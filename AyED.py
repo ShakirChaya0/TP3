@@ -155,6 +155,17 @@ def Bs_Usu(X , valor):
       cont = -1
   return cont
 
+#Validación de numeros
+def Validar(nro, desde, hasta):
+  try:
+    nro = int(nro)
+    if nro >= desde and nro <= hasta:
+      return True
+    else:
+      return False
+  except: 
+    return False
+
 def Registrarse():
    global i_global
    R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100," ")
@@ -173,8 +184,13 @@ def Registrarse():
    i_global = i_global + 1
    pickle.dump(R_Usu, ALU)
    ALU.flush()
-   
-   
+
+def Admin():
+  print("A")
+def DueñoDelocales():
+  print("D")
+def Clientes():
+  print("C")
 
 #declaración de variables...
 bandera = 0
@@ -208,6 +224,10 @@ if os.path.getsize(AFU) == 0:
     pickle.dump(R_Usu, ALU)
     ALU.flush()
 
+
+
+####### PROGRAMA PRINCIPAL ########
+
 print("""
       1. Ingresar con usuario registrado
       2. Registrarse como cliente
@@ -215,23 +235,28 @@ print("""
       """)
 elec = input ("Seleccione la opción que desee: ")
 while elec != 3 and bandera == 0:
-    if elec == 1:
-       pedirusuario()
-       match cod:
-            case 1:
-                print("admin")
-            case 4:
-                print("dueños locales")
-            case 6:
-                print("dueños locales")
-            case 9:
-                print("cliente")
-    elif elec == 2:
-       print("")
-    if bandera == 0:
-        print("""
-          1. Ingresar con usuario registrado
-          2. Registrarse como cliente
-          3. Salir
-          """)
-        elec = input ("Seleccione la opción que desee: ")
+    try:
+        nro = int(nro)
+        if elec == 1:
+           pedirusuario()
+           match cod:
+                case "administrador": 
+                    Admin()
+                case "dueños de local":
+                    DueñoDelocales()
+                case "cliente":
+                    Clientes()
+        elif elec == 2:
+          Registrarse()
+        elif elec != 1 and elec != 2:
+           print("error")
+        if bandera == 0:
+          print("""
+            1. Ingresar con usuario registrado
+            2. Registrarse como cliente
+            3. Salir
+            """)
+          elec = input ("Seleccione la opción que desee: ")
+    except: 
+      elec = input ("Valor equivocado, seleccione la opción que desee: ")
+
