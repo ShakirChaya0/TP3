@@ -1,3 +1,4 @@
+import getpass
 import pickle 
 import os.path
 from datetime import date
@@ -43,6 +44,141 @@ class Novedades:
         self.TipoUsuario = " ".ljust(20," ")
         self.Estado = ""
 
+def separador():
+  print(70 * "-")
+
+def pedirusuario():
+  global cod
+  global eleccion
+  global bandera
+  contador = 0
+  
+  #Ingreso de datos:
+  user = input("Escriba su usuario: ")
+  contraseña = getpass.getpass("Escriba su contraseña: ")
+  ALU.seek(0,0)
+  cont = pickle.load(ALU)
+  pre = Bs_Usu(cont.NombreUsuario,user)
+  if pre != -1:      
+      ent = Bs_Usu(pre.ClaveUsuario,contraseña)
+      if ent != -1:
+         cod = ent.TipoUsuario
+  else:
+     cod = ""
+
+  #Restricción de intentos del inicio de sesión
+  while cod == "" and contador < 3:
+   contador = contador + 1
+   os.system("cls")
+   if contador <= 2:
+      print("Su usuario o contraseña son incorrectos, intentelo de nuevo")
+      separador()
+      user = input("Escriba su usuario: ")
+      contraseña = getpass.getpass("Escriba su contraseña: ")
+      ALU.seek(0,0)
+      cont = pickle.load(ALU)
+      pre = Bs_Usu(cont.NombreUsuario,user)
+      if pre != -1:      
+          ent = Bs_Usu(pre.ClaveUsuario,contraseña)
+          if ent != -1:
+             cod = ent.TipoUsuario
+      else:
+         cod = ""
+   else:
+      print("Su numero de intentos ha finalizado")
+      bandera = 1
+      eleccion = 0     
+  if cod == "administrador" or cod == "cliente":
+    os.system("cls")
+    print("- Hola, has ingresado correctamente")
+
+def mostrar_menu():
+  if cod == 1:
+    if eleccion != 1 and eleccion != 4 and eleccion != 0:
+      print(
+    """\033[1;36m---------------Menu principal Administrador---------------\033[0;m
+      0. Salir
+      1. Gestion de locales
+      2. Crear cuentas de dueños de locales
+      3. Aprobar / Denegar solicitud de descuento
+      4. Gestión de Novedades
+      5. Reporte de utilización de descuentos""")
+
+    elif eleccion == 1:
+      print(
+    """\033[;32m---------------Gestión de locales---------------\033[0;m
+        a) Crear locales
+        b) Modificar local
+        c) Eliminar local
+        d) Mapa de locales
+        e) Volver""")
+
+    elif eleccion == 4:
+      print(
+    """\033[;32m---------------Gestión de Novedades---------------\033[0;m
+        a) Crear novedades
+        b) Modificar novedad
+        c) Eliminar novedad
+        d) Ver reporte de novedades
+        e) Volver""")
+      
+  elif cod == 4 or cod == 6:
+     print(
+    """\033[1;36m---------------Menu principal Dueños Locales---------------\033[0;m
+      1. Gestión de Descuentos
+      a) Crear descuento para mi local
+      b) Modificar descuento de mi local
+      c) Eliminar descuento de mi local
+      d) Volver
+      2. Aceptar / Rechazar pedido de descuento
+      3. Reporte de uso de descuentos
+      0. Salir""")
+     
+  else:
+    print(
+    """\033[1;36m---------------Menu principal Cliente---------------\033[0;m
+      1. Registrarme
+      2. Buscar descuentos en locales
+      3. Solicitar descuento
+      4. Ver novedades
+      0. Salir""")
+
+#Busqueda secuencial para registro Usuarios
+def Bs_Usu(X , valor):
+  T = os.path.getsize(AFU)
+  while ALU.tell() < T and X != valor:
+      pos = ALU.tell()
+      cont = pickle.load(ALU)
+  if valor == cont.X:
+      cont = pos
+  else:
+      cont = -1
+  return cont
+
+def Registrarse():
+   global i_global
+   R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100," ")
+   #Hacer busqueda secuencial para verificar que no se repite el usuario...
+   while len(R_Usu.NombreUsuario) >= 100:
+        print("Usted ingreso un mail muy largo, intente otra vez")
+        R_Usu.NombreUsuario = input("Ingrese la clave del usuario: ").ljust(100," ")
+
+   R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8," ")
+   while len(R_Usu.ClaveUsuario) >= 8:
+      print("Usted ingreso una clave muy larga, intente otra vez")
+      R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8," ")
+    
+   R_Usu.TipoUsuario = "cliente"
+   R_Usu.CodUsuario = i_global
+   i_global = i_global + 1
+   pickle.dump(R_Usu, ALU)
+   ALU.flush()
+   
+   
+
+#declaración de variables...
+bandera = 0
+i_global = 1
 
 AFU = "C:\\TP3\\Archivos\\Usuarios.dat"
 AFL = "C:\\TP3\\Archivos\\Locales.dat"
@@ -62,9 +198,9 @@ R_Pro = Promociones()
 R_Uso_Pro = Uso_Promocion()
 R_Nov = Novedades()
 
-
 if os.path.getsize(AFU) == 0: 
-    R_Usu.CodUsuario = 1
+    R_Usu.CodUsuario = i_global
+    i_global = i_global + 1
     R_Usu.NombreUsuario = "admin".ljust(100," ")
     R_Usu.ClaveUsuario = "12345".ljust(8," ")
     R_Usu.TipoUsuario = "administrador".ljust(20," ")
@@ -72,5 +208,30 @@ if os.path.getsize(AFU) == 0:
     pickle.dump(R_Usu, ALU)
     ALU.flush()
 
-
-
+print("""
+      1. Ingresar con usuario registrado
+      2. Registrarse como cliente
+      3. Salir
+      """)
+elec = input ("Seleccione la opción que desee: ")
+while elec != 3 and bandera == 0:
+    if elec == 1:
+       pedirusuario()
+       match cod:
+            case 1:
+                print("admin")
+            case 4:
+                print("dueños locales")
+            case 6:
+                print("dueños locales")
+            case 9:
+                print("cliente")
+    elif elec == 2:
+       print("")
+    if bandera == 0:
+        print("""
+          1. Ingresar con usuario registrado
+          2. Registrarse como cliente
+          3. Salir
+          """)
+        elec = input ("Seleccione la opción que desee: ")
