@@ -67,9 +67,8 @@ def pedirusuario():
     cont = pickle.load(ALU)
     pre = Bs_Usu(cont.NombreUsuario, user)
     if pre != -1:
-        ent = Bs_Usu(cont.ClaveUsuario, contraseña)
-        if ent != -1:
-            cod = cont.TipoUsuario
+        if cont.ClaveUsuario == contraseña:
+            cod = cont.TipoUsuario.strip()
         else:
             cod = ""
     else:
@@ -80,10 +79,8 @@ def pedirusuario():
         contador = contador + 1
         os.system("cls")
         if contador <= 2:
-            print("Su usuario o contraseña son incorrectos, intentelo de nuevo")
-            separador()
-            user = input("Escriba su usuario: ")
-            contraseña = getpass.getpass("Escriba su contraseña: ")
+            user = input("Escriba su usuario: ").ljust(100, " ")
+            contraseña = getpass.getpass("Escriba su contraseña: ").ljust(8, " ")
             ALU.seek(0, 0)
             cont = pickle.load(ALU)
             pre = Bs_Usu(cont.NombreUsuario, user)
@@ -91,13 +88,15 @@ def pedirusuario():
                 ent = Bs_Usu(cont.ClaveUsuario, contraseña)
                 if ent != -1:
                     cod = cont.TipoUsuario
+                else:
+                    cod = ""
             else:
                 cod = ""
         else:
             print("Su numero de intentos ha finalizado")
-            bandera = 1
+            bandera = -1
             eleccion = 0
-    if cod == "administrador" or cod == "cliente":
+    if cod != "":
         os.system("cls")
         print("- Hola, has ingresado correctamente")
 
@@ -272,9 +271,10 @@ elec = input("Seleccione la opción que desee: ")
 while elec != 3 and bandera == 0:
     try:
         elec = int(elec)
+        adm = "administrador"
         if elec == 1:
             pedirusuario()
-            match cod:
+            match cod.strip():
                 case "administrador":
                     Admin()
                 case "dueños de local":
