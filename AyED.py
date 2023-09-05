@@ -169,15 +169,15 @@ def Menu_principal():
 
 
 # Busqueda secuencial para registro Usuarios
-def Bs_Usu(X, valor):
+def Bs_Usu(valor):
     T = os.path.getsize(AFU)
     pos = 1
-    ALU.seek(0, 0)
+    ALU.seek(0, 1)
     cont = pickle.load(ALU)
-    while ALU.tell() < T and X != valor:
+    while ALU.tell() < T and cont.NombreUsuario != valor:
         pos = ALU.tell()
         cont = pickle.load(ALU)
-    if valor == X:
+    if valor == cont.NombreUsuario:
         cont = pos
     else:
         cont = -1
@@ -200,12 +200,12 @@ def Registrarse():
     global i_global
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
     # Hacer busqueda secuencial para verificar que no se repite el usuario...
-    while len(R_Usu.NombreUsuario) >= 100:
+    while len(R_Usu.NombreUsuario) > 100:
         print("Usted ingreso un mail muy largo, intente otra vez")
         R_Usu.NombreUsuario = input("Ingrese la clave del usuario: ").ljust(100, " ")
 
     R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
-    while len(R_Usu.ClaveUsuario) >= 8:
+    while len(R_Usu.ClaveUsuario) > 8:
         print("Usted ingreso una clave muy larga, intente otra vez")
         R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
 
@@ -230,7 +230,7 @@ def Clientes():
 
 # Declaración de variables...
 bandera = 0
-i_global = 1
+i_global = 2
 
 # Declaración de variables que contienen la ubicación física de los archivos
 AFU = "C:\\TP3\\Archivos\\Usuarios.dat"
@@ -254,8 +254,7 @@ R_Uso_Pro = Uso_Promocion()
 R_Nov = Novedades()
 
 if os.path.getsize(AFU) == 0:
-    R_Usu.CodUsuario = i_global
-    i_global = i_global + 1
+    R_Usu.CodUsuario = 1
     R_Usu.NombreUsuario = "admin".ljust(100, " ")
     R_Usu.ClaveUsuario = "12345".ljust(8, " ")
     R_Usu.TipoUsuario = "administrador".ljust(20, " ")
