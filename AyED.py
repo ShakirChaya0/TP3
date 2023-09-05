@@ -116,7 +116,7 @@ def Bs_Usu(valor):
         return -1
 
 
-# Menus
+# Sub-menus
 def mostrar_menu():
     if cod == 1:
         if eleccion != 1 and eleccion != 4 and eleccion != 0:
@@ -174,6 +174,7 @@ def mostrar_menu():
         )
 
 
+# Menu del programa principal
 def Menu_principal():
     print(
         """
