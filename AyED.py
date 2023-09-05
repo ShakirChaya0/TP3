@@ -63,10 +63,11 @@ def pedirusuario():
     # Ingreso de datos:
     user = input("Escriba su usuario: ").ljust(100, " ")
     contraseña = getpass.getpass("Escriba su contraseña: ").ljust(8, " ")
-    ALU.seek(0, 0)
-    cont = pickle.load(ALU)
-    pre = Bs_Usu(cont.NombreUsuario, user)
-    if pre != -1:
+
+    pos = Bs_Usu(user)
+    if pos != -1:
+        ALU.seek(pos, 0)
+        cont = pickle.load(ALU)
         if cont.ClaveUsuario == contraseña:
             cod = cont.TipoUsuario.strip()
         else:
@@ -81,13 +82,12 @@ def pedirusuario():
         if contador <= 2:
             user = input("Escriba su usuario: ").ljust(100, " ")
             contraseña = getpass.getpass("Escriba su contraseña: ").ljust(8, " ")
-            ALU.seek(0, 0)
-            cont = pickle.load(ALU)
-            pre = Bs_Usu(cont.NombreUsuario, user)
-            if pre != -1:
-                ent = Bs_Usu(cont.ClaveUsuario, contraseña)
-                if ent != -1:
-                    cod = cont.TipoUsuario
+            pos = Bs_Usu(user)
+            if pos != -1:
+                ALU.seek(pos, 0)
+                cont = pickle.load(ALU)
+                if cont.ClaveUsuario == contraseña:
+                    cod = cont.TipoUsuario.strip()
                 else:
                     cod = ""
             else:
@@ -99,6 +99,21 @@ def pedirusuario():
     if cod != "":
         os.system("cls")
         print("- Hola, has ingresado correctamente")
+
+
+# Busqueda secuencial para registro Usuarios
+def Bs_Usu(valor):
+    T = os.path.getsize(AFU)
+    pos = 0
+    ALU.seek(0, 0)
+    cont = pickle.load(ALU)
+    while ALU.tell() < T and cont.NombreUsuario != valor:
+        pos = ALU.tell()
+        cont = pickle.load(ALU)
+    if cont.NombreUsuario == valor:
+        return pos
+    else:
+        return -1
 
 
 def mostrar_menu():
@@ -168,22 +183,6 @@ def Menu_principal():
     )
 
 
-# Busqueda secuencial para registro Usuarios
-def Bs_Usu(valor):
-    T = os.path.getsize(AFU)
-    pos = 1
-    ALU.seek(0, 1)
-    cont = pickle.load(ALU)
-    while ALU.tell() < T and cont.NombreUsuario != valor:
-        pos = ALU.tell()
-        cont = pickle.load(ALU)
-    if valor == cont.NombreUsuario:
-        cont = pos
-    else:
-        cont = -1
-    return cont
-
-
 # Validación de numeros
 def Validar(nro, desde, hasta):
     try:
@@ -212,6 +211,8 @@ def Registrarse():
     R_Usu.TipoUsuario = "cliente"
     R_Usu.CodUsuario = i_global
     i_global = i_global + 1
+    C = os.path.getsize(AFU)
+    ALU.seek(C, 0)
     pickle.dump(R_Usu, ALU)
     ALU.flush()
 
@@ -270,7 +271,6 @@ elec = input("Seleccione la opción que desee: ")
 while elec != 3 and bandera == 0:
     try:
         elec = int(elec)
-        adm = "administrador"
         if elec == 1:
             pedirusuario()
             match cod.strip():
