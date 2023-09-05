@@ -116,6 +116,7 @@ def Bs_Usu(valor):
         return -1
 
 
+# Menus
 def mostrar_menu():
     if cod == 1:
         if eleccion != 1 and eleccion != 4 and eleccion != 0:
