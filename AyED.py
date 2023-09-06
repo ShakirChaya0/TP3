@@ -52,86 +52,16 @@ class Novedades:
         self.Estado = ""
 
 
+Rubros = [0] * 3
+Rubros[0] = "perfumeria"
+Rubros[1] = "indumentaria"
+Rubros[2] = "comida"
+
+Rubros_c = [0] * 3
+
+
 def separador():
     print(70 * "-")
-
-
-def Exhibicion():
-    borde = "║"
-    label = "║Codigo local"
-    label += borde
-    label += "Codigo Usuario"
-    label += borde
-    label += " " * 12
-    label += "Nombre"
-    label += " " * 12
-    label += borde
-    label += " " * 10
-    label += "Ubicacion"
-    label += " " * 11
-    label += borde
-    label += " " * 3
-    label += "Rubro"
-    label += " " * 4
-    label += borde
-    label += "Estado║"
-    # print("╔",12*"═","╦",14*"═","╦",30*"═","╦",30*"═","╦",12*"═","╦",6*"═","╗")   intento de hacerlo en una linea
-    sys.stdout.write("╔")
-    sys.stdout.write(12 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(14 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(30 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(30 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(12 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(6 * "═")
-    sys.stdout.write("╗\n")
-    print(label)
-    for i in range(0, i_global):
-        sys.stdout.write("╠")
-        sys.stdout.write(12 * "═")
-        sys.stdout.write("╬")
-        sys.stdout.write(14 * "═")
-        sys.stdout.write("╬")
-        sys.stdout.write(30 * "═")
-        sys.stdout.write("╬")
-        sys.stdout.write(30 * "═")
-        sys.stdout.write("╬")
-        sys.stdout.write(12 * "═")
-        sys.stdout.write("╬")
-        sys.stdout.write(6 * "═")
-        sys.stdout.write("╣\n")
-        item = ""
-        item += "║"
-        item += str(Cod_loc[i][0]).center(12)
-        item += borde
-        item += str(Cod_loc[i][1]).center(14)
-        item += borde
-        item += Datos_Locales[i][0].strip().center(30)
-        item += borde
-        item += Datos_Locales[i][1].strip().center(30)
-        item += borde
-        item += Datos_Locales[i][2].center(12)
-        item += borde
-        item += Datos_Locales[i][3].center(6)
-        item += "║"
-        print(item)
-    sys.stdout.write("╚")
-    sys.stdout.write(12 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(14 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(30 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(30 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(12 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(6 * "═")
-    sys.stdout.write("╝\n")
 
 
 def pedirusuario():
@@ -191,6 +121,20 @@ def Bs_Usu(valor):
         pos = ALU.tell()
         cont = pickle.load(ALU)
     if cont.NombreUsuario == valor:
+        return pos
+    else:
+        return -1
+
+
+def Bs_Usu_Cod(valor):
+    T = os.path.getsize(AFU)
+    pos = 0
+    ALU.seek(0, 0)
+    cont = pickle.load(ALU)
+    while ALU.tell() < T and cont.CodUsuario != valor:
+        pos = ALU.tell()
+        cont = pickle.load(ALU)
+    if cont.CodUsuario == valor:
         return pos
     else:
         return -1
@@ -268,6 +212,144 @@ def Validar(nro, desde, hasta):
             return False
     except:
         return False
+
+
+def or_archivo():
+    ALL.seek(0, 0)
+    Aux_I = pickle.load(ALL)
+    T_RL = ALL.tell()
+    C_RL = int(os.path.getsize(AFL) / T_RL)
+    for i in range(0, C_RL - 1):
+        for j in range(i + 1, C_RL):
+            ALL.seek(i * T_RL, 0)
+            Aux_I = pickle.load(ALL)
+            ALL.seek(j * T_RL, 0)
+            Aux_J = pickle.load(ALL)
+            if Aux_I.NombreLocal > Aux_J.NombreLocal:
+                ALL.seek(i * T_RL, 0)
+                pickle.dump(Aux_J, ALL)
+                ALL.seek(j * T_RL, 0)
+                pickle.dump(Aux_I, 0)
+                ALL.flush()
+
+
+def Bd_archivo(X):
+    ALL.seek(0, 0)
+    R_L = pickle.load(ALL)
+    T_RL = ALL.tell()
+    C_RL = int(os.path.getsize(AFL) / T_RL)
+    inf = 0
+    sup = C_RL - 1
+    medio = (inf + sup) // 2
+    ALL.seek(medio * T_RL, 0)
+    R_L = pickle.load(ALL)
+    while inf < sup and R_L.NombreLocal != X:
+        if X < R_L.NombreLocal:
+            sup = medio - 1
+        else:
+            inf = medio + 1
+        medio = (inf + sup) // 2
+        ALL.seek(medio * T_RL, 0)
+        R_L = pickle.load(ALL)
+    if R_L.NombreLocal == X:
+        return medio * T_RL
+    else:
+        return -1
+
+
+def Bs_Sec_R(arreglo, valor):
+    p = 0
+    while arreglo[p] != valor and p < i_global:
+        p = p + 1
+    if arreglo[p] == valor:
+        return p
+    else:
+        return -1
+
+
+def Exhibicion():
+    or_archivo()
+    ALL.seek(0, 0)
+    Aux_I = pickle.load(ALL)
+    T_RL = ALL.tell()
+    T_AL = os.path.getsize(AFL)
+    C_RL = int(T_AL / T_RL)
+    borde = "║"
+    label = "║Codigo local"
+    label += borde
+    label += "Codigo Usuario"
+    label += borde
+    label += " " * 12
+    label += "Nombre"
+    label += " " * 12
+    label += borde
+    label += " " * 10
+    label += "Ubicacion"
+    label += " " * 11
+    label += borde
+    label += " " * 3
+    label += "Rubro"
+    label += " " * 4
+    label += borde
+    label += "Estado║"
+    sys.stdout.write("╔")
+    sys.stdout.write(12 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(14 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(30 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(30 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(12 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(6 * "═")
+    sys.stdout.write("╗\n")
+    print(label)
+    for i in range(0, C_RL):
+        sys.stdout.write("╠")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╬")
+        sys.stdout.write(14 * "═")
+        sys.stdout.write("╬")
+        sys.stdout.write(30 * "═")
+        sys.stdout.write("╬")
+        sys.stdout.write(30 * "═")
+        sys.stdout.write("╬")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╬")
+        sys.stdout.write(6 * "═")
+        sys.stdout.write("╣\n")
+        ALL.seek(i * T_RL, 0)
+        Auxiliar = pickle.load(ALL)
+        item = ""
+        item += "║"
+        item += str(Auxiliar.CodLocal).center(12)
+        item += borde
+        item += str(Auxiliar.NombreLocal).center(14)
+        item += borde
+        item += Auxiliar.UbiLocal.strip().center(30)
+        item += borde
+        item += Auxiliar.RubroLocal.strip().center(30)
+        item += borde
+        item += Auxiliar.CodUsuario.center(12)
+        item += borde
+        item += Auxiliar.Estado.center(6)
+        item += "║"
+        print(item)
+    sys.stdout.write("╚")
+    sys.stdout.write(12 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(14 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(30 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(30 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(12 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(6 * "═")
+    sys.stdout.write("╝\n")
 
 
 def Registrarse():
@@ -356,6 +438,7 @@ def gestion_de_locales():
     ):
         mostrar_menu()
         decision = input("Escoger la opción a la que desee acceder: ")
+
         os.system("cls")
 
         if (
@@ -433,24 +516,8 @@ def gestion_de_locales():
 
 
 def Crear_Locales():
-    verificacion = True
+    verificacion = -2
     global i_global
-
-    # Busqueda dicotomica
-    def Bs_Dico(x, nom):
-        pri = 0
-        ult = 49
-        med = (pri + ult) // 2
-        while x[med][0] != nom and pri <= ult:
-            if x[med][0] > nom:
-                ult = med - 1
-            else:
-                pri = med + 1
-            med = (pri + ult) // 2
-        if x[med][0] == nom:
-            return True
-        else:
-            return False
 
     nombre = input(
         "Ingrese el nombre del local (si no quiere crear locales ingrese 0): "
@@ -466,10 +533,10 @@ def Crear_Locales():
 
     while nombre != "0":
         # Verificación y carga del nombre:
-        while verificacion == True and nombre != "0":
-            verificacion = Bs_Dico(Datos_Locales[:][:], nombre)
-            if verificacion == False:
-                Datos_Locales[i_global][0] = nombre
+        while verificacion != -1 and nombre != "0":
+            verificacion = Bd_archivo(nombre)
+            if verificacion == -1:
+                print("Nombre correcto.")
             else:
                 print("Usted ingreso un nombre ya existente")
                 separador()
@@ -477,7 +544,7 @@ def Crear_Locales():
                     "Ingrese otro nombre de local (si no quiere crear locales ingrese 0): "
                 )
                 nombre = nombre.lower()
-        verificacion = True
+        verificacion = -2
 
         if nombre != "0":
             # Cargando Ubicación:
@@ -486,7 +553,6 @@ def Crear_Locales():
                 print("Usted ingreso una ubicación muy larga... ")
                 separador()
                 Ubi = input("Ingrese una ubicación mas corta: ")
-            Datos_Locales[i_global][1] = Ubi
             # Cargando Rubro:
             rubro = input(
                 "Ingrese el tipo de rubro del local (perfumería, comida o indumentaria): "
@@ -511,35 +577,45 @@ def Crear_Locales():
             pos_suma = Bs_Sec_R(Rubros[:], rubro)
             if rubro == "perfumeria" or rubro == "perfumería":
                 Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
-                Datos_Locales[i_global][2] = rubro
             elif rubro == "indumentaria":
                 Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
-                Datos_Locales[i_global][2] = rubro
             else:
                 Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
-                Datos_Locales[i_global][2] = rubro
 
-            # Cargando Estado
-            Datos_Locales[i_global][3] = "A"
-
-            # Cargando el codigo del local
-            Cod_loc[i_global][0] = i_global + 1
-
+            # Pidiendo el Código de usuario
+            flag = 0
             Cod_us = input("Ingrese el codigo de usuario: ")
 
-            # Verificacíon y carga del codigo de usuario
-            while Cod_us != "4" and Cod_us != "6":
+            if Cod_us.isdigit():
+                Cod_us = int(Cod_us)
+                flag = 1
+            while flag == 0:
                 print("Usted ingreso un codigo de usuario erroneo, intentelo de nuevo")
                 separador()
                 Cod_us = input("Ingrese el codigo de usuario: ")
-            Cod_us = int(Cod_us)
-            Cod_loc[i_global][1] = Cod_us
+                if Cod_us.isdigit():
+                    Cod_us = int(Cod_us)
+                    Veri = Bs_Usu_Cod(Cod_us)
+                    if Veri == True:
+                        flag = 1
+
+            # Cargando registro locales.
+            M = os.path.getsize(AFL)
+            Pos = ALL.seek(M, 0)
+            Pos.CodLocal = i_global
+            Pos.NombreLocal = nombre
+            Pos.UbiLocal = Ubi
+            Pos.RubroLocal = rubro
+            Pos.CodUsuario = Cod_us
+            Pos.Estado = "A"
+            pickle.dump()
+            ALL.flush()
 
             # Aumentando el contador global post carga de un local
             i_global = i_global + 1
             separador()
 
-            Ordenamiento()
+            or_archivo()
 
             # Pidiendo el siguiente local
             nombre = input(
@@ -863,9 +939,12 @@ def Mapa_Locales():
 
 # Declaración de variables...
 eleccion = -1
+decision = ""
 bandera = 0
-i_global = 2
+i_usu = 2
+i_global = 1
 frenar = True
+
 
 # Declaración de variables que contienen la ubicación física de los archivos
 AFU = "C:\\TP3\\Archivos\\Usuarios.dat"
