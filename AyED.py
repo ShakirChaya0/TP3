@@ -138,7 +138,19 @@ def Bs_Usu_Cod(valor):
         return pos
     else:
         return -1
-
+    
+def Bs_Loc(valor):
+    T = os.path.getsize(AFL)
+    pos = 0
+    ALL.seek(0, 0)
+    cont = pickle.load(ALL)
+    while ALL.tell() < T and cont.CodLocal != valor:
+        pos = ALL.tell()
+        cont = pickle.load(ALL)
+    if cont.CodUsuario == valor:
+        return pos
+    else:
+        return -1
 
 # Sub-menus
 def mostrar_menu():
@@ -189,7 +201,6 @@ def mostrar_menu():
     4. Ver novedades
     0. Salir"""
         )
-
 
 # Menu del programa principal
 def Menu_principal():
@@ -588,7 +599,12 @@ def Crear_Locales():
 
             if Cod_us.isdigit():
                 Cod_us = int(Cod_us)
-                flag = 1
+                Veri = Bs_Usu_Cod(Cod_us)
+                if Veri !=  -1:
+                    ALL.seek(Veri, 0)
+                    R_Loc = pickle.load(ALL)
+                    if R_Loc.TipoUsuario.strip() == "dueños de local":
+                        flag = 1
             while flag == 0:
                 print("Usted ingreso un codigo de usuario erroneo, intentelo de nuevo")
                 separador()
@@ -596,8 +612,12 @@ def Crear_Locales():
                 if Cod_us.isdigit():
                     Cod_us = int(Cod_us)
                     Veri = Bs_Usu_Cod(Cod_us)
-                    if Veri == True:
-                        flag = 1
+                    if Veri !=  -1:
+                        ALL.seek(Veri, 0)
+                        R_Loc = pickle.load(ALL)
+                        if R_Loc.TipoUsuario.strip() == "dueños de local":
+                            flag = 1
+                        
 
             # Cargando registro locales.
             M = os.path.getsize(AFL)
@@ -670,25 +690,9 @@ def Crear_Locales():
 
 
 def Modificar_Locales():
-    # Busqueda dicotomica para el codigo
-    def Bs_Dico(x, valor):
-        pri = 0
-        ult = i_global - 1
-        med = (pri + ult) // 2
-        while x[med][0] != valor and pri <= ult:
-            if x[med][0] > valor:
-                ult = med - 1
-            else:
-                pri = med + 1
-            med = (pri + ult) // 2
-        if x[med][0] == valor:
-            return med
-        else:
-            return -1
-
     # Procedimiento para la modificación de un local:
     def Modificacion():
-        verificacion = 0
+        verificacion = -2
         os.system("cls")
         print("Aclaración: si no desea modificar ninguna parte ingrese 0")
         modif = input(
@@ -720,17 +724,18 @@ def Modificar_Locales():
                 separador()
                 nombre = input("Ingrese un nombre mas corto: ")
                 nombre = nombre.lower()
-            while verificacion == 0:
-                verificacion = Bs_Dico(Datos_Locales[:][:], nombre)
+
+            while verificacion != -1:
+                verificacion = Bd_archivo(nombre)
                 if verificacion == -1:
-                    Datos_Locales[valor][0] = nombre
-                    Ordenamiento()
+                    print("Nombre correcto.")
                 else:
                     print("Usted ingreso un nombre ya existente")
-                    verificacion = 0
                     separador()
-                    nombre = input("Ingrese otro nombre de local: ")
+                    nombre = input("Ingrese otro nombre de local (si no quiere crear locales ingrese 0): ")
                     nombre = nombre.lower()
+            verificacion = -2
+            R_Loc.NombreLocal = nombre
             print("Su modificación se a realizado con exito")
 
         # Modificación de la ubicación:
@@ -740,14 +745,12 @@ def Modificar_Locales():
                 print("Usted ingreso una ubicación muy larga... ")
                 separador()
                 Ubi = input("Ingrese una ubicación mas corta: ")
-            Datos_Locales[valor][1] = Ubi
+            R_Loc.UbiLocal = Ubi
             print("Su modificación se a realizado con exito")
 
         # Modificación del rubro
         elif modif == "rubro":
-            rubro = input(
-                "Ingrese el nuevo rubro (perfumería, comida o indumentaria): "
-            )
+            rubro = input("Ingrese el nuevo rubro (perfumería, comida o indumentaria): ")
             rubro = rubro.lower()
             while (
                 rubro != "perfumeria"
@@ -763,39 +766,58 @@ def Modificar_Locales():
                     "Ingrese el nuevo rubro del local (perfumeria, comida o indumentaria): "
                 )
                 rubro = rubro.lower()
-            tipo = Datos_Locales[valor][2]
+            tipo = R_Loc.RubroLocal
             pos_rest = Bs_Sec_R(Rubros[:], tipo)
             pos_suma = Bs_Sec_R(Rubros[:], rubro)
             if (
-                Datos_Locales[valor][2] == "perfumeria"
-                or Datos_Locales[valor][2] == "perfumería"
+                R_Loc.RubroLocal == "perfumeria"
+                or R_Loc.RubroLocal == "perfumería"
             ):
                 Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
-            elif Datos_Locales[valor][2] == "indumentaria":
+            elif R_Loc.RubroLocal == "indumentaria":
                 Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
             else:
                 Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
             if rubro == "perfumeria" or rubro == "perfumería":
                 Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
-                Datos_Locales[valor][2] = rubro
+                R_Loc.RubroLocal = rubro
             elif rubro == "indumentaria":
                 Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
-                Datos_Locales[valor][2] = rubro
+                R_Loc.RubroLocal = rubro
             else:
                 Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
-                Datos_Locales[valor][2] = rubro
+                R_Loc.RubroLocal = rubro
+            R_Loc.RubroLocal = rubro
             print("Su modificación se a realizado con exito")
 
         # Modificación del código de usuario
         elif modif == "codigo de usuario":
-            Cod_us = input("Ingrese el nuevo codigo de usuario: ")
-            while Cod_us != "4" and Cod_us != "6":
+            flag = 0
+            Cod_us = input("Ingrese el codigo de usuario: ")
+            if Cod_us.isdigit():
+                Cod_us = int(Cod_us)
+                Veri = Bs_Usu_Cod(Cod_us)
+                if Veri !=  -1:
+                    ALL.seek(Veri, 0)
+                    R_Loc = pickle.load(ALL)
+                    if R_Loc.TipoUsuario.strip() == "dueños de local":
+                        flag = 1
+            while flag == 0:
                 print("Usted ingreso un codigo de usuario erroneo, intentelo de nuevo")
                 separador()
-                Cod_us = input("Ingrese el nuevo codigo de usuario: ")
-            Cod_us = int(Cod_us)
-            Cod_loc[valor][1] = Cod_us
+                Cod_us = input("Ingrese el codigo de usuario: ")
+                if Cod_us.isdigit():
+                    Cod_us = int(Cod_us)
+                    Veri = Bs_Usu_Cod(Cod_us)
+                    if Veri !=  -1:
+                        ALL.seek(Veri, 0)
+                        R_Loc = pickle.load(ALL)
+                        if R_Loc.TipoUsuario.strip() == "dueños de local":
+                            flag = 1
+            R_Loc.CodUsuario = Cod_us
             print("Su modificación se a realizado con exito")
+
+        #Escribir dump y flush
         else:
             print("No se realizó ninguna modificación")
 
@@ -805,7 +827,7 @@ def Modificar_Locales():
     while cod_local != "0":
         if cod_local.isdigit():
             cod_local = int(cod_local)
-            valor = Bs_Sec(Cod_loc[:][:], cod_local)
+            valor = Bs_Loc(cod_local)
             if valor == -1:
                 print("Usted ingreso un valor no valido, intentelo de nuevo")
                 separador()
@@ -814,7 +836,9 @@ def Modificar_Locales():
                 )
             else:
                 print("Local encontrado!!!")
-                if Datos_Locales[valor][3] == "B":
+                ALL.seek(valor, 0)
+                R_Loc = pickle.load(ALL)
+                if R_Loc.Estado == "B":
                     print("Este local esta dado de baja")
                     rta = input("Desea cambiarlo a estado activo? (si o no): ")
                     while rta != "si" and rta != "no":
@@ -827,15 +851,14 @@ def Modificar_Locales():
                             "Ingrese el codigo de otro local que desee modificar(si no desea modificar ninguno ingrese 0): "
                         )
                     else:
-                        pos = Bs_Sec(Cod_loc[:][:], cod_local)
-                        Datos_Locales[pos][3] = "A"
+                        R_Loc.Estado = "A" #VER SI FUNCIONA CORRECTAMENTE CON EL PROCEDIMIENTO MODIFICACION
                         if (
-                            Datos_Locales[pos][2] == "perfumeria"
-                            or Datos_Locales[pos][2] == "perfumería"
+                            R_Loc.RubroLocal == "perfumeria"
+                            or R_Loc.RubroLocal == "perfumería"
                         ):
                             re_suma = Bs_Sec_R(Rubros[:], "perfumeria")
                             Rubros_c[re_suma] = Rubros_c[re_suma] + 1
-                        elif Datos_Locales[pos][2] == "indumentaria":
+                        elif R_Loc.RubroLocal == "indumentaria":
                             re_suma = Bs_Sec_R(Rubros[:], "indumentaria")
                             Rubros_c[re_suma] = Rubros_c[re_suma] + 1
                         else:
@@ -848,6 +871,8 @@ def Modificar_Locales():
                             "Ingrese el siguiente codigo del local que desea modificar(si no desea modificar ninguno ingrese 0): "
                         )
                 else:
+                    ALL.seek(valor, 0)
+                    R_Loc = pickle.load(ALL)
                     Modificacion()
                     separador()
                     cod_local = input(
