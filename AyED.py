@@ -125,6 +125,7 @@ def Bs_Usu(valor):
     else:
         return -1
 
+
 def Bs_Usu_Cod(valor):
     T = os.path.getsize(AFU)
     pos = 0
@@ -137,7 +138,8 @@ def Bs_Usu_Cod(valor):
         return pos
     else:
         return -1
-    
+
+
 def Bs_Loc(valor):
     T = os.path.getsize(AFL)
     pos = 0
@@ -150,6 +152,7 @@ def Bs_Loc(valor):
         return pos
     else:
         return -1
+
 
 # Sub-menus
 def mostrar_menu():
@@ -200,6 +203,7 @@ def mostrar_menu():
     4. Ver novedades
     0. Salir"""
         )
+
 
 # Menu del programa principal
 def Menu_principal():
@@ -278,88 +282,93 @@ def Bs_Sec_R(arreglo, valor):
 
 
 def Exhibicion():
-    or_archivo()
-    ALL.seek(0, 0)
-    Aux_I = pickle.load(ALL)
-    T_RL = ALL.tell()
-    T_AL = os.path.getsize(AFL)
-    C_RL = int(T_AL / T_RL)
-    borde = "║"
-    label = "║Codigo local"
-    label += borde
-    label += "Codigo Usuario"
-    label += borde
-    label += " " * 12
-    label += "Nombre"
-    label += " " * 12
-    label += borde
-    label += " " * 10
-    label += "Ubicacion"
-    label += " " * 11
-    label += borde
-    label += " " * 3
-    label += "Rubro"
-    label += " " * 4
-    label += borde
-    label += "Estado║"
-    sys.stdout.write("╔")
-    sys.stdout.write(12 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(14 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(30 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(30 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(12 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(6 * "═")
-    sys.stdout.write("╗\n")
-    print(label)
-    for i in range(0, C_RL):
-        sys.stdout.write("╠")
+    if os.path.getsize(AFL) != 0:
+        or_archivo()
+        ALL.seek(0, 0)
+        Aux_I = pickle.load(ALL)
+        T_RL = ALL.tell()
+        T_AL = os.path.getsize(AFL)
+        C_RL = int(T_AL / T_RL)
+        i = 0
+        borde = "║"
+        label = "║Codigo local"
+        label += borde
+        label += "Codigo Usuario"
+        label += borde
+        label += " " * 12
+        label += "Nombre"
+        label += " " * 12
+        label += borde
+        label += " " * 10
+        label += "Ubicacion"
+        label += " " * 11
+        label += borde
+        label += " " * 3
+        label += "Rubro"
+        label += " " * 4
+        label += borde
+        label += "Estado║"
+        sys.stdout.write("╔")
         sys.stdout.write(12 * "═")
-        sys.stdout.write("╬")
+        sys.stdout.write("╦")
         sys.stdout.write(14 * "═")
-        sys.stdout.write("╬")
+        sys.stdout.write("╦")
         sys.stdout.write(30 * "═")
-        sys.stdout.write("╬")
+        sys.stdout.write("╦")
         sys.stdout.write(30 * "═")
-        sys.stdout.write("╬")
+        sys.stdout.write("╦")
         sys.stdout.write(12 * "═")
-        sys.stdout.write("╬")
+        sys.stdout.write("╦")
         sys.stdout.write(6 * "═")
-        sys.stdout.write("╣\n")
-        ALL.seek(i * T_RL, 0)
-        Auxiliar = pickle.load(ALL)
-        item = ""
-        item += "║"
-        item += str(Auxiliar.CodLocal).center(12)
-        item += borde
-        item += str(Auxiliar.NombreLocal).center(14)
-        item += borde
-        item += Auxiliar.UbiLocal.strip().center(30)
-        item += borde
-        item += Auxiliar.RubroLocal.strip().center(30)
-        item += borde
-        item += Auxiliar.CodUsuario.center(12)
-        item += borde
-        item += Auxiliar.Estado.center(6)
-        item += "║"
-        print(item)
-    sys.stdout.write("╚")
-    sys.stdout.write(12 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(14 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(30 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(30 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(12 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(6 * "═")
-    sys.stdout.write("╝\n")
+        sys.stdout.write("╗\n")
+        print(label)
+        while ALL.tell() < T_AL:
+            sys.stdout.write("╠")
+            sys.stdout.write(12 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(14 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(30 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(30 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(12 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(6 * "═")
+            sys.stdout.write("╣\n")
+            ALL.seek(i * T_RL, 0)
+            Auxiliar = pickle.load(ALL)
+            item = ""
+            item += "║"
+            item += str(Auxiliar.CodLocal).center(12)
+            item += borde
+            item += str(Auxiliar.CodUsuario).center(14)
+            item += borde
+            item += Auxiliar.NombreLocal.strip().center(30)
+            item += borde
+            item += Auxiliar.UbiLocal.strip().center(30)
+            item += borde
+            item += Auxiliar.RubroLocal.center(12)
+            item += borde
+            item += Auxiliar.Estado.center(6)
+            item += "║"
+            i += 1
+            print(item)
+        sys.stdout.write("╚")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(14 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(30 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(30 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(6 * "═")
+        sys.stdout.write("╝\n")
+    else:
+        print("Aun no hay ningún local cargado")
 
 
 def Registrarse():
@@ -524,6 +533,7 @@ def gestion_de_locales():
             eleccion = -1
             decision = "z"
 
+
 def Crear_Locales():
     verificacion = -2
     global i_global
@@ -543,16 +553,17 @@ def Crear_Locales():
     while nombre != "0":
         # Verificación y carga del nombre:
         while verificacion != -1 and nombre != "0":
-            verificacion = Bd_archivo(nombre)
-            if verificacion == -1:
-                print("Nombre correcto.")
+            if os.path.getsize(AFL) != 0:
+                verificacion = Bd_archivo(nombre)
+                if verificacion != -1:
+                    print("Usted ingreso un nombre ya existente")
+                    separador()
+                    nombre = input(
+                        "Ingrese otro nombre de local (si no quiere crear locales ingrese 0): "
+                    )
+                    nombre = nombre.lower()
             else:
-                print("Usted ingreso un nombre ya existente")
-                separador()
-                nombre = input(
-                    "Ingrese otro nombre de local (si no quiere crear locales ingrese 0): "
-                )
-                nombre = nombre.lower()
+                verificacion = -1
         verificacion = -2
 
         if nombre != "0":
@@ -598,10 +609,10 @@ def Crear_Locales():
             if Cod_us.isdigit():
                 Cod_us = int(Cod_us)
                 Veri = Bs_Usu_Cod(Cod_us)
-                if Veri !=  -1:
-                    ALL.seek(Veri, 0)
-                    R_Loc = pickle.load(ALL)
-                    if R_Loc.TipoUsuario.strip() == "dueños de local":
+                if Veri != -1:
+                    ALU.seek(Veri, 0)
+                    R_Usu = pickle.load(ALU)
+                    if R_Usu.TipoUsuario.strip() == "administrador":
                         flag = 1
             while flag == 0:
                 print("Usted ingreso un codigo de usuario erroneo, intentelo de nuevo")
@@ -610,23 +621,22 @@ def Crear_Locales():
                 if Cod_us.isdigit():
                     Cod_us = int(Cod_us)
                     Veri = Bs_Usu_Cod(Cod_us)
-                    if Veri !=  -1:
-                        ALL.seek(Veri, 0)
-                        R_Loc = pickle.load(ALL)
-                        if R_Loc.TipoUsuario.strip() == "dueños de local":
+                    if Veri != -1:
+                        ALU.seek(Veri, 0)
+                        R_Usu = pickle.load(ALU)
+                        if R_Usu.TipoUsuario.strip() == "administrador":
                             flag = 1
-                        
 
             # Cargando registro locales.
             M = os.path.getsize(AFL)
-            Pos = ALL.seek(M, 0)
-            Pos.CodLocal = i_global
-            Pos.NombreLocal = nombre
-            Pos.UbiLocal = Ubi
-            Pos.RubroLocal = rubro
-            Pos.CodUsuario = Cod_us
-            Pos.Estado = "A"
-            pickle.dump(Pos,ALL)
+            ALL.seek(M, 0)
+            R_Loc.CodLocal = i_global
+            R_Loc.NombreLocal = nombre
+            R_Loc.UbiLocal = Ubi
+            R_Loc.RubroLocal = rubro
+            R_Loc.CodUsuario = Cod_us
+            R_Loc.Estado = "A"
+            pickle.dump(R_Loc, ALL)
             ALL.flush()
 
             # Aumentando el contador global post carga de un local
@@ -686,6 +696,7 @@ def Crear_Locales():
     sys.stdout.write(19 * "═")
     sys.stdout.write("╝\n")
 
+
 def Modificar_Locales():
     # Procedimiento para la modificación de un local:
     def Modificacion(pos_reg):
@@ -729,7 +740,9 @@ def Modificar_Locales():
                 else:
                     print("Usted ingreso un nombre ya existente")
                     separador()
-                    nombre = input("Ingrese otro nombre de local (si no quiere crear locales ingrese 0): ")
+                    nombre = input(
+                        "Ingrese otro nombre de local (si no quiere crear locales ingrese 0): "
+                    )
                     nombre = nombre.lower()
             verificacion = -2
             R_Loc.NombreLocal = nombre
@@ -747,7 +760,9 @@ def Modificar_Locales():
 
         # Modificación del rubro
         elif modif == "rubro":
-            rubro = input("Ingrese el nuevo rubro (perfumería, comida o indumentaria): ")
+            rubro = input(
+                "Ingrese el nuevo rubro (perfumería, comida o indumentaria): "
+            )
             rubro = rubro.lower()
             while (
                 rubro != "perfumeria"
@@ -766,10 +781,7 @@ def Modificar_Locales():
             tipo = R_Loc.RubroLocal
             pos_rest = Bs_Sec_R(Rubros[:], tipo)
             pos_suma = Bs_Sec_R(Rubros[:], rubro)
-            if (
-                R_Loc.RubroLocal == "perfumeria"
-                or R_Loc.RubroLocal == "perfumería"
-            ):
+            if R_Loc.RubroLocal == "perfumeria" or R_Loc.RubroLocal == "perfumería":
                 Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
             elif R_Loc.RubroLocal == "indumentaria":
                 Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
@@ -794,7 +806,7 @@ def Modificar_Locales():
             if Cod_us.isdigit():
                 Cod_us = int(Cod_us)
                 Veri = Bs_Usu_Cod(Cod_us)
-                if Veri !=  -1:
+                if Veri != -1:
                     ALL.seek(Veri, 0)
                     R_Loc = pickle.load(ALL)
                     if R_Loc.TipoUsuario.strip() == "dueños de local":
@@ -806,7 +818,7 @@ def Modificar_Locales():
                 if Cod_us.isdigit():
                     Cod_us = int(Cod_us)
                     Veri = Bs_Usu_Cod(Cod_us)
-                    if Veri !=  -1:
+                    if Veri != -1:
                         ALL.seek(Veri, 0)
                         R_Loc = pickle.load(ALL)
                         if R_Loc.TipoUsuario.strip() == "dueños de local":
@@ -817,9 +829,9 @@ def Modificar_Locales():
             print("No se realizó ninguna modificación")
 
         if modif != "0":
-            #Cargando al archivo 
-            ALL.seek(pos_reg,0)
-            pickle.dump(R_Loc,ALL)
+            # Cargando al archivo
+            ALL.seek(pos_reg, 0)
+            pickle.dump(R_Loc, ALL)
             ALL.flush()
 
     cod_local = input(
@@ -852,7 +864,7 @@ def Modificar_Locales():
                             "Ingrese el codigo de otro local que desee modificar(si no desea modificar ninguno ingrese 0): "
                         )
                     else:
-                        R_Loc.Estado = "A" #VER SI FUNCIONA CORRECTAMENTE CON EL PROCEDIMIENTO MODIFICACION
+                        R_Loc.Estado = "A"  # VER SI FUNCIONA CORRECTAMENTE CON EL PROCEDIMIENTO MODIFICACION
                         if (
                             R_Loc.RubroLocal == "perfumeria"
                             or R_Loc.RubroLocal == "perfumería"
@@ -883,6 +895,7 @@ def Modificar_Locales():
             cod_local = input(
                 "Ingrese el codigo del local que desea modificar(si no desea modificar ninguno ingrese 0): "
             )
+
 
 def Eliminar_Locales():
     eliminar = input(
@@ -933,7 +946,7 @@ def Eliminar_Locales():
                             Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
                         R_Loc.Estado = "B"
                         ALL.seek(pos, 0)
-                        pickle.dump(R_Loc,ALL)
+                        pickle.dump(R_Loc, ALL)
                         ALL.flush()
                         os.system("cls")
                         print("El local ha sido eliminado...")
@@ -948,16 +961,19 @@ def Eliminar_Locales():
                 "Ingrese el codigo del local que desea eliminar(si no desea eliminar ninguno ingrese 0): "
             )
 
+
 def Mapa_Locales():
     os.system("cls")
-    print("""
+    print(
+        """
         Referencias: 
         - \033[0;32mLocal activo\033[0;m
         - \033[0;31mLocal inactivo\033[0;m
-        """)
+        """
+    )
     print("                 Mapa de Locales")
     print("", "+--------+--------+--------+--------+--------+")
-    ALL.seek(0,0)
+    ALL.seek(0, 0)
     for i in range(0, 10):
         for j in range(0, 5):
             R_Loc = pickle.load(ALL)
@@ -970,6 +986,14 @@ def Mapa_Locales():
                 Codigo = 0
             sys.stdout.write(f" |   {Codigo}   ")
         print(" |  \n +--------+--------+--------+--------+--------+")
+
+
+def DueñoDelocales():
+    print("D")
+
+
+def Clientes():
+    print("C")
 
 
 # Declaración de variables...
@@ -1017,7 +1041,7 @@ if os.path.getsize(AFU) == 0:
 Menu_principal()
 elec = input("Seleccione la opción que desee: ")
 while elec != 3 and bandera == 0:
-    try:
+    if elec.isdigit():
         elec = int(elec)
         if elec == 1:
             pedirusuario()
@@ -1037,7 +1061,12 @@ while elec != 3 and bandera == 0:
             print("Hasta luego...")
             bandera = -1
         if bandera == 0:
+            os.system("cls")
             Menu_principal()
             elec = input("Seleccione la opción que desee: ")
-    except:
-        elec = input("Valor equivocado, intente ingresar una de las opciones dadas: ")
+    else:
+        os.system("cls")
+        print("El valor que a ingresado no es una opción válida, intentelo nuevamente.")
+        separador()
+        Menu_principal()
+        elec = input("Seleccione la opción que desee: ")
