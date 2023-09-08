@@ -125,7 +125,6 @@ def Bs_Usu(valor):
     else:
         return -1
 
-
 def Bs_Usu_Cod(valor):
     T = os.path.getsize(AFU)
     pos = 0
@@ -525,7 +524,6 @@ def gestion_de_locales():
             eleccion = -1
             decision = "z"
 
-
 def Crear_Locales():
     verificacion = -2
     global i_global
@@ -628,7 +626,7 @@ def Crear_Locales():
             Pos.RubroLocal = rubro
             Pos.CodUsuario = Cod_us
             Pos.Estado = "A"
-            pickle.dump()
+            pickle.dump(Pos,ALL)
             ALL.flush()
 
             # Aumentando el contador global post carga de un local
@@ -688,10 +686,9 @@ def Crear_Locales():
     sys.stdout.write(19 * "═")
     sys.stdout.write("╝\n")
 
-
 def Modificar_Locales():
     # Procedimiento para la modificación de un local:
-    def Modificacion():
+    def Modificacion(pos_reg):
         verificacion = -2
         os.system("cls")
         print("Aclaración: si no desea modificar ninguna parte ingrese 0")
@@ -816,10 +813,14 @@ def Modificar_Locales():
                             flag = 1
             R_Loc.CodUsuario = Cod_us
             print("Su modificación se a realizado con exito")
-
-        #Escribir dump y flush
         else:
             print("No se realizó ninguna modificación")
+
+        if modif != "0":
+            #Cargando al archivo 
+            ALL.seek(pos_reg,0)
+            pickle.dump(R_Loc,ALL)
+            ALL.flush()
 
     cod_local = input(
         "Ingrese el codigo del local que desea modificar(si no desea modificar ninguno ingrese 0): "
@@ -827,8 +828,8 @@ def Modificar_Locales():
     while cod_local != "0":
         if cod_local.isdigit():
             cod_local = int(cod_local)
-            valor = Bs_Loc(cod_local)
-            if valor == -1:
+            pos = Bs_Loc(cod_local)
+            if pos == -1:
                 print("Usted ingreso un valor no valido, intentelo de nuevo")
                 separador()
                 cod_local = input(
@@ -836,7 +837,7 @@ def Modificar_Locales():
                 )
             else:
                 print("Local encontrado!!!")
-                ALL.seek(valor, 0)
+                ALL.seek(pos, 0)
                 R_Loc = pickle.load(ALL)
                 if R_Loc.Estado == "B":
                     print("Este local esta dado de baja")
@@ -865,15 +866,13 @@ def Modificar_Locales():
                             re_suma = Bs_Sec_R(Rubros[:], "comida")
                             Rubros_c[re_suma] = Rubros_c[re_suma] + 1
 
-                        Modificacion()
+                        Modificacion(pos)
                         separador()
                         cod_local = input(
                             "Ingrese el siguiente codigo del local que desea modificar(si no desea modificar ninguno ingrese 0): "
                         )
                 else:
-                    ALL.seek(valor, 0)
-                    R_Loc = pickle.load(ALL)
-                    Modificacion()
+                    Modificacion(pos)
                     separador()
                     cod_local = input(
                         "Ingrese el siguiente codigo del local que desea modificar(si no desea modificar ninguno ingrese 0): "
@@ -885,7 +884,6 @@ def Modificar_Locales():
                 "Ingrese el codigo del local que desea modificar(si no desea modificar ninguno ingrese 0): "
             )
 
-
 def Eliminar_Locales():
     eliminar = input(
         "Ingrese el codigo del local que desea eliminar(si no desea eliminar ninguno ingrese 0): "
@@ -893,7 +891,7 @@ def Eliminar_Locales():
     while eliminar != "0":
         if eliminar.isdigit():
             eliminar = int(eliminar)
-            pos = Bs_Sec(Cod_loc[:][:], eliminar)
+            pos = Bs_Loc(eliminar)
             if pos == -1:
                 print("Usted ingreso un valor no valido, intentelo de nuevo")
                 separador()
@@ -902,7 +900,9 @@ def Eliminar_Locales():
                 )
             else:
                 print("Local encontrado!!!")
-                if Datos_Locales[pos][3] == "B":
+                ALL.seek(pos, 0)
+                R_Loc = pickle.load(ALL)
+                if R_Loc.Estado == "B":
                     print("Este local esta dado de baja")
                     eliminar = input(
                         "Ingrese otro codigo del local que desee eliminar(si no desea eliminar ninguno ingrese 0): "
@@ -922,16 +922,19 @@ def Eliminar_Locales():
                             "Ingrese otro codigo del local que desee eliminar(si no desea eliminar ninguno ingrese 0): "
                         )
                     else:
-                        Datos_Locales[pos][3] = "B"
-                        if Datos_Locales[pos][2] == "perfumeria":
+                        if R_Loc.RubroLocal == "perfumeria":
                             pos_rest = Bs_Sec_R(Rubros[:], "perfumeria")
                             Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
-                        elif Datos_Locales[pos][2] == "indumentaria":
+                        elif R_Loc.RubroLocal == "indumentaria":
                             pos_rest = Bs_Sec_R(Rubros[:], "indumentaria")
                             Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
                         else:
                             pos_rest = Bs_Sec_R(Rubros[:], "comida")
                             Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
+                        R_Loc.Estado = "B"
+                        ALL.seek(pos, 0)
+                        pickle.dump(R_Loc,ALL)
+                        ALL.flush()
                         os.system("cls")
                         print("El local ha sido eliminado...")
                         separador()
@@ -945,21 +948,28 @@ def Eliminar_Locales():
                 "Ingrese el codigo del local que desea eliminar(si no desea eliminar ninguno ingrese 0): "
             )
 
-
 def Mapa_Locales():
     os.system("cls")
-    C = 0
+    print("""
+        Referencias: 
+        - \033[0;32mLocal activo\033[0;m
+        - \033[0;31mLocal inactivo\033[0;m
+        """)
     print("                 Mapa de Locales")
     print("", "+--------+--------+--------+--------+--------+")
+    ALL.seek(0,0)
     for i in range(0, 10):
         for j in range(0, 5):
-            if Datos_Locales[C + j][0] != " ":
-                Codigo = Cod_loc[C + j][0]
+            R_Loc = pickle.load(ALL)
+            T = os.path.getsize(AFL)
+            if ALL.tell() < T and R_Loc.Estado == "A":
+                Codigo = f"\033[1;32m{R_Loc.CodLocal}\033[0;m"
+            elif ALL.tell() < T and R_Loc.Estado == "B":
+                Codigo = f"\033[1;31m{R_Loc.CodLocal}\033[0;m"
             else:
                 Codigo = 0
             sys.stdout.write(f" |   {Codigo}   ")
         print(" |  \n +--------+--------+--------+--------+--------+")
-        C = C + 5
 
 
 # Declaración de variables...
