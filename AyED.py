@@ -418,7 +418,7 @@ def pedirusuario():
 
 
 def Registrarse():
-    global i_global
+    global i_usu
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
     pos = Bs_Usu(R_Usu.NombreUsuario)
     while len(R_Usu.NombreUsuario) > 100 and pos == -1:
@@ -435,8 +435,8 @@ def Registrarse():
         R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
 
     R_Usu.TipoUsuario = "cliente"
-    R_Usu.CodUsuario = i_global
-    i_global = i_global + 1
+    R_Usu.CodUsuario = i_usu
+    i_usu = i_usu + 1
     C = os.path.getsize(AFU)
     ALU.seek(C, 0)
     pickle.dump(R_Usu, ALU)
@@ -505,7 +505,7 @@ def Aprobar():
 
 
 def Crear_D():
-    global i_global
+    global i_usu
     global cond_crear
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
     pos = Bs_Usu(R_Usu.NombreUsuario)
@@ -523,8 +523,8 @@ def Crear_D():
         R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
 
     R_Usu.TipoUsuario = "dueño de local"
-    R_Usu.CodUsuario = i_global
-    i_global = i_global + 1
+    R_Usu.CodUsuario = i_usu
+    i_usu = i_usu + 1
     C = os.path.getsize(AFU)
     ALU.seek(C, 0)
     pickle.dump(R_Usu, ALU)
@@ -709,7 +709,7 @@ def Crear_Locales():
                 if Veri != -1:
                     ALU.seek(Veri, 0)
                     R_Usu = pickle.load(ALU)
-                    if R_Usu.TipoUsuario.strip() == "dueños de locales":
+                    if R_Usu.TipoUsuario.strip() == "dueño de local":
                         flag = 1
             while flag == 0:
                 print("Usted ingreso un codigo de usuario erroneo, intentelo de nuevo")
@@ -721,7 +721,7 @@ def Crear_Locales():
                     if Veri != -1:
                         ALU.seek(Veri, 0)
                         R_Usu = pickle.load(ALU)
-                        if R_Usu.TipoUsuario.strip() == "dueños de locales":
+                        if R_Usu.TipoUsuario.strip() == "dueño de local":
                             flag = 1
 
             # Cargando registro locales.
