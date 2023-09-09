@@ -146,7 +146,7 @@ def Exhibicion():
             item += Auxiliar.Estado.center(6)
             item += "║"
             i += 1
-            ALL.seek((i * T_RL) +10 , 0)
+            ALL.seek((i * T_RL) +20 , 0)
             print(item)
         sys.stdout.write("╚")
         sys.stdout.write(12 * "═")
@@ -1088,13 +1088,14 @@ def Mapa_Locales():
     ALL.seek(0, 0)
     for i in range(0, 10):
         for j in range(0, 5):
-            R_Loc = pickle.load(ALL)
-            T = os.path.getsize(AFL)
-            if ALL.tell() < T and R_Loc.Estado == "A":
-                Codigo = f"\033[1;32m{R_Loc.CodLocal}\033[0;m"
-            elif ALL.tell() < T and R_Loc.Estado == "B":
-                Codigo = f"\033[1;31m{R_Loc.CodLocal}\033[0;m"
-            else:
+            try:
+                R_Loc = pickle.load(ALL)
+                T = os.path.getsize(AFL)
+                if ALL.tell() <= T and R_Loc.Estado == "A":
+                    Codigo = f"\033[1;32m{R_Loc.CodLocal}\033[0;m"
+                elif ALL.tell() <= T and R_Loc.Estado == "B":
+                    Codigo = f"\033[1;31m{R_Loc.CodLocal}\033[0;m"
+            except:
                 Codigo = 0
             sys.stdout.write(f" |   {Codigo}   ")
         print(" |  \n +--------+--------+--------+--------+--------+")
