@@ -59,226 +59,19 @@ Rubros[2] = "comida"
 
 Rubros_c = [0] * 3
 
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+
+# SECCIÓN DE DETALLES ESTÉTICOS # (Inicio)
+
 
 def separador():
     print(70 * "-")
-
-
-def pedirusuario():
-    global cod
-    global eleccion
-    global bandera
-    contador = 0
-
-    # Ingreso de datos:
-    user = input("Escriba su usuario: ").ljust(100, " ")
-    contraseña = getpass.getpass("Escriba su contraseña: ").ljust(8, " ")
-
-    pos = Bs_Usu(user)
-    if pos != -1:
-        ALU.seek(pos, 0)
-        cont = pickle.load(ALU)
-        if cont.ClaveUsuario == contraseña:
-            cod = cont.TipoUsuario.strip()
-        else:
-            cod = ""
-    else:
-        cod = ""
-
-    # Restricción de intentos del inicio de sesión
-    while cod == "" and contador < 3:
-        contador = contador + 1
-        os.system("cls")
-        if contador <= 2:
-            user = input("Escriba su usuario: ").ljust(100, " ")
-            contraseña = getpass.getpass("Escriba su contraseña: ").ljust(8, " ")
-            pos = Bs_Usu(user)
-            if pos != -1:
-                ALU.seek(pos, 0)
-                cont = pickle.load(ALU)
-                if cont.ClaveUsuario == contraseña:
-                    cod = cont.TipoUsuario.strip()
-                else:
-                    cod = ""
-            else:
-                cod = ""
-        else:
-            print("Su numero de intentos ha finalizado")
-            bandera = -1
-            eleccion = 0
-    if cod != "":
-        os.system("cls")
-        print("- Hola, has ingresado correctamente")
-
-
-# Busqueda secuencial para registro Usuarios
-def Bs_Usu(valor):
-    T = os.path.getsize(AFU)
-    pos = 0
-    ALU.seek(0, 0)
-    cont = pickle.load(ALU)
-    while ALU.tell() < T and cont.NombreUsuario != valor:
-        pos = ALU.tell()
-        cont = pickle.load(ALU)
-    if cont.NombreUsuario == valor:
-        return pos
-    else:
-        return -1
-
-
-def Bs_Usu_Cod(valor):
-    T = os.path.getsize(AFU)
-    pos = 0
-    ALU.seek(0, 0)
-    cont = pickle.load(ALU)
-    while ALU.tell() < T and cont.CodUsuario != valor:
-        pos = ALU.tell()
-        cont = pickle.load(ALU)
-    if cont.CodUsuario == valor:
-        return pos
-    else:
-        return -1
-
-
-def Bs_Loc(valor):
-    T = os.path.getsize(AFL)
-    pos = 0
-    ALL.seek(0, 0)
-    cont = pickle.load(ALL)
-    while ALL.tell() < T and cont.CodLocal != valor:
-        pos = ALL.tell()
-        cont = pickle.load(ALL)
-    if cont.CodUsuario == valor:
-        return pos
-    else:
-        return -1
-
-
-# Sub-menus
-def mostrar_menu():
-    if cod == "administrador":
-        if eleccion != 1 and eleccion != 4 and eleccion != 0:
-            print(
-                """\033[1;36m---------------Menu principal Administrador---------------\033[0;m
-    0. Salir
-    1. Gestion de locales
-    2. Crear cuentas de dueños de locales
-    3. Aprobar / Denegar solicitud de descuento
-    4. Gestión de Novedades
-    5. Reporte de utilización de descuentos"""
-            )
-
-        elif eleccion == 1:
-            print(
-                """\033[;32m---------------Gestión de locales---------------\033[0;m
-      a) Crear locales
-      b) Modificar local
-      c) Eliminar local
-      d) Mapa de locales
-      e) Volver"""
-            )
-
-        elif eleccion == 4:
-            print("Diagramado en chapín, para volver al menu oprima la letra e")
-
-    elif cod == "dueños de local":
-        print(
-            """\033[1;36m---------------Menu principal Dueños Locales---------------\033[0;m
-    1. Gestión de Descuentos
-    a) Crear descuento para mi local
-    b) Modificar descuento de mi local
-    c) Eliminar descuento de mi local
-    d) Volver
-    2. Aceptar / Rechazar pedido de descuento
-    3. Reporte de uso de descuentos
-    0. Salir"""
-        )
-
-    else:
-        print(
-            """\033[1;36m---------------Menu principal Cliente---------------\033[0;m
-    1. Registrarme
-    2. Buscar descuentos en locales
-    3. Solicitar descuento
-    4. Ver novedades
-    0. Salir"""
-        )
-
-
-# Menu del programa principal
-def Menu_principal():
-    print(
-        """
-    1. Ingresar con usuario registrado
-    2. Registrarse como cliente
-    3. Salir
-    """
-    )
-
-
-# Validación de numeros
-def Validar(nro, desde, hasta):
-    try:
-        nro = int(nro)
-        if nro >= desde and nro <= hasta:
-            return True
-        else:
-            return False
-    except:
-        return False
-
-
-def or_archivo():
-    ALL.seek(0, 0)
-    Aux_I = pickle.load(ALL)
-    T_RL = ALL.tell()
-    C_RL = int(os.path.getsize(AFL) / T_RL)
-    for i in range(0, C_RL - 1):
-        for j in range(i + 1, C_RL):
-            ALL.seek(i * T_RL, 0)
-            Aux_I = pickle.load(ALL)
-            ALL.seek(j * T_RL, 0)
-            Aux_J = pickle.load(ALL)
-            if Aux_I.NombreLocal > Aux_J.NombreLocal:
-                ALL.seek(i * T_RL, 0)
-                pickle.dump(Aux_J, ALL)
-                ALL.seek(j * T_RL, 0)
-                pickle.dump(Aux_I, 0)
-                ALL.flush()
-
-
-def Bd_archivo(X):
-    ALL.seek(0, 0)
-    R_L = pickle.load(ALL)
-    T_RL = ALL.tell()
-    C_RL = int(os.path.getsize(AFL) / T_RL)
-    inf = 0
-    sup = C_RL - 1
-    medio = (inf + sup) // 2
-    ALL.seek(medio * T_RL, 0)
-    R_L = pickle.load(ALL)
-    while inf < sup and R_L.NombreLocal != X:
-        if X < R_L.NombreLocal:
-            sup = medio - 1
-        else:
-            inf = medio + 1
-        medio = (inf + sup) // 2
-        ALL.seek(medio * T_RL, 0)
-        R_L = pickle.load(ALL)
-    if R_L.NombreLocal == X:
-        return medio * T_RL
-    else:
-        return -1
-
-
-def Bs_Sec_R(arreglo, valor):
-    p = 0
-    while arreglo[p] != valor and p < i_global:
-        p = p + 1
-    if arreglo[p] == valor:
-        return p
-    else:
-        return -1
 
 
 def Exhibicion():
@@ -371,13 +164,270 @@ def Exhibicion():
         print("Aun no hay ningún local cargado")
 
 
+# SECCIÓN DE DETALLES ESTÉTICOS # (Final)
+
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+
+# SECCIÓN DE BUSQUEDAS, ORDENAMIENTOS Y OTRAS FUNCIONES# (Inicio)
+
+
+def Bs_Usu(valor):
+    T = os.path.getsize(AFU)
+    pos = 0
+    ALU.seek(0, 0)
+    cont = pickle.load(ALU)
+    while ALU.tell() < T and cont.NombreUsuario != valor:
+        pos = ALU.tell()
+        cont = pickle.load(ALU)
+    if cont.NombreUsuario == valor:
+        return pos
+    else:
+        return -1
+
+
+def Bs_Usu_Cod(valor):
+    T = os.path.getsize(AFU)
+    pos = 0
+    ALU.seek(0, 0)
+    cont = pickle.load(ALU)
+    while ALU.tell() < T and cont.CodUsuario != valor:
+        pos = ALU.tell()
+        cont = pickle.load(ALU)
+    if cont.CodUsuario == valor:
+        return pos
+    else:
+        return -1
+
+
+def Bs_Loc(valor):
+    T = os.path.getsize(AFL)
+    pos = 0
+    ALL.seek(0, 0)
+    cont = pickle.load(ALL)
+    while ALL.tell() < T and cont.CodLocal != valor:
+        pos = ALL.tell()
+        cont = pickle.load(ALL)
+    if cont.CodUsuario == valor:
+        return pos
+    else:
+        return -1
+
+
+def or_archivo():
+    ALL.seek(0, 0)
+    Aux_I = pickle.load(ALL)
+    T_RL = ALL.tell()
+    C_RL = int(os.path.getsize(AFL) / T_RL)
+    for i in range(0, C_RL - 1):
+        for j in range(i + 1, C_RL):
+            ALL.seek(i * T_RL, 0)
+            Aux_I = pickle.load(ALL)
+            ALL.seek(j * T_RL, 0)
+            Aux_J = pickle.load(ALL)
+            if Aux_I.NombreLocal > Aux_J.NombreLocal:
+                ALL.seek(i * T_RL, 0)
+                pickle.dump(Aux_J, ALL)
+                ALL.seek(j * T_RL, 0)
+                pickle.dump(Aux_I, 0)
+                ALL.flush()
+
+
+def Bd_archivo(X):
+    ALL.seek(0, 0)
+    R_L = pickle.load(ALL)
+    T_RL = ALL.tell()
+    C_RL = int(os.path.getsize(AFL) / T_RL)
+    inf = 0
+    sup = C_RL - 1
+    medio = (inf + sup) // 2
+    ALL.seek(medio * T_RL, 0)
+    R_L = pickle.load(ALL)
+    while inf < sup and R_L.NombreLocal != X:
+        if X < R_L.NombreLocal:
+            sup = medio - 1
+        else:
+            inf = medio + 1
+        medio = (inf + sup) // 2
+        ALL.seek(medio * T_RL, 0)
+        R_L = pickle.load(ALL)
+    if R_L.NombreLocal == X:
+        return medio * T_RL
+    else:
+        return -1
+
+
+def Bs_Sec_R(arreglo, valor):
+    p = 0
+    while arreglo[p] != valor and p < i_global:
+        p = p + 1
+    if arreglo[p] == valor:
+        return p
+    else:
+        return -1
+
+
+def Validacion(desde, hasta):
+    while True:
+        try:
+            numero = int(
+                input(f"Por favor ingresa una opción, número entre {desde} y {hasta}: ")
+            )
+            if desde <= numero <= hasta:
+                return numero
+            else:
+                print(
+                    f"El número debe estar entre {desde} y {hasta}. Inténtalo de nuevo."
+                )
+        except ValueError:
+            print("¡Eso no es un número válido! Inténtalo de nuevo.")
+
+
+# SECCIÓN DE BUSQUEDAS, ORDENAMIENTOS Y OTRAS FUNCIONES# (Final)
+
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+
+# SECCIÓN DE MENUS # (Inicio)
+
+
+def mostrar_menu():
+    if cod == "administrador":
+        if eleccion != 1 and eleccion != 4 and eleccion != 0:
+            print(
+                """\033[1;36m---------------Menu principal Administrador---------------\033[0;m
+    0. Salir
+    1. Gestion de locales
+    2. Crear cuentas de dueños de locales
+    3. Aprobar / Denegar solicitud de descuento
+    4. Gestión de Novedades
+    5. Reporte de utilización de descuentos"""
+            )
+
+        elif eleccion == 1:
+            print(
+                """\033[;32m---------------Gestión de locales---------------\033[0;m
+      a) Crear locales
+      b) Modificar local
+      c) Eliminar local
+      d) Mapa de locales
+      e) Volver"""
+            )
+
+        elif eleccion == 4:
+            print("Diagramado en chapín, para volver al menu oprima la letra e")
+
+    elif cod == "dueño de local":
+        print(
+            """\033[1;36m---------------Menu principal Dueños Locales---------------\033[0;m
+    1. Crear descuento
+    2. Reporte de uso de descuentos
+    3. Ver novedades
+    0. Salir"""
+        )
+
+    else:
+        print(
+            """\033[1;36m---------------Menu principal Cliente---------------\033[0;m
+    1. Registrarme
+    2. Buscar descuentos en locales
+    3. Solicitar descuento
+    4. Ver novedades
+    0. Salir"""
+        )
+
+
+def Menu_principal():
+    print(
+        """
+    1. Ingresar con usuario registrado
+    2. Registrarse como cliente
+    3. Salir
+    """
+    )
+
+
+# SECCIÓN DE MENUS # (Final)
+
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+
+# SECCIÓN DE REGISTRO E INICIO DE SESIÓN # (Inicio)
+
+
+def pedirusuario():
+    global cod
+    global eleccion
+    global bandera
+    contador = 0
+
+    # Ingreso de datos:
+    user = input("Escriba su usuario: ").ljust(100, " ")
+    contraseña = getpass.getpass("Escriba su contraseña: ").ljust(8, " ")
+
+    pos = Bs_Usu(user)
+    if pos != -1:
+        ALU.seek(pos, 0)
+        cont = pickle.load(ALU)
+        if cont.ClaveUsuario == contraseña:
+            cod = cont.TipoUsuario.strip()
+        else:
+            cod = ""
+    else:
+        cod = ""
+
+    # Restricción de intentos del inicio de sesión
+    while cod == "" and contador < 3:
+        contador = contador + 1
+        os.system("cls")
+        if contador <= 2:
+            user = input("Escriba su usuario: ").ljust(100, " ")
+            contraseña = getpass.getpass("Escriba su contraseña: ").ljust(8, " ")
+            pos = Bs_Usu(user)
+            if pos != -1:
+                ALU.seek(pos, 0)
+                cont = pickle.load(ALU)
+                if cont.ClaveUsuario == contraseña:
+                    cod = cont.TipoUsuario.strip()
+                else:
+                    cod = ""
+            else:
+                cod = ""
+        else:
+            print("Su numero de intentos ha finalizado")
+            bandera = -1
+            eleccion = 0
+    if cod != "":
+        os.system("cls")
+        print("- Hola, has ingresado correctamente")
+
+
 def Registrarse():
     global i_global
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
-    # Hacer busqueda secuencial para verificar que no se repite el usuario...
-    while len(R_Usu.NombreUsuario) > 100:
-        print("Usted ingreso un mail muy largo, intente otra vez")
-        R_Usu.NombreUsuario = input("Ingrese la clave del usuario: ").ljust(100, " ")
+    pos = Bs_Usu(R_Usu.NombreUsuario)
+    while len(R_Usu.NombreUsuario) > 100 and pos == -1:
+        if pos == -1:
+            print("Actualmente ese mail existe, intente con otro...")
+        else:
+            print("Usted ingreso un mail muy largo, intente otra vez")
+        R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
+        pos = Bs_Usu(R_Usu.NombreUsuario)
 
     R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
     while len(R_Usu.ClaveUsuario) > 8:
@@ -391,6 +441,19 @@ def Registrarse():
     ALU.seek(C, 0)
     pickle.dump(R_Usu, ALU)
     ALU.flush()
+
+
+# SECCIÓN DE REGISTRO E INICIO DE SESIÓN # (Final)
+
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+
+# SECCIÓN ADMINISTRADOR CON TODAS SUS SUB-SECCIONES # (Inicio)
 
 
 def Admin():
@@ -422,6 +485,7 @@ def Admin():
                     eleccion = -2
                 case 1:
                     gestion_de_locales()
+                    eleccion = -1
                 case 2:
                     Crear_D()
                 case 3:
@@ -441,107 +505,143 @@ def Aprobar():
 
 
 def Crear_D():
-    print("a")
+    global i_global
+    global cond_crear
+    R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
+    pos = Bs_Usu(R_Usu.NombreUsuario)
+    while len(R_Usu.NombreUsuario) > 100 and pos == -1:
+        if pos == -1:
+            print("Actualmente ese mail existe, intente con otro...")
+        else:
+            print("Usted ingreso un mail muy largo, intente otra vez")
+        R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
+        pos = Bs_Usu(R_Usu.NombreUsuario)
+
+    R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
+    while len(R_Usu.ClaveUsuario) > 8:
+        print("Usted ingreso una clave muy larga, intente otra vez")
+        R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
+
+    R_Usu.TipoUsuario = "dueño de local"
+    R_Usu.CodUsuario = i_global
+    i_global = i_global + 1
+    C = os.path.getsize(AFU)
+    ALU.seek(C, 0)
+    pickle.dump(R_Usu, ALU)
+    ALU.flush()
+    cond_crear = 1
 
 
 def gestion_de_locales():
     global eleccion
     global decision
-
-    while (
-        decision != "a"
-        and decision != "b"
-        and decision != "c"
-        and decision != "d"
-        and eleccion == 1
-    ):
-        mostrar_menu()
-        decision = input("Escoger la opción a la que desee acceder: ")
-
-        os.system("cls")
-
-        if (
+    if cond_crear == 1:
+        while (
             decision != "a"
             and decision != "b"
             and decision != "c"
             and decision != "d"
-            and decision != "e"
+            and eleccion == 1
         ):
-            separador()
-            print(
-                "La opción que has elegido es incorrecta, intentelo de nuevo ingresando una de las letras dadas."
-            )
+            mostrar_menu()
+            decision = input("Escoger la opción a la que desee acceder: ")
 
-        elif decision == "a":
             os.system("cls")
-            locales_cargados = input(
-                "¿Desea ver los locales cargados hasta el momento?(Si o No): "
-            )
-            while locales_cargados.lower() != "si" and locales_cargados.lower() != "no":
-                print("Necesitamos que responda con un Si o No, para continuar")
+
+            if (
+                decision != "a"
+                and decision != "b"
+                and decision != "c"
+                and decision != "d"
+                and decision != "e"
+            ):
+                separador()
+                print(
+                    "La opción que has elegido es incorrecta, intentelo de nuevo ingresando una de las letras dadas."
+                )
+
+            elif decision == "a":
+                os.system("cls")
                 locales_cargados = input(
                     "¿Desea ver los locales cargados hasta el momento?(Si o No): "
                 )
-            if locales_cargados.lower() == "si":
-                Exhibicion()
-            separador()
-            Crear_Locales()
-            separador()
-            decision = "z"
+                while (
+                    locales_cargados.lower() != "si"
+                    and locales_cargados.lower() != "no"
+                ):
+                    print("Necesitamos que responda con un Si o No, para continuar")
+                    locales_cargados = input(
+                        "¿Desea ver los locales cargados hasta el momento?(Si o No): "
+                    )
+                if locales_cargados.lower() == "si":
+                    Exhibicion()
+                separador()
+                Crear_Locales()
+                separador()
+                decision = "z"
 
-        # Nuevo, revisar.
-        elif decision == "b":
-            os.system("cls")
-            locales_cargados = input(
-                "¿Desea ver los locales cargados hasta el momento?(Si o No): "
-            )
-            while locales_cargados.lower() != "si" and locales_cargados.lower() != "no":
-                print("Necesitamos que responda con un Si o No, para continuar")
+            # Nuevo, revisar.
+            elif decision == "b":
+                os.system("cls")
                 locales_cargados = input(
                     "¿Desea ver los locales cargados hasta el momento?(Si o No): "
                 )
-            if locales_cargados.lower() == "si":
-                Exhibicion()
-            separador()
-            Modificar_Locales()
-            decision = "z"
+                while (
+                    locales_cargados.lower() != "si"
+                    and locales_cargados.lower() != "no"
+                ):
+                    print("Necesitamos que responda con un Si o No, para continuar")
+                    locales_cargados = input(
+                        "¿Desea ver los locales cargados hasta el momento?(Si o No): "
+                    )
+                if locales_cargados.lower() == "si":
+                    Exhibicion()
+                separador()
+                Modificar_Locales()
+                decision = "z"
 
-        # Nuevo, revisar.
-        elif decision == "c":
-            os.system("cls")
-            locales_cargados = input(
-                "¿Desea ver los locales cargados hasta el momento?(Si o No): "
-            )
-            while locales_cargados.lower() != "si" and locales_cargados.lower() != "no":
-                print("Necesitamos que responda con un Si o No, para continuar")
+            # Nuevo, revisar.
+            elif decision == "c":
+                os.system("cls")
                 locales_cargados = input(
                     "¿Desea ver los locales cargados hasta el momento?(Si o No): "
                 )
-            if locales_cargados.lower() == "si":
-                Exhibicion()
-            separador()
-            Eliminar_Locales()
-            decision = "z"
+                while (
+                    locales_cargados.lower() != "si"
+                    and locales_cargados.lower() != "no"
+                ):
+                    print("Necesitamos que responda con un Si o No, para continuar")
+                    locales_cargados = input(
+                        "¿Desea ver los locales cargados hasta el momento?(Si o No): "
+                    )
+                if locales_cargados.lower() == "si":
+                    Exhibicion()
+                separador()
+                Eliminar_Locales()
+                decision = "z"
 
-        # Falta desarrollar
-        elif decision == "d":
-            os.system("cls")
-            Mapa_Locales()
-            decision = "z"
+            # Falta desarrollar
+            elif decision == "d":
+                os.system("cls")
+                Mapa_Locales()
+                decision = "z"
 
-        elif decision == "e":
-            eleccion = -1
-            decision = "z"
+            elif decision == "e":
+                eleccion = -1
+                decision = "z"
+    else:
+        print("No hay locales cargados hasata el momento.")
 
 
 def Crear_Locales():
-    verificacion = -2
     global i_global
-
+    global cond_crear
+    verificacion = -2
     nombre = input(
         "Ingrese el nombre del local (si no quiere crear locales ingrese 0): "
     )
     nombre = nombre.lower()
+
     while len(nombre) > 30:
         print("Usted ingreso un nombre muy largo... ")
         separador()
@@ -564,7 +664,6 @@ def Crear_Locales():
                     nombre = nombre.lower()
             else:
                 verificacion = -1
-        verificacion = -2
 
         if nombre != "0":
             # Cargando Ubicación:
@@ -601,18 +700,16 @@ def Crear_Locales():
                 Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
             else:
                 Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
-
             # Pidiendo el Código de usuario
             flag = 0
             Cod_us = input("Ingrese el codigo de usuario: ")
-
             if Cod_us.isdigit():
                 Cod_us = int(Cod_us)
                 Veri = Bs_Usu_Cod(Cod_us)
                 if Veri != -1:
                     ALU.seek(Veri, 0)
                     R_Usu = pickle.load(ALU)
-                    if R_Usu.TipoUsuario.strip() == "administrador":
+                    if R_Usu.TipoUsuario.strip() == "dueños de locales":
                         flag = 1
             while flag == 0:
                 print("Usted ingreso un codigo de usuario erroneo, intentelo de nuevo")
@@ -624,7 +721,7 @@ def Crear_Locales():
                     if Veri != -1:
                         ALU.seek(Veri, 0)
                         R_Usu = pickle.load(ALU)
-                        if R_Usu.TipoUsuario.strip() == "administrador":
+                        if R_Usu.TipoUsuario.strip() == "dueños de locales":
                             flag = 1
 
             # Cargando registro locales.
@@ -638,13 +735,10 @@ def Crear_Locales():
             R_Loc.Estado = "A"
             pickle.dump(R_Loc, ALL)
             ALL.flush()
-
             # Aumentando el contador global post carga de un local
             i_global = i_global + 1
             separador()
-
             or_archivo()
-
             # Pidiendo el siguiente local
             nombre = input(
                 "Ingrese el nombre del local (si no quiere crear locales ingrese 0): "
@@ -652,7 +746,6 @@ def Crear_Locales():
             nombre = nombre.lower()
 
     os.system("cls")
-
     # Ordenando array de rubros y cantidades (de mayor a menor)
     for i in range(0, 2):
         for j in range(i + 1, 3):
@@ -665,7 +758,6 @@ def Crear_Locales():
                 aux1 = Rubros[i]
                 Rubros[i] = Rubros[j]
                 Rubros[j] = aux1
-
     borde = "║"
     label1 = "║    Rubro   "
     label1 += borde
@@ -988,13 +1080,70 @@ def Mapa_Locales():
         print(" |  \n +--------+--------+--------+--------+--------+")
 
 
+# SECCIÓN ADMINISTRADOR CON TODAS SUS SUB-SECCIONES # (Final)
+
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+
+# SECCION  DUEÑOS DE LOCALES CON TODAS SUS SUB-SECCIONES # (Inicio)
+
+
 def DueñoDelocales():
-    print("D")
+    Condicion = 0
+    mostrar_menu()
+    Opcion = Validacion(0, 3)
+    match Opcion:
+        case 1:
+            Crear_Descuentos()
+        case 2:
+            Reporte()
+        case 3:
+            Ver_Nov()
+
+
+def Crear_Descuentos():
+    print("Crea")
+
+
+def Reporte():
+    print("Rep")
+
+
+def Ver_Nov():
+    print("Ver")
+
+
+# SECCION  DUEÑOS DE LOCALES CON TODAS SUS SUB-SECCIONES # (Final)
+
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+
+# SECCION  CLIENTES CON TODAS SUS SUB-SECCIONES # (Inicio)
 
 
 def Clientes():
     print("C")
 
+
+# SECCION  CLIENTES CON TODAS SUS SUB-SECCIONES # (Final)
+
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
+""""""
 
 # Declaración de variables...
 eleccion = -1
@@ -1003,6 +1152,7 @@ bandera = 0
 i_usu = 2
 i_global = 1
 frenar = True
+cond_crear = 0
 
 
 # Declaración de variables que contienen la ubicación física de los archivos
@@ -1036,37 +1186,26 @@ if os.path.getsize(AFU) == 0:
     ALU.flush()
 
 
-####### PROGRAMA PRINCIPAL ########
+# PROGRAMA PRINCIPAL #
 
+os.system("cls")
 Menu_principal()
-elec = input("Seleccione la opción que desee: ")
-while elec != 3 and bandera == 0:
-    if elec.isdigit():
-        elec = int(elec)
-        if elec == 1:
-            pedirusuario()
-            match cod.strip():
-                case "administrador":
-                    mostrar_menu()
-                    Admin()
-                case "dueños de local":
-                    mostrar_menu()
-                    DueñoDelocales()
-                case "cliente":
-                    mostrar_menu()
-                    Clientes()
-        elif elec == 1 or elec == 2:
-            Registrarse()
-        elif elec == 3:
-            print("Hasta luego...")
-            bandera = -1
-        if bandera == 0:
-            os.system("cls")
-            Menu_principal()
-            elec = input("Seleccione la opción que desee: ")
+Eleccion = Validacion(1, 3)
+while Eleccion != 3:
+    if Eleccion == 1:
+        pedirusuario()
+        match cod.strip():
+            case "administrador":
+                Admin()
+            case "dueño de local":
+                DueñoDelocales()
+            case "cliente":
+                Clientes()
+    elif Eleccion == 2:
+        Registrarse()
     else:
-        os.system("cls")
-        print("El valor que a ingresado no es una opción válida, intentelo nuevamente.")
-        separador()
-        Menu_principal()
-        elec = input("Seleccione la opción que desee: ")
+        print("Hasta luego...")
+        bandera = -1
+    os.system("cls")
+    Menu_principal()
+    Eleccion = Validacion(1, 3)
