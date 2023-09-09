@@ -81,7 +81,7 @@ def Exhibicion():
         Aux_I = pickle.load(ALL)
         T_RL = ALL.tell()
         T_AL = os.path.getsize(AFL)
-        C_RL = int(T_AL / T_RL)
+        C_RL = round(T_AL / T_RL) 
         i = 0
         borde = "║"
         label = "║Codigo local"
@@ -115,7 +115,7 @@ def Exhibicion():
         sys.stdout.write(6 * "═")
         sys.stdout.write("╗\n")
         print(label)
-        while ALL.tell() < T_AL:
+        while ALL.tell() <= T_AL:
             sys.stdout.write("╠")
             sys.stdout.write(12 * "═")
             sys.stdout.write("╬")
@@ -146,6 +146,7 @@ def Exhibicion():
             item += Auxiliar.Estado.center(6)
             item += "║"
             i += 1
+            ALL.seek((i * T_RL) +10 , 0)
             print(item)
         sys.stdout.write("╚")
         sys.stdout.write(12 * "═")
