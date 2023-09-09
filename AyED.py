@@ -190,7 +190,6 @@ def Bs_Usu(valor):
     else:
         return -1
 
-
 def Bs_Usu_Cod(valor):
     T = os.path.getsize(AFU)
     pos = 0
@@ -204,6 +203,18 @@ def Bs_Usu_Cod(valor):
     else:
         return -1
 
+def Bs_Usu_Tipo(valor):
+    T = os.path.getsize(AFU)
+    pos = 0
+    ALU.seek(0, 0)
+    cont = pickle.load(ALU)
+    while ALU.tell() < T and cont.TipoUsuario != valor:
+        pos = ALU.tell()
+        cont = pickle.load(ALU)
+    if cont.TipoUsuario == valor:
+        return pos
+    else:
+        return -1
 
 def Bs_Loc(valor):
     T = os.path.getsize(AFL)
@@ -213,7 +224,7 @@ def Bs_Loc(valor):
     while ALL.tell() < T and cont.CodLocal != valor:
         pos = ALL.tell()
         cont = pickle.load(ALL)
-    if cont.CodUsuario == valor:
+    if cont.CodLocal == valor:
         return pos
     else:
         return -1
@@ -234,7 +245,7 @@ def or_archivo():
                 ALL.seek(i * T_RL, 0)
                 pickle.dump(Aux_J, ALL)
                 ALL.seek(j * T_RL, 0)
-                pickle.dump(Aux_I, 0)
+                pickle.dump(Aux_I, ALL)
                 ALL.flush()
 
 
@@ -254,8 +265,9 @@ def Bd_archivo(X):
         else:
             inf = medio + 1
         medio = (inf + sup) // 2
-        ALL.seek(medio * T_RL, 0)
-        R_L = pickle.load(ALL)
+        if medio >= 0:
+            ALL.seek(medio * T_RL, 0)
+            R_L = pickle.load(ALL)
     if R_L.NombreLocal == X:
         return medio * T_RL
     else:
@@ -421,8 +433,8 @@ def Registrarse():
     global i_usu
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
     pos = Bs_Usu(R_Usu.NombreUsuario)
-    while len(R_Usu.NombreUsuario) > 100 and pos == -1:
-        if pos == -1:
+    while len(R_Usu.NombreUsuario) <= 100 and pos != -1:
+        if pos != -1:
             print("Actualmente ese mail existe, intente con otro...")
         else:
             print("Usted ingreso un mail muy largo, intente otra vez")
@@ -509,8 +521,8 @@ def Crear_D():
     global cond_crear
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
     pos = Bs_Usu(R_Usu.NombreUsuario)
-    while len(R_Usu.NombreUsuario) > 100 and pos == -1:
-        if pos == -1:
+    while len(R_Usu.NombreUsuario) <= 100 and pos != -1:
+        if pos != -1:
             print("Actualmente ese mail existe, intente con otro...")
         else:
             print("Usted ingreso un mail muy largo, intente otra vez")
@@ -535,7 +547,7 @@ def Crear_D():
 def gestion_de_locales():
     global eleccion
     global decision
-    if cond_crear == 1:
+    if Bs_Usu_Tipo("dueño de local") != -1:
         while (
             decision != "a"
             and decision != "b"
@@ -630,7 +642,7 @@ def gestion_de_locales():
                 eleccion = -1
                 decision = "z"
     else:
-        print("No hay locales cargados hasata el momento.")
+        print("No hay dueños de locales cargados hasta el momento.")
 
 
 def Crear_Locales():
@@ -793,7 +805,6 @@ def Modificar_Locales():
     # Procedimiento para la modificación de un local:
     def Modificacion(pos_reg):
         verificacion = -2
-        os.system("cls")
         print("Aclaración: si no desea modificar ninguna parte ingrese 0")
         modif = input(
             "Que parte del local desea modificar(nombre, ubicación, rubro o codigo de usuario)? "
@@ -837,6 +848,8 @@ def Modificar_Locales():
                     )
                     nombre = nombre.lower()
             verificacion = -2
+            ALL.seek(pos_reg, 0)
+            R_Loc = pickle.load(ALL)
             R_Loc.NombreLocal = nombre
             print("Su modificación se a realizado con exito")
 
@@ -847,6 +860,8 @@ def Modificar_Locales():
                 print("Usted ingreso una ubicación muy larga... ")
                 separador()
                 Ubi = input("Ingrese una ubicación mas corta: ")
+            ALL.seek(pos_reg, 0)
+            R_Loc = pickle.load(ALL)
             R_Loc.UbiLocal = Ubi
             print("Su modificación se a realizado con exito")
 
@@ -888,6 +903,8 @@ def Modificar_Locales():
             else:
                 Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
                 R_Loc.RubroLocal = rubro
+            ALL.seek(pos_reg, 0)
+            R_Loc = pickle.load(ALL)
             R_Loc.RubroLocal = rubro
             print("Su modificación se a realizado con exito")
 
@@ -915,6 +932,8 @@ def Modificar_Locales():
                         R_Loc = pickle.load(ALL)
                         if R_Loc.TipoUsuario.strip() == "dueños de local":
                             flag = 1
+            ALL.seek(pos_reg, 0)
+            R_Loc = pickle.load(ALL)
             R_Loc.CodUsuario = Cod_us
             print("Su modificación se a realizado con exito")
         else:
@@ -1152,7 +1171,6 @@ bandera = 0
 i_usu = 2
 i_global = 1
 frenar = True
-cond_crear = 0
 
 
 # Declaración de variables que contienen la ubicación física de los archivos
