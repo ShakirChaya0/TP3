@@ -983,8 +983,14 @@ def Modificar_Locales():
                         cod_local = input(
                             "Ingrese el codigo de otro local que desee modificar(si no desea modificar ninguno ingrese 0): "
                         )
-                    else:
-                        R_Loc.Estado = "A"  # VER SI FUNCIONA CORRECTAMENTE CON EL PROCEDIMIENTO MODIFICACION
+                    else:        # VER SI FUNCIONA CORRECTAMENTE CON EL PROCEDIMIENTO MODIFICACION
+                        ALL.seek(pos, 0)
+                        R_Loc = pickle.load(ALL)
+                        R_Loc.Estado = "A"
+                        ALL.seek(pos, 0)
+                        pickle.dump(R_Loc, ALL)
+                        ALL.flush()
+                        
                         if (
                             R_Loc.RubroLocal == "perfumeria"
                             or R_Loc.RubroLocal == "perfumería"
