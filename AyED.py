@@ -647,6 +647,7 @@ def gestion_de_locales():
                 decision = "z"
     else:
         print("No hay dueños de locales cargados hasta el momento.")
+        
 
 
 def Crear_Locales():
@@ -740,8 +741,11 @@ def Crear_Locales():
 
             #Buscando el codigo del local del anterior registro
             if os.path.getsize(AFL) > 0:
+                ALL.seek(0, 0)
+                Aux_I = pickle.load(ALL)
+                T_AL = os.path.getsize(AFL)
                 T_aux = ALL.tell()
-                C_RL = int(os.path.getsize(AFL) / T_aux)
+                C_RL = round(T_AL / T_aux)
                 Cod_ant = C_RL
             else:
                 Cod_ant = 0
@@ -1168,6 +1172,7 @@ def Ver_Nov():
 
 def Clientes():
     print("C")
+
 
 
 # SECCION  CLIENTES CON TODAS SUS SUB-SECCIONES # (Final)
