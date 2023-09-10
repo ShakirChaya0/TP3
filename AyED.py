@@ -17,9 +17,9 @@ class Usuarios:
 class Locales:
     def __init__(self) -> None:
         self.CodLocal = 0
-        self.NombreLocal = " ".ljust(50, " ")
-        self.UbiLocal = " ".ljust(50, " ")
-        self.RubroLocal = " ".ljust(50, " ")
+        self.NombreLocal = " ".ljust(30, " ")
+        self.UbiLocal = " ".ljust(30, " ")
+        self.RubroLocal = " ".ljust(12, " ")
         self.CodUsuario = 0
         self.Estado = ""
 
@@ -230,7 +230,6 @@ def Bs_Loc(valor):
     else:
         return -1
 
-
 def or_archivo():
     ALL.seek(0, 0)
     Aux_I = pickle.load(ALL)
@@ -248,7 +247,6 @@ def or_archivo():
                 ALL.seek(j * T_RL, 0)
                 pickle.dump(Aux_I, ALL)
                 ALL.flush()
-
 
 def Bd_archivo(X):
     ALL.seek(0, 0)
@@ -431,7 +429,6 @@ def pedirusuario():
 
 
 def Registrarse():
-    global i_usu
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
     pos = Bs_Usu(R_Usu.NombreUsuario)
     while len(R_Usu.NombreUsuario) <= 100 and pos != -1:
@@ -447,9 +444,13 @@ def Registrarse():
         print("Usted ingreso una clave muy larga, intente otra vez")
         R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
 
-    R_Usu.TipoUsuario = "cliente"
-    R_Usu.CodUsuario = i_usu
-    i_usu = i_usu + 1
+    R_Usu.TipoUsuario = "cliente".ljust(20," ")
+    #Buscando el codigo del anterior registro
+    ALU.seek(0, 0)
+    Aux = pickle.load(ALU)
+    T_aux = ALU.tell()
+    C_RL = int(os.path.getsize(AFU) / T_aux)
+    R_Usu.CodUsuario = C_RL + 1
     C = os.path.getsize(AFU)
     ALU.seek(C, 0)
     pickle.dump(R_Usu, ALU)
@@ -518,8 +519,6 @@ def Aprobar():
 
 
 def Crear_D():
-    global i_usu
-    global cond_crear
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
     pos = Bs_Usu(R_Usu.NombreUsuario)
     while len(R_Usu.NombreUsuario) <= 100 and pos != -1:
@@ -535,20 +534,24 @@ def Crear_D():
         print("Usted ingreso una clave muy larga, intente otra vez")
         R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
 
-    R_Usu.TipoUsuario = "dueño de local"
-    R_Usu.CodUsuario = i_usu
-    i_usu = i_usu + 1
+    R_Usu.TipoUsuario = "dueño de local".ljust(20," ")
+    #Buscando el codigo del anterior registro
+    ALU.seek(0, 0)
+    Aux = pickle.load(ALU)
+    T_aux = ALU.tell()
+    C_RL = int(os.path.getsize(AFU) / T_aux)
+    R_Usu.CodUsuario = C_RL + 1
     C = os.path.getsize(AFU)
     ALU.seek(C, 0)
     pickle.dump(R_Usu, ALU)
     ALU.flush()
-    cond_crear = 1
+
 
 
 def gestion_de_locales():
     global eleccion
     global decision
-    if Bs_Usu_Tipo("dueño de local") != -1:
+    if Bs_Usu_Tipo("dueño de local".ljust(20," ")) != -1:
         while (
             decision != "a"
             and decision != "b"
@@ -647,8 +650,6 @@ def gestion_de_locales():
 
 
 def Crear_Locales():
-    global i_global
-    global cond_crear
     verificacion = -2
     nombre = input(
         "Ingrese el nombre del local (si no quiere crear locales ingrese 0): "
@@ -737,19 +738,25 @@ def Crear_Locales():
                         if R_Usu.TipoUsuario.strip() == "dueño de local":
                             flag = 1
 
+            #Buscando el codigo del local del anterior registro
+            if os.path.getsize(AFL) > 0:
+                T_aux = ALL.tell()
+                C_RL = int(os.path.getsize(AFL) / T_aux)
+                Cod_ant = C_RL
+            else:
+                Cod_ant = 0
             # Cargando registro locales.
             M = os.path.getsize(AFL)
+            print("Tamaño del archivo: ", M)
             ALL.seek(M, 0)
-            R_Loc.CodLocal = i_global
-            R_Loc.NombreLocal = nombre
-            R_Loc.UbiLocal = Ubi
-            R_Loc.RubroLocal = rubro
+            R_Loc.CodLocal = Cod_ant + 1
+            R_Loc.NombreLocal = nombre.ljust(30," ")
+            R_Loc.UbiLocal = Ubi.ljust(30," ")
+            R_Loc.RubroLocal = rubro.ljust(12," ")
             R_Loc.CodUsuario = Cod_us
             R_Loc.Estado = "A"
             pickle.dump(R_Loc, ALL)
             ALL.flush()
-            # Aumentando el contador global post carga de un local
-            i_global = i_global + 1
             separador()
             or_archivo()
             # Pidiendo el siguiente local
@@ -803,6 +810,7 @@ def Crear_Locales():
 
 
 def Modificar_Locales():
+
     # Procedimiento para la modificación de un local:
     def Modificacion(pos_reg):
         verificacion = -2
@@ -851,7 +859,7 @@ def Modificar_Locales():
             verificacion = -2
             ALL.seek(pos_reg, 0)
             R_Loc = pickle.load(ALL)
-            R_Loc.NombreLocal = nombre
+            R_Loc.NombreLocal = nombre.ljust(30," ")
             print("Su modificación se a realizado con exito")
 
         # Modificación de la ubicación:
@@ -863,7 +871,7 @@ def Modificar_Locales():
                 Ubi = input("Ingrese una ubicación mas corta: ")
             ALL.seek(pos_reg, 0)
             R_Loc = pickle.load(ALL)
-            R_Loc.UbiLocal = Ubi
+            R_Loc.UbiLocal = Ubi.ljust(30," ")
             print("Su modificación se a realizado con exito")
 
         # Modificación del rubro
@@ -906,7 +914,7 @@ def Modificar_Locales():
                 R_Loc.RubroLocal = rubro
             ALL.seek(pos_reg, 0)
             R_Loc = pickle.load(ALL)
-            R_Loc.RubroLocal = rubro
+            R_Loc.RubroLocal = rubro.ljust(12," ")
             print("Su modificación se a realizado con exito")
 
         # Modificación del código de usuario
@@ -1170,8 +1178,7 @@ def Clientes():
 eleccion = -1
 decision = ""
 bandera = 0
-i_usu = 2
-i_global = 1
+i_global = 1 #Eliminar una vez modificado el arreglo de rubros y cantidades
 frenar = True
 
 
@@ -1216,6 +1223,22 @@ while Eleccion != 3:
         pedirusuario()
         match cod.strip():
             case "administrador":
+                if os.path.getsize(AFL) > 0: #Ayuda para entender todo sobre los registros
+                    separador()
+                    ALL.seek(0, 0)
+                    Aux = pickle.load(ALL)
+                    T_aux = ALL.tell()
+                    C_RL = int(os.path.getsize(AFL) / T_aux)
+                    print("Tamaño del archivo: ", os.path.getsize(AFL))
+                    print("Tamaño de cada registro: ", T_aux)
+                    print("Cantidad de Registros: ", C_RL)
+                    if C_RL > 2:
+                        Aux = pickle.load(ALL)
+                        T_aux_2 = ALL.tell()
+                        print("Tamaño de 2 registros: ", T_aux_2)
+                        ALL.seek(-T_aux_2, 1)
+                        Aux = pickle.load(ALL)
+                    separador()
                 Admin()
             case "dueño de local":
                 DueñoDelocales()
