@@ -141,7 +141,7 @@ def Exhibicion():
             item += borde
             item += Auxiliar.UbiLocal.strip().center(30)
             item += borde
-            item += Auxiliar.RubroLocal.center(12)
+            item += Auxiliar.RubroLocal.strip().center(12)
             item += borde
             item += Auxiliar.Estado.center(6)
             item += "║"
@@ -258,8 +258,8 @@ def Bd_archivo(X):
     medio = (inf + sup) // 2
     ALL.seek(medio * T_RL, 0)
     R_L = pickle.load(ALL)
-    while inf < sup and R_L.NombreLocal != X:
-        if X < R_L.NombreLocal:
+    while inf < sup and R_L.NombreLocal.strip() != X:
+        if X < R_L.NombreLocal.strip():
             sup = medio - 1
         else:
             inf = medio + 1
@@ -267,7 +267,7 @@ def Bd_archivo(X):
         if medio >= 0:
             ALL.seek(medio * T_RL, 0)
             R_L = pickle.load(ALL)
-    if R_L.NombreLocal == X:
+    if R_L.NombreLocal.strip() == X:
         return medio * T_RL
     else:
         return -1
@@ -648,8 +648,6 @@ def gestion_de_locales():
     else:
         print("No hay dueños de locales cargados hasta el momento.")
         
-
-
 def Crear_Locales():
     verificacion = -2
     nombre = input(
@@ -679,7 +677,7 @@ def Crear_Locales():
                     nombre = nombre.lower()
             else:
                 verificacion = -1
-
+        verificacion = -2
         if nombre != "0":
             # Cargando Ubicación:
             Ubi = input("Ingrese la ubicación para el local: ")
@@ -812,7 +810,6 @@ def Crear_Locales():
     sys.stdout.write(19 * "═")
     sys.stdout.write("╝\n")
 
-
 def Modificar_Locales():
 
     # Procedimiento para la modificación de un local:
@@ -930,8 +927,8 @@ def Modificar_Locales():
                 Veri = Bs_Usu_Cod(Cod_us)
                 if Veri != -1:
                     ALL.seek(Veri, 0)
-                    R_Loc = pickle.load(ALL)
-                    if R_Loc.TipoUsuario.strip() == "dueños de local":
+                    R_Usu = pickle.load(ALU)
+                    if R_Usu.TipoUsuario.strip() == "dueño de local":
                         flag = 1
             while flag == 0:
                 print("Usted ingreso un codigo de usuario erroneo, intentelo de nuevo")
@@ -942,8 +939,8 @@ def Modificar_Locales():
                     Veri = Bs_Usu_Cod(Cod_us)
                     if Veri != -1:
                         ALL.seek(Veri, 0)
-                        R_Loc = pickle.load(ALL)
-                        if R_Loc.TipoUsuario.strip() == "dueños de local":
+                        R_Usu = pickle.load(ALU)
+                        if R_Usu.TipoUsuario.strip() == "dueños de local":
                             flag = 1
             ALL.seek(pos_reg, 0)
             R_Loc = pickle.load(ALL)
@@ -1010,12 +1007,14 @@ def Modificar_Locales():
 
                         Modificacion(pos)
                         separador()
+                        Exhibicion()
                         cod_local = input(
                             "Ingrese el siguiente codigo del local que desea modificar(si no desea modificar ninguno ingrese 0): "
                         )
                 else:
                     Modificacion(pos)
                     separador()
+                    Exhibicion()
                     cod_local = input(
                         "Ingrese el siguiente codigo del local que desea modificar(si no desea modificar ninguno ingrese 0): "
                     )
@@ -1081,6 +1080,7 @@ def Eliminar_Locales():
                         os.system("cls")
                         print("El local ha sido eliminado...")
                         separador()
+                        Exhibicion()
                         eliminar = input(
                             "Ingrese el siguiente codigo del local que desee eliminar(si no desea eliminar ninguno ingrese 0): "
                         )
