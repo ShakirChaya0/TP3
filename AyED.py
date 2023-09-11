@@ -3,7 +3,7 @@ import pickle
 import os.path
 import os
 import sys
-from datetime import date
+import datetime
 
 
 class Usuarios:
@@ -30,7 +30,7 @@ class Promociones:
         self.TextoPromo = " ".ljust(200, " ")
         self.FechaDesdePromo = ""
         self.FechaHastaPromo = ""
-        self.DiaSemana = [0] * 6
+        self.DiaSemana = [0] * 7
         self.Estado = " ".ljust(10, " ")
         self.CodLocal = 0
 
@@ -50,6 +50,7 @@ class Novedades:
         self.FechaHastaNovedad = ""
         self.TipoUsuario = " ".ljust(20, " ")
         self.Estado = ""
+
 
 
 Rubros = [0] * 3
@@ -160,6 +161,112 @@ def Exhibicion():
         sys.stdout.write(12 * "═")
         sys.stdout.write("╩")
         sys.stdout.write(6 * "═")
+        sys.stdout.write("╝\n")
+    else:
+        print("Aun no hay ningún local cargado")
+
+
+def Exhibicion_Prom():
+    if os.path.getsize(AFP) != 0:
+        ALP.seek(0, 0)
+        Aux_I = pickle.load(ALP)
+        T_RP = ALP.tell()
+        T_AP = os.path.getsize(AFP)
+        C_RP = round(T_AP / T_RP) 
+        i = 0
+        borde = "║"
+        label = "║Codigo Promo"
+        label += borde
+        label += "Texto Promo"
+        label += " " * 3
+        label += borde
+        label += " " * 8
+        label += "Fecha Desde Promo"
+        label += " " * 5
+        label += borde
+        label += " " * 5
+        label += "Fecha Hasta Promo"
+        label += " " * 8
+        label += borde
+        label += " " * 8
+        label += "Dia Semana"
+        label += " " * 4
+        label += borde
+        label += " " * 4
+        label += "Estado"
+        label += " " * 4
+        label += borde
+        label += " Cod Local║"
+        label += " " 
+        sys.stdout.write("╔")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(14 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(30 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(30 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(22 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(14 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(10 * "═")
+        sys.stdout.write("╗\n")
+        print(label)
+        while ALP.tell() <= T_AP:
+            sys.stdout.write("╠")
+            sys.stdout.write(12 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(14 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(30 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(30 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(22 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(14 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(10 * "═")
+            sys.stdout.write("╣\n")
+            ALP.seek(i * T_RP, 0)
+            R_Pro = pickle.load(ALP)
+            item = ""
+            item += "║"
+            item += str(R_Pro.CodPromo).center(12)
+            item += borde
+            item += R_Pro.TextoPromo.strip().center(14)
+            item += borde
+            item += str(R_Pro.FechaDesdePromo).center(30)
+            item += borde
+            item += str(R_Pro.FechaHastaPromo).center(30)
+            item += borde
+            item += str(R_Pro.DiaSemana).center(12)
+            item += " "
+            item += borde
+            item += R_Pro.Estado.center(14)
+            item += borde
+            item += str(R_Pro.CodLocal).center(8)
+            item += " " * 2
+            item += "║"
+            i += 1
+            ALP.seek((i * T_RP) + 20 , 0)
+            print(item)
+        sys.stdout.write("╚")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(14 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(30 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(30 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(22 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(14 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(10 * "═")
         sys.stdout.write("╝\n")
     else:
         print("Aun no hay ningún local cargado")
@@ -472,6 +579,7 @@ def Registrarse():
 
 def Admin():
     global eleccion
+    eleccion = -1
     while eleccion >= -1 and eleccion < 6:
         separador()
         mostrar_menu()
@@ -1133,20 +1241,119 @@ def Mapa_Locales():
 
 
 def DueñoDelocales():
-    Condicion = 0
-    mostrar_menu()
-    Opcion = Validacion(0, 3)
-    match Opcion:
-        case 1:
-            Crear_Descuentos()
-        case 2:
-            Reporte()
-        case 3:
-            Ver_Nov()
+    global eleccion
+    eleccion = -1
+    while eleccion >= -1 and eleccion < 4:
+        separador()
+        mostrar_menu()
+        eleccion = input("Escoger la opción a la que desee acceder: ")
+
+        if (
+            eleccion != "1"
+            and eleccion != "2"
+            and eleccion != "3"
+            and eleccion != "0"
+        ):
+            os.system("cls")
+            print(
+                "La opción que has elegido es incorrecta, intentelo de nuevo ingresando un numero del 0 al 3."
+            )
+            eleccion = -1
+        else:
+            eleccion = int(eleccion)
+            os.system("cls")
+            match eleccion:
+                case 0:
+                    print("\033[3;31mSaliendo del programa...\033[0;m")
+                    eleccion = -2
+                case 1:
+                    Crear_Descuentos()
+                    eleccion = -1
+                case 2:
+                    Crear_D()
+                case 3:
+                    Aprobar()
 
 
 def Crear_Descuentos():
-    print("Crea")
+    global frenar, codP
+    frenar = True
+    band = True
+    #LISTAR DESCUENTOS
+    try:
+        ALP.seek(0,0)
+        ALL.seek(0,0)
+        aux = pickle.load(ALP)
+        aux_L = pickle.load(ALL)
+        while aux_L.CodLocal == aux.CodLocal and aux_L.Estado == "A" and band == True:
+            Exhibicion_Prom()
+            separador()
+            band = False
+    except:
+        print("No se encontro ninguna promocion")
+    
+    while frenar:
+        parar = True
+        try:
+            txt = input("Ingrese el tipo de descuento que desee crear (Ingrese 0 si desea salir): ")
+            if txt == "0":
+                frenar = False
+            else:
+                fecha_I = input("Desde que fecha será el descuento (formato: YYYY-MM-DD), (Ingrese 0 si desea salir): ")
+                if fecha_I == "0":
+                    frenar = False
+                else:
+                    fecha_H = input("Hasta que fecha será el descuento (formato: YYYY-MM-DD), (Ingrese 0 si desea salir): ")
+                    if fecha_H == "0":
+                        frenar = False
+                    else:
+                        while parar:
+                            loc = Validacion (0,i_global)
+                            if loc == 0:
+                                parar = False
+                            else:
+                                loc = int(loc)
+                                pos = Bs_Loc(loc)
+                                if pos != -1:
+                                    fecha_I = datetime.datetime.strptime(fecha_I, "%Y-%m-%d").date()
+                                    fecha_H = datetime.datetime.strptime(fecha_H, "%Y-%m-%d").date()
+                                    R_Pro.FechaDesdePromo = fecha_I
+                                    R_Pro.FechaHastaPromo = fecha_H
+                                    R_Pro.TextoPromo = txt
+                                    R_Pro.Estado = "pendiente"
+                                    R_Pro.CodPromo = codP + 1
+                                    R_Pro.CodLocal = pos + 1 
+                                    nombres_dias_semana = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                                    dias_semana_entre_fechas = []
+                                    while fecha_I <= fecha_H:
+                                        dia_semana = fecha_I.strftime('%A').lower()
+                                        dias_semana_entre_fechas.append(dia_semana)
+                                        fecha_I += datetime.timedelta(days=1)
+                                    dias_semana_entre_fechas = list(set(dias_semana_entre_fechas))
+                                    print("Días de la semana disponibles:")
+                                    print("Días generados:")
+                                    print(dias_semana_entre_fechas)
+                                    for i, dia in enumerate(nombres_dias_semana):
+                                        if dia in dias_semana_entre_fechas:
+                                            R_Pro.DiaSemana[i] = 1
+                                    pickle.dump(R_Pro,ALP)
+                                    ALP.flush()
+                                    print("Valores 0 y 1 según los días de la semana:")
+                                    print(R_Pro.DiaSemana)
+                                    ALP.seek(0,0)
+                                    datos_guardados = pickle.load(ALP)
+                                    if (datos_guardados.FechaDesdePromo == R_Pro.FechaDesdePromo and
+                                        datos_guardados.FechaHastaPromo == R_Pro.FechaHastaPromo and
+                                        datos_guardados.TextoPromo == R_Pro.TextoPromo and
+                                        datos_guardados.DiaSemana == R_Pro.DiaSemana):
+                                        print("Los datos se han guardado correctamente.")
+                                    else:
+                                        print("Los datos no coinciden con lo esperado.")
+                                    parar = False
+                                else:
+                                    print("No se ha encontrado el codigo de su local") 
+        except ValueError:
+            print("Formato de fecha incorrecto. Asegúrate de usar el formato YYYY-MM-DD.")
 
 
 def Reporte():
@@ -1154,7 +1361,7 @@ def Reporte():
 
 
 def Ver_Nov():
-    print("Ver")
+    print("Diagramado en chapin")
 
 
 # SECCION  DUEÑOS DE LOCALES CON TODAS SUS SUB-SECCIONES # (Final)
@@ -1191,6 +1398,7 @@ decision = ""
 bandera = 0
 i_global = 1 #Eliminar una vez modificado el arreglo de rubros y cantidades
 frenar = True
+codP = 0
 
 
 # Declaración de variables que contienen la ubicación física de los archivos
