@@ -405,7 +405,19 @@ def Validacion(desde, hasta):
         except ValueError:
             print("¡Eso no es un número válido! Inténtalo de nuevo.")
 
-
+def Bs_pro(valor):
+    M = os.path.getsize(AFP)
+    pos = 0
+    ALP.seek(0, 0)
+    R_Pro = pickle.load(ALP)
+    while ALP.tell() < M and R_Pro.CodLocal != valor:
+        pos = ALL.tell()
+        R_Pro = pickle.load(ALL)
+    if R_Pro.CodLocal == valor:
+        return pos
+    else:
+        return -1
+    
 # SECCIÓN DE BUSQUEDAS, ORDENAMIENTOS Y OTRAS FUNCIONES# (Final)
 
 """"""
@@ -623,7 +635,44 @@ def Reporte():
 
 
 def Aprobar():
-    print("a")
+    #FALTA MOSSTRAR LOS DATOS DE CADA PROMOCION EN PENDIENTE Y ADEMAS DECIR EL CODIGO DE SU LOCAL Y EL NOMBRE DEL MISMO
+    try:
+        band = True
+        ALP.seek(0,0)
+        for i in range(0, codP):
+            R_Pro = pickle.load(ALP)
+            if R_Pro.Estado == "pendiente":
+                print(R_Pro.CodPromo, R_Pro.TextoPromo, R_Pro.FechaDesdePromo, R_Pro.FechaHastaPromo, R_Pro.DiaSemana, R_Pro.Estado, R_Pro.CodLocal)
+                while band:
+                    rta = input("Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir): ")
+                    if rta == "0":
+                        band = False
+                    else:
+                        rta = int(rta)
+                        pos = Bs_pro(rta)
+                        if pos == 0:
+                            R_Pro.CodLocal = pos + 1
+                        else:
+                            R_Pro.CodLocal = round(os.path.getsize(AFL) / pos) 
+                        print("Se ha logrado encontrar la promo")
+                        elec = input("Ingrese `Aprobar` o `Denegar` para acetpar o rechazar la promocion (Ingrese 0 si desea salir): ")
+                        if elec.lower() == "aprobar":
+                            R_Pro.Estado = "aprobada"
+                            pickle.dump(ALP)
+                            ALP.flush()
+                        elif elec.lower() == "denegar":
+                            R_Pro.Estado = "rechazada"
+                            pickle.dump(ALP)
+                            ALP.flush()
+                        elif elec == "0":
+                            band = False
+                        else:
+                            print("No existe esa opcion")
+                
+            else:
+                print("No hay promos pendientes")
+    except:       
+        print("No se han encontrado promos por el momento")     
 
 
 def Crear_D():
@@ -1278,17 +1327,19 @@ def DueñoDelocales():
 def Crear_Descuentos():
     global frenar, codP
     frenar = True
-    band = True
     #LISTAR DESCUENTOS
     try:
         ALP.seek(0,0)
-        ALL.seek(0,0)
-        aux = pickle.load(ALP)
-        aux_L = pickle.load(ALL)
-        while aux_L.CodLocal == aux.CodLocal and aux_L.Estado == "A" and band == True:
-            Exhibicion_Prom()
-            separador()
-            band = False
+        ALL.seek(0,0)                           #FALTA VERIFICAR QUE EL CODLOCAL PERTENEZCA AL USUARIO LOGUEADO DE DUEÑO DE LOCALES
+        for i in range(0, R_Loc.CodLocal):
+            aux = pickle.load(ALP)
+            for j in range (0, R_Loc.CodLocal):
+                band = True
+                aux_L = pickle.load(ALL)
+                while aux_L.CodLocal == aux.CodLocal and aux_L.Estado == "A" and band == True:
+                    Exhibicion_Prom()
+                    separador()
+                    band = False
     except:
         print("No se encontro ninguna promocion")
     
@@ -1308,7 +1359,7 @@ def Crear_Descuentos():
                         frenar = False
                     else:
                         while parar:
-                            loc = Validacion (0,i_global)
+                            loc = Validacion (0,R_Loc.CodLocal)
                             if loc == 0:
                                 parar = False
                             else:
@@ -1321,8 +1372,20 @@ def Crear_Descuentos():
                                     R_Pro.FechaHastaPromo = fecha_H
                                     R_Pro.TextoPromo = txt
                                     R_Pro.Estado = "pendiente"
+                                    if os.path.getsize(AFP) > 0:
+                                        ALP.seek(0, 0)
+                                        Aux_I = pickle.load(ALP)
+                                        T_AP = os.path.getsize(AFP)
+                                        T_aux = ALP.tell()
+                                        C_RP = round(T_AP / T_aux)
+                                        codP = C_RP
+                                    else:
+                                        codP = 0
                                     R_Pro.CodPromo = codP + 1
-                                    R_Pro.CodLocal = pos + 1 
+                                    if pos == 0:
+                                        R_Pro.CodLocal = pos + 1
+                                    else:
+                                        R_Pro.CodLocal = round(os.path.getsize(AFL) / pos) 
                                     nombres_dias_semana = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
                                     dias_semana_entre_fechas = []
                                     while fecha_I <= fecha_H:
@@ -1398,7 +1461,6 @@ decision = ""
 bandera = 0
 i_global = 1 #Eliminar una vez modificado el arreglo de rubros y cantidades
 frenar = True
-codP = 0
 
 
 # Declaración de variables que contienen la ubicación física de los archivos
