@@ -166,8 +166,8 @@ def Exhibicion():
         print("Aun no hay ningún local cargado")
 
 
-def Exhibicion_Prom():
-    if os.path.getsize(AFP) != 0:
+def Exhibicion_Prom(X, Valor):
+    if os.path.getsize(AFP) != 0 and X.CodLocal == Valor.CodLocal:
         ALP.seek(0, 0)
         Aux_I = pickle.load(ALP)
         T_RP = ALP.tell()
@@ -214,7 +214,7 @@ def Exhibicion_Prom():
         sys.stdout.write(10 * "═")
         sys.stdout.write("╗\n")
         print(label)
-        while ALP.tell() <= T_AP:
+        while ALP.tell() <= T_AP and X.CodLocal == Valor.CodLocal:
             sys.stdout.write("╠")
             sys.stdout.write(12 * "═")
             sys.stdout.write("╬")
@@ -231,23 +231,24 @@ def Exhibicion_Prom():
             sys.stdout.write(10 * "═")
             sys.stdout.write("╣\n")
             ALP.seek(i * T_RP, 0)
-            R_Pro = pickle.load(ALP)
+            X = pickle.load(ALP)
+            Valor = pickle.load(ALL)
             item = ""
             item += "║"
-            item += str(R_Pro.CodPromo).center(12)
+            item += str(X.CodPromo).center(12)
             item += borde
-            item += R_Pro.TextoPromo.strip().center(14)
+            item += X.TextoPromo.strip().center(14)
             item += borde
-            item += str(R_Pro.FechaDesdePromo).center(30)
+            item += str(X.FechaDesdePromo).center(30)
             item += borde
-            item += str(R_Pro.FechaHastaPromo).center(30)
+            item += str(X.FechaHastaPromo).center(30)
             item += borde
-            item += str(R_Pro.DiaSemana).center(12)
+            item += str(X.DiaSemana).center(12)
             item += " "
             item += borde
-            item += R_Pro.Estado.center(14)
+            item += X.Estado.center(14)
             item += borde
-            item += str(R_Pro.CodLocal).center(8)
+            item += str(X.CodLocal).center(8)
             item += " " * 2
             item += "║"
             i += 1
@@ -268,6 +269,8 @@ def Exhibicion_Prom():
         sys.stdout.write("╩")
         sys.stdout.write(10 * "═")
         sys.stdout.write("╝\n")
+        X.seek(0.0)
+        Valor.seek(0,0)
     else:
         print("Aun no hay ningún local cargado")
 
@@ -635,42 +638,51 @@ def Reporte():
 
 
 def Aprobar():
-    #FALTA MOSSTRAR LOS DATOS DE CADA PROMOCION EN PENDIENTE Y ADEMAS DECIR EL CODIGO DE SU LOCAL Y EL NOMBRE DEL MISMO
+    #FALTA MOSSTRAR LOS DATOS DE CADA PROMOCION EL CODIGO DE SU LOCAL Y EL NOMBRE DEL MISMO
     try:
         band = True
         ALP.seek(0,0)
-        for i in range(0, codP):
-            R_Pro = pickle.load(ALP)
-            if R_Pro.Estado == "pendiente":
-                print(R_Pro.CodPromo, R_Pro.TextoPromo, R_Pro.FechaDesdePromo, R_Pro.FechaHastaPromo, R_Pro.DiaSemana, R_Pro.Estado, R_Pro.CodLocal)
-                while band:
-                    rta = input("Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir): ")
-                    if rta == "0":
+        R_Pro = pickle.load(ALP)
+        T = os.path.getsize(AFP)
+        try:
+            while ALP.tell() <= T:
+                R_Pro = pickle.load(ALP)
+        except:
+            ALP.seek(0,0)
+            for i in range(0, R_Pro.CodPromo):  
+                R_Pro = pickle.load(ALP)
+                if R_Pro.Estado == "pendiente":
+                    print(R_Pro.CodPromo, R_Pro.TextoPromo, R_Pro.FechaDesdePromo, R_Pro.FechaHastaPromo, R_Pro.DiaSemana, R_Pro.Estado, R_Pro.CodLocal)
+                else:
+                    print("No hay promos pendientes")
+                    band = False
+
+            while band:
+                rta = input("Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir): ")
+                if rta == "0":
+                    band = False
+                else:
+                    rta = int(rta)
+                    pos = Bs_pro(rta)
+                    if pos == 0:
+                        R_Pro.CodLocal = pos + 1
+                    else:
+                        R_Pro.CodLocal = round(os.path.getsize(AFL) / pos) 
+                    print("Se ha logrado encontrar la promo")
+                    elec = input("Ingrese `Aprobar` o `Denegar` para acetpar o rechazar la promocion (Ingrese 0 si desea salir): ")
+                    if elec.lower() == "aprobar":
+                        R_Pro.Estado = "aprobada"
+                        pickle.dump(R_Pro, ALP)
+                        ALP.flush()
+                    elif elec.lower() == "denegar":
+                        R_Pro.Estado = "rechazada"
+                        pickle.dump(R_Pro,ALP)
+                        ALP.flush()
+                    elif elec == "0":
                         band = False
                     else:
-                        rta = int(rta)
-                        pos = Bs_pro(rta)
-                        if pos == 0:
-                            R_Pro.CodLocal = pos + 1
-                        else:
-                            R_Pro.CodLocal = round(os.path.getsize(AFL) / pos) 
-                        print("Se ha logrado encontrar la promo")
-                        elec = input("Ingrese `Aprobar` o `Denegar` para acetpar o rechazar la promocion (Ingrese 0 si desea salir): ")
-                        if elec.lower() == "aprobar":
-                            R_Pro.Estado = "aprobada"
-                            pickle.dump(ALP)
-                            ALP.flush()
-                        elif elec.lower() == "denegar":
-                            R_Pro.Estado = "rechazada"
-                            pickle.dump(ALP)
-                            ALP.flush()
-                        elif elec == "0":
-                            band = False
-                        else:
-                            print("No existe esa opcion")
-                
-            else:
-                print("No hay promos pendientes")
+                        print("No existe esa opcion")
+        
     except:       
         print("No se han encontrado promos por el momento")     
 
@@ -1330,16 +1342,25 @@ def Crear_Descuentos():
     #LISTAR DESCUENTOS
     try:
         ALP.seek(0,0)
-        ALL.seek(0,0)                           #FALTA VERIFICAR QUE EL CODLOCAL PERTENEZCA AL USUARIO LOGUEADO DE DUEÑO DE LOCALES
-        for i in range(0, R_Loc.CodLocal):
-            aux = pickle.load(ALP)
-            for j in range (0, R_Loc.CodLocal):
-                band = True
-                aux_L = pickle.load(ALL)
-                while aux_L.CodLocal == aux.CodLocal and aux_L.Estado == "A" and band == True:
-                    Exhibicion_Prom()
-                    separador()
-                    band = False
+        ALL.seek(0,0)      #FALTA VERIFICAR QUE EL CODLOCAL PERTENEZCA AL USUARIO LOGUEADO DE DUEÑO DE LOCALES
+        TA = os.path.getsize(AFP)
+        R_Pro = pickle.load(ALP)
+        try:
+            while ALP.tell() <= TA:
+                R_Pro = pickle.load(ALP)
+        except:
+            ALP.seek(0,0)
+            for i in range(0, R_Pro.CodPromo):
+                R_Loc = pickle.load(ALL)
+                R_Pro = pickle.load(ALP)
+                if R_Pro.CodLocal == R_Loc.CodLocal and R_Loc.Estado == "A":
+                    aux = pickle.load(ALL)
+                    aux_L = pickle.load(ALP)
+                    print(R_Pro.TextoPromo, R_Pro.DiaSemana)
+                    Exhibicion_Prom(aux, aux_L)
+                else:
+                    ("No hay local activos o no hay locales para este Codigo de Local")
+
     except:
         print("No se encontro ninguna promocion")
     
