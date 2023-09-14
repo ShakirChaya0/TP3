@@ -166,8 +166,8 @@ def Exhibicion():
         print("Aun no hay ningún local cargado")
 
 
-def Exhibicion_Prom(X, Valor):
-    if os.path.getsize(AFP) != 0 and X.CodLocal == Valor.CodLocal:
+def Exhibicion_Prom():
+    if os.path.getsize(AFP) != 0:
         ALP.seek(0, 0)
         Aux_I = pickle.load(ALP)
         T_RP = ALP.tell()
@@ -214,7 +214,7 @@ def Exhibicion_Prom(X, Valor):
         sys.stdout.write(10 * "═")
         sys.stdout.write("╗\n")
         print(label)
-        while ALP.tell() <= T_AP and X.CodLocal == Valor.CodLocal:
+        while ALP.tell() <= T_AP:
             sys.stdout.write("╠")
             sys.stdout.write(12 * "═")
             sys.stdout.write("╬")
@@ -231,24 +231,23 @@ def Exhibicion_Prom(X, Valor):
             sys.stdout.write(10 * "═")
             sys.stdout.write("╣\n")
             ALP.seek(i * T_RP, 0)
-            X = pickle.load(ALP)
-            Valor = pickle.load(ALL)
+            R_Pro = pickle.load(ALP)
             item = ""
             item += "║"
-            item += str(X.CodPromo).center(12)
+            item += str(R_Pro.CodPromo).center(12)
             item += borde
-            item += X.TextoPromo.strip().center(14)
+            item += R_Pro.TextoPromo.strip().center(14)
             item += borde
-            item += str(X.FechaDesdePromo).center(30)
+            item += str(R_Pro.FechaDesdePromo).center(30)
             item += borde
-            item += str(X.FechaHastaPromo).center(30)
+            item += str(R_Pro.FechaHastaPromo).center(30)
             item += borde
-            item += str(X.DiaSemana).center(12)
+            item += str(R_Pro.DiaSemana).center(12)
             item += " "
             item += borde
-            item += X.Estado.center(14)
+            item += R_Pro.Estado.center(14)
             item += borde
-            item += str(X.CodLocal).center(8)
+            item += str(R_Pro.CodLocal).center(8)
             item += " " * 2
             item += "║"
             i += 1
@@ -269,8 +268,6 @@ def Exhibicion_Prom(X, Valor):
         sys.stdout.write("╩")
         sys.stdout.write(10 * "═")
         sys.stdout.write("╝\n")
-        X.seek(0.0)
-        Valor.seek(0,0)
     else:
         print("Aun no hay ningún local cargado")
 
@@ -413,10 +410,10 @@ def Bs_pro(valor):
     pos = 0
     ALP.seek(0, 0)
     R_Pro = pickle.load(ALP)
-    while ALP.tell() < M and R_Pro.CodLocal != valor:
+    while ALP.tell() < M and R_Pro.CodPromo != valor:
         pos = ALL.tell()
-        R_Pro = pickle.load(ALL)
-    if R_Pro.CodLocal == valor:
+        R_Pro = pickle.load(ALP)
+    if R_Pro.CodPromo == valor:
         return pos
     else:
         return -1
@@ -638,24 +635,25 @@ def Reporte():
 
 
 def Aprobar():
+    global R_Pro
     #FALTA MOSSTRAR LOS DATOS DE CADA PROMOCION EL CODIGO DE SU LOCAL Y EL NOMBRE DEL MISMO
     try:
         band = True
         ALP.seek(0,0)
-        R_Pro = pickle.load(ALP)
+        aux_p = pickle.load(ALP)
         T = os.path.getsize(AFP)
         try:
             while ALP.tell() <= T:
-                R_Pro = pickle.load(ALP)
+                aux_p = pickle.load(ALP)
         except:
             ALP.seek(0,0)
-            for i in range(0, R_Pro.CodPromo):  
-                R_Pro = pickle.load(ALP)
-                if R_Pro.Estado == "pendiente":
-                    print(R_Pro.CodPromo, R_Pro.TextoPromo, R_Pro.FechaDesdePromo, R_Pro.FechaHastaPromo, R_Pro.DiaSemana, R_Pro.Estado, R_Pro.CodLocal)
+            for i in range(0, aux_p.CodPromo):  
+                aux_p = pickle.load(ALP)
+                if aux_p.Estado == "pendiente":
+                    print(aux_p.CodPromo, aux_p.TextoPromo, aux_p.FechaDesdePromo, aux_p.FechaHastaPromo, aux_p.DiaSemana, aux_p.Estado, aux_p.CodLocal)
                 else:
                     print("No hay promos pendientes")
-                    band = False
+                    
 
             while band:
                 rta = input("Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir): ")
@@ -664,10 +662,8 @@ def Aprobar():
                 else:
                     rta = int(rta)
                     pos = Bs_pro(rta)
-                    if pos == 0:
-                        R_Pro.CodLocal = pos + 1
-                    else:
-                        R_Pro.CodLocal = round(os.path.getsize(AFL) / pos) 
+                    ALP.seek(pos,0)
+                    R_Pro = pickle.load(ALP)
                     print("Se ha logrado encontrar la promo")
                     elec = input("Ingrese `Aprobar` o `Denegar` para acetpar o rechazar la promocion (Ingrese 0 si desea salir): ")
                     if elec.lower() == "aprobar":
@@ -1337,107 +1333,109 @@ def DueñoDelocales():
 
 
 def Crear_Descuentos():
-    global frenar, codP
+    global frenar, R_Pro
     frenar = True
     #LISTAR DESCUENTOS
     try:
         ALP.seek(0,0)
-        ALL.seek(0,0)      #FALTA VERIFICAR QUE EL CODLOCAL PERTENEZCA AL USUARIO LOGUEADO DE DUEÑO DE LOCALES
+        ALL.seek(0,0)    #FALTA VERIFICAR QUE EL CODLOCAL PERTENEZCA AL USUARIO LOGUEADO DE DUEÑO DE LOCALES
+        T = os.path.getsize(AFL)
         TA = os.path.getsize(AFP)
-        R_Pro = pickle.load(ALP)
+        R_Loc = pickle.load(ALL)
         try:
-            while ALP.tell() <= TA:
-                R_Pro = pickle.load(ALP)
-        except:
-            ALP.seek(0,0)
-            for i in range(0, R_Pro.CodPromo):
+            while ALL.tell() <= T:
                 R_Loc = pickle.load(ALL)
-                R_Pro = pickle.load(ALP)
-                if R_Pro.CodLocal == R_Loc.CodLocal and R_Loc.Estado == "A":
-                    aux = pickle.load(ALL)
-                    aux_L = pickle.load(ALP)
-                    print(R_Pro.TextoPromo, R_Pro.DiaSemana)
-                    Exhibicion_Prom(aux, aux_L)
-                else:
-                    ("No hay local activos o no hay locales para este Codigo de Local")
-
+        except:
+            try:
+                while ALP.tell() <= TA:
+                    aux = pickle.load(ALP)
+            except:
+                try:
+                    ALP.seek(0,0)
+                    ALL.seek(0,0)
+                    R_Loc = pickle.load(ALL)
+                    for i in range(0, aux.CodPromo):
+                        aux = pickle.load(ALP)
+                        if aux.CodLocal == R_Loc.CodLocal and R_Loc.Estado == "A": #falta exhibir de forma aesthetic
+                            print(aux.TextoPromo, aux.DiaSemana)
+                        else:
+                            ("No hay local activos o no hay locales para este Codigo de Local")
+                except:
+                    print("Esos son las promociones cargadas")
     except:
         print("No se encontro ninguna promocion")
     
     while frenar:
         parar = True
-        try:
-            txt = input("Ingrese el tipo de descuento que desee crear (Ingrese 0 si desea salir): ")
-            if txt == "0":
-                frenar = False
-            else:
+        txt = input("Ingrese el tipo de descuento que desee crear (Ingrese 0 si desea salir): ")
+        if txt == "0":
+            frenar = False
+        else:
+            try:
                 fecha_I = input("Desde que fecha será el descuento (formato: YYYY-MM-DD), (Ingrese 0 si desea salir): ")
+                fecha_I = datetime.datetime.strptime(fecha_I, "%Y-%m-%d").date()
                 if fecha_I == "0":
                     frenar = False
                 else:
                     fecha_H = input("Hasta que fecha será el descuento (formato: YYYY-MM-DD), (Ingrese 0 si desea salir): ")
+                    fecha_H = datetime.datetime.strptime(fecha_H, "%Y-%m-%d").date()
                     if fecha_H == "0":
                         frenar = False
                     else:
-                        while parar:
-                            loc = Validacion (0,R_Loc.CodLocal)
-                            if loc == 0:
-                                parar = False
-                            else:
-                                loc = int(loc)
-                                pos = Bs_Loc(loc)
-                                if pos != -1:
-                                    fecha_I = datetime.datetime.strptime(fecha_I, "%Y-%m-%d").date()
-                                    fecha_H = datetime.datetime.strptime(fecha_H, "%Y-%m-%d").date()
-                                    R_Pro.FechaDesdePromo = fecha_I
-                                    R_Pro.FechaHastaPromo = fecha_H
-                                    R_Pro.TextoPromo = txt
-                                    R_Pro.Estado = "pendiente"
-                                    if os.path.getsize(AFP) > 0:
-                                        ALP.seek(0, 0)
-                                        Aux_I = pickle.load(ALP)
-                                        T_AP = os.path.getsize(AFP)
-                                        T_aux = ALP.tell()
-                                        C_RP = round(T_AP / T_aux)
-                                        codP = C_RP
-                                    else:
-                                        codP = 0
-                                    R_Pro.CodPromo = codP + 1
-                                    if pos == 0:
-                                        R_Pro.CodLocal = pos + 1
-                                    else:
-                                        R_Pro.CodLocal = round(os.path.getsize(AFL) / pos) 
-                                    nombres_dias_semana = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-                                    dias_semana_entre_fechas = []
-                                    while fecha_I <= fecha_H:
-                                        dia_semana = fecha_I.strftime('%A').lower()
-                                        dias_semana_entre_fechas.append(dia_semana)
-                                        fecha_I += datetime.timedelta(days=1)
-                                    dias_semana_entre_fechas = list(set(dias_semana_entre_fechas))
-                                    print("Días de la semana disponibles:")
-                                    print("Días generados:")
-                                    print(dias_semana_entre_fechas)
-                                    for i, dia in enumerate(nombres_dias_semana):
-                                        if dia in dias_semana_entre_fechas:
-                                            R_Pro.DiaSemana[i] = 1
-                                    pickle.dump(R_Pro,ALP)
-                                    ALP.flush()
-                                    print("Valores 0 y 1 según los días de la semana:")
-                                    print(R_Pro.DiaSemana)
-                                    ALP.seek(0,0)
-                                    datos_guardados = pickle.load(ALP)
-                                    if (datos_guardados.FechaDesdePromo == R_Pro.FechaDesdePromo and
-                                        datos_guardados.FechaHastaPromo == R_Pro.FechaHastaPromo and
-                                        datos_guardados.TextoPromo == R_Pro.TextoPromo and
-                                        datos_guardados.DiaSemana == R_Pro.DiaSemana):
-                                        print("Los datos se han guardado correctamente.")
-                                    else:
-                                        print("Los datos no coinciden con lo esperado.")
+                        try:
+                            while ALL.tell() <= T:
+                                R_Loc = pickle.load(ALL)
+                        except:
+                            while parar:
+                                loc = input(f"Ingrese el numero de su local teniendo en cuenta que el ultimo codigo de local es {R_Loc.CodLocal} (Ingrese 0 para salir)")
+                                if loc == "0":
                                     parar = False
                                 else:
-                                    print("No se ha encontrado el codigo de su local") 
-        except ValueError:
-            print("Formato de fecha incorrecto. Asegúrate de usar el formato YYYY-MM-DD.")
+                                    loc = int(loc)
+                                    pos = Bs_Loc(loc)
+                                    if pos != -1:
+                                        R_Pro.FechaDesdePromo = fecha_I
+                                        R_Pro.FechaHastaPromo = fecha_H
+                                        R_Pro.TextoPromo = txt
+                                        R_Pro.Estado = "pendiente"
+                                        if os.path.getsize(AFP) > 0:
+                                            ALP.seek(0, 0)
+                                            Aux_I = pickle.load(ALP)
+                                            T_AP = os.path.getsize(AFP)
+                                            T_aux = ALP.tell()
+                                            C_RP = round(T_AP / T_aux)
+                                            codP = C_RP
+                                            
+                                        else:
+                                            codP = 0
+                                        R_Pro.CodPromo = codP + 1
+                                        if pos == 0:
+                                            R_Pro.CodLocal = pos + 1
+                                        else:
+                                            R_Pro.CodLocal = round(os.path.getsize(AFL) / pos) 
+                                        nombres_dias_semana = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+                                        dias_semana_entre_fechas = []
+                                        while fecha_I <= fecha_H:
+                                            dia_semana = fecha_I.strftime('%A').lower()
+                                            dias_semana_entre_fechas.append(dia_semana)
+                                            fecha_I += datetime.timedelta(days=1)
+                                        dias_semana_entre_fechas = list(set(dias_semana_entre_fechas))
+                                        print("Días de la semana disponibles:")
+                                        print("Días generados:")
+                                        print(dias_semana_entre_fechas)
+                                        for i, dia in enumerate(nombres_dias_semana):
+                                            if dia in dias_semana_entre_fechas:
+                                                R_Pro.DiaSemana[i] = 1
+                                        ALP.seek(0,2)
+                                        pickle.dump(R_Pro,ALP)
+                                        ALP.flush()
+                                        print("Valores 0 y 1 según los días de la semana:")
+                                        print(R_Pro.DiaSemana)
+                                        parar = False
+                                    else:
+                                        print("No se ha encontrado el codigo de su local") 
+            except:
+                print("Formato de fecha incorrecto. Asegúrate de usar el formato YYYY-MM-DD.")
 
 
 def Reporte():
