@@ -59,7 +59,7 @@ class R_Rub:
 Rubros = [R_Rub] * 3
 #Instanciando las clases para asignar los atributos respectivos
 cl1 = R_Rub()
-cl1.Nom = "perfumería".ljust(12," ")
+cl1.Nom = "perfumeria".ljust(12," ")
 cl1.Ca = 0
 Rubros[0] = cl1
 cl2 = R_Rub()
@@ -390,7 +390,6 @@ def Bd_archivo(X):
     else:
         return -1
 
-
 def Bs_Sec_R(arreglo, valor):
     p = 0
     while arreglo[p] != valor and p < i_global:
@@ -640,10 +639,8 @@ def Admin():
                 case 5:
                     Reporte()
 
-
 def Reporte():
     print("a")
-
 
 def Aprobar():
     global R_Pro
@@ -693,7 +690,6 @@ def Aprobar():
     except:       
         print("No se han encontrado promos por el momento")     
 
-
 def Crear_D():
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
     pos = Bs_Usu(R_Usu.NombreUsuario)
@@ -721,8 +717,6 @@ def Crear_D():
     ALU.seek(C, 0)
     pickle.dump(R_Usu, ALU)
     ALU.flush()
-
-
 
 def gestion_de_locales():
     global eleccion
@@ -868,7 +862,7 @@ def Crear_Locales():
             rubro = rubro.lower()
 
             # Verificacíon y carga del rubro
-            while (
+            while ( rubro != "perfumeria" and
                 rubro != "perfumería"
                 and rubro != "indumentaria"
                 and rubro != "comida"
@@ -881,7 +875,7 @@ def Crear_Locales():
                     "Ingrese el tipo de rubro del local (perfumería, comida o indumentaria): "
                 )
                 rubro = rubro.lower()
-            if rubro == "perfumería":
+            if rubro == "perfumeria":
                 Rubros[0].Ca = Rubros[0].Ca + 1
             elif rubro == "indumentaria":
                 Rubros[1].Ca = Rubros[1].Ca + 1
@@ -986,7 +980,6 @@ def Crear_Locales():
     sys.stdout.write("╝\n")
 
 def Modificar_Locales():
-
     # Procedimiento para la modificación de un local:
     def Modificacion(pos_reg):
         verificacion = -2
@@ -1056,7 +1049,7 @@ def Modificar_Locales():
                 "Ingrese el nuevo rubro (perfumería, comida o indumentaria): "
             )
             rubro = rubro.lower()
-            while (
+            while ( rubro != "perfumeria"and
                 rubro != "perfumería"
                 and rubro != "indumentaria"
                 and rubro != "comida"
@@ -1079,7 +1072,7 @@ def Modificar_Locales():
             Rubros[c].Ca = Rubros[c].Ca - 1
             #Buscando el nuevo rubro
             c1 = 0
-            while Rubros[c1].Nom != rubro:
+            while Rubros[c1].Nom.strip() != rubro:
                 c1 = c1 + 1
             Rubros[c1].Ca = Rubros[c1].Ca + 1
             R_Loc.RubroLocal = rubro.ljust(12," ")
@@ -1151,7 +1144,7 @@ def Modificar_Locales():
                         cod_local = input(
                             "Ingrese el codigo de otro local que desee modificar(si no desea modificar ninguno ingrese 0): "
                         )
-                    else:        # VER SI FUNCIONA CORRECTAMENTE CON EL PROCEDIMIENTO MODIFICACION
+                    else:       
                         ALL.seek(pos, 0)
                         R_Loc = pickle.load(ALL)
                         R_Loc.Estado = "A"
