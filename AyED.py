@@ -51,14 +51,25 @@ class Novedades:
         self.TipoUsuario = " ".ljust(20, " ")
         self.Estado = ""
 
+class R_Rub:
+    def __init__(self) -> None:
+        self.Nom = " ".ljust(12," ")
+        self.Ca = 0
 
-
-Rubros = [0] * 3
-Rubros[0] = "perfumeria"
-Rubros[1] = "indumentaria"
-Rubros[2] = "comida"
-
-Rubros_c = [0] * 3
+Rubros = [R_Rub] * 3
+#Instanciando las clases para asignar los atributos respectivos
+cl1 = R_Rub()
+cl1.Nom = "perfumería".ljust(12," ")
+cl1.Ca = 0
+Rubros[0] = cl1
+cl2 = R_Rub()
+cl2.Nom = "indumentaria".ljust(12," ")
+cl2.Ca = 0
+Rubros[1] = cl2
+cl3 = R_Rub()
+cl3.Nom = "comida".ljust(12," ")
+cl3.Ca = 0
+Rubros[2] = cl3
 
 """"""
 """"""
@@ -858,8 +869,7 @@ def Crear_Locales():
 
             # Verificacíon y carga del rubro
             while (
-                rubro != "perfumeria"
-                and rubro != "perfumería"
+                rubro != "perfumería"
                 and rubro != "indumentaria"
                 and rubro != "comida"
             ):
@@ -868,16 +878,16 @@ def Crear_Locales():
                 )
                 separador()
                 rubro = input(
-                    "Ingrese el tipo de rubro del local (perfumeria, comida o indumentaria): "
+                    "Ingrese el tipo de rubro del local (perfumería, comida o indumentaria): "
                 )
                 rubro = rubro.lower()
-            pos_suma = Bs_Sec_R(Rubros[:], rubro)
-            if rubro == "perfumeria" or rubro == "perfumería":
-                Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
+            if rubro == "perfumería":
+                Rubros[0].Ca = Rubros[0].Ca + 1
             elif rubro == "indumentaria":
-                Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
+                Rubros[1].Ca = Rubros[1].Ca + 1
             else:
-                Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
+                Rubros[2].Ca = 1 + Rubros[2].Ca
+            
             # Pidiendo el Código de usuario
             flag = 0
             Cod_us = input("Ingrese el codigo de usuario: ")
@@ -936,15 +946,15 @@ def Crear_Locales():
     # Ordenando array de rubros y cantidades (de mayor a menor)
     for i in range(0, 2):
         for j in range(i + 1, 3):
-            if Rubros_c[i] < Rubros_c[j]:
+            if Rubros[i].Ca < Rubros[j].Ca:
                 # Ordenando arreglo de cantidades
-                aux = Rubros_c[i]
-                Rubros_c[i] = Rubros_c[j]
-                Rubros_c[j] = aux
+                aux = Rubros[i].Ca
+                Rubros[i].Ca = Rubros[j].Ca
+                Rubros[j].Ca = aux
                 # Ordenando arreglo de rubros
-                aux1 = Rubros[i]
-                Rubros[i] = Rubros[j]
-                Rubros[j] = aux1
+                aux1 = Rubros[i].Nom.ljust(12," ")
+                Rubros[i].Nom = Rubros[j].Nom.ljust(12," ")
+                Rubros[j].Nom = aux1
     borde = "║"
     label1 = "║    Rubro   "
     label1 += borde
@@ -964,9 +974,9 @@ def Crear_Locales():
         sys.stdout.write("╣\n")
         item = ""
         item += "║"
-        item += str(Rubros[i]).center(12)
+        item += str(Rubros[i].Nom).strip().center(12)
         item += borde
-        item += str(Rubros_c[i]).center(19)
+        item += str(Rubros[i].Ca).center(19)
         item += "║"
         print(item)
     sys.stdout.write("╚")
@@ -1047,8 +1057,7 @@ def Modificar_Locales():
             )
             rubro = rubro.lower()
             while (
-                rubro != "perfumeria"
-                and rubro != "perfumería"
+                rubro != "perfumería"
                 and rubro != "indumentaria"
                 and rubro != "comida"
             ):
@@ -1057,29 +1066,22 @@ def Modificar_Locales():
                 )
                 separador()
                 rubro = input(
-                    "Ingrese el nuevo rubro del local (perfumeria, comida o indumentaria): "
+                    "Ingrese el nuevo rubro del local (perfumería, comida o indumentaria): "
                 )
                 rubro = rubro.lower()
-            tipo = R_Loc.RubroLocal
-            pos_rest = Bs_Sec_R(Rubros[:], tipo)
-            pos_suma = Bs_Sec_R(Rubros[:], rubro)
-            if R_Loc.RubroLocal == "perfumeria" or R_Loc.RubroLocal == "perfumería":
-                Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
-            elif R_Loc.RubroLocal == "indumentaria":
-                Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
-            else:
-                Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
-            if rubro == "perfumeria" or rubro == "perfumería":
-                Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
-                R_Loc.RubroLocal = rubro
-            elif rubro == "indumentaria":
-                Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
-                R_Loc.RubroLocal = rubro
-            else:
-                Rubros_c[pos_suma] = Rubros_c[pos_suma] + 1
-                R_Loc.RubroLocal = rubro
             ALL.seek(pos_reg, 0)
-            R_Loc = pickle.load(ALL)
+            R_Loc = pickle.load(ALL)    
+            tipo = R_Loc.RubroLocal.ljust(12," ")
+            #Buscando el anterior rubro
+            c = 0
+            while Rubros[c].Nom != tipo:
+                c = c + 1
+            Rubros[c].Ca = Rubros[c].Ca - 1
+            #Buscando el nuevo rubro
+            c1 = 0
+            while Rubros[c1].Nom != rubro:
+                c1 = c1 + 1
+            Rubros[c1].Ca = Rubros[c1].Ca + 1
             R_Loc.RubroLocal = rubro.ljust(12," ")
             print("Su modificación se a realizado con exito")
 
@@ -1156,19 +1158,13 @@ def Modificar_Locales():
                         ALL.seek(pos, 0)
                         pickle.dump(R_Loc, ALL)
                         ALL.flush()
-                        
-                        if (
-                            R_Loc.RubroLocal == "perfumeria"
-                            or R_Loc.RubroLocal == "perfumería"
-                        ):
-                            re_suma = Bs_Sec_R(Rubros[:], "perfumeria")
-                            Rubros_c[re_suma] = Rubros_c[re_suma] + 1
-                        elif R_Loc.RubroLocal == "indumentaria":
-                            re_suma = Bs_Sec_R(Rubros[:], "indumentaria")
-                            Rubros_c[re_suma] = Rubros_c[re_suma] + 1
-                        else:
-                            re_suma = Bs_Sec_R(Rubros[:], "comida")
-                            Rubros_c[re_suma] = Rubros_c[re_suma] + 1
+                            
+                        tipo = R_Loc.RubroLocal.ljust(12," ")
+                        #Buscando el anterior rubro
+                        c = 0
+                        while Rubros[c].Nom != tipo:
+                            c = c + 1
+                        Rubros[c].Ca = Rubros[c].Ca + 1
 
                         Modificacion(pos)
                         separador()
@@ -1189,7 +1185,6 @@ def Modificar_Locales():
             cod_local = input(
                 "Ingrese el codigo del local que desea modificar(si no desea modificar ninguno ingrese 0): "
             )
-
 
 def Eliminar_Locales():
     eliminar = input(
@@ -1229,17 +1224,14 @@ def Eliminar_Locales():
                             "Ingrese otro codigo del local que desee eliminar(si no desea eliminar ninguno ingrese 0): "
                         )
                     else:
-                        if R_Loc.RubroLocal == "perfumeria":
-                            pos_rest = Bs_Sec_R(Rubros[:], "perfumeria")
-                            Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
-                        elif R_Loc.RubroLocal == "indumentaria":
-                            pos_rest = Bs_Sec_R(Rubros[:], "indumentaria")
-                            Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
-                        else:
-                            pos_rest = Bs_Sec_R(Rubros[:], "comida")
-                            Rubros_c[pos_rest] = Rubros_c[pos_rest] - 1
-                        R_Loc.Estado = "B"
+                        tipo = R_Loc.RubroLocal.ljust(12," ")
+                        #Buscando el anterior rubro
+                        c = 0
+                        while Rubros[c].Nom != tipo:
+                            c = c + 1
+                        Rubros[c].Ca = Rubros[c].Ca - 1
                         ALL.seek(pos, 0)
+                        R_Loc.Estado = "B"
                         pickle.dump(R_Loc, ALL)
                         ALL.flush()
                         os.system("cls")
