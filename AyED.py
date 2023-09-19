@@ -282,6 +282,68 @@ def Exhibicion_Prom():
     else:
         print("Aun no hay ningún local cargado")
 
+def Exhibicion_Clientes(Cod_local, Fecha):
+    borde = "║"
+    label = "║Codigo Promo"
+    label += borde
+    label += " " * 15
+    label += "Texto Promo"
+    label += " " * 15
+    label += borde
+    label += " " * 5
+    label += "Fecha Desde"
+    label += " " * 5
+    label += borde
+    label += " " * 5
+    label += "Fecha Hasta"
+    label += " " * 5
+    label += borde
+    sys.stdout.write("╔")
+    sys.stdout.write(12 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(41 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(21 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(21 * "═")
+    sys.stdout.write("╗\n")
+    print(label)
+    ALP.seek(0,0)
+    while ALP.tell() < os.path.getsize(AFP):
+        R_Pro = pickle.load(ALP)
+        if R_Pro.CodLocal == Cod_local and R_Pro.Estado == "aprobada" and R_Pro.FechaDesdePromo <= Fecha and R_Pro.FechaHastaPromo >= Fecha:
+          if R_Pro.DiaSemana[Fecha.weekday()] == 1:
+                sys.stdout.write("╠")
+                sys.stdout.write(12 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(41 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(21 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(21 * "═")
+                sys.stdout.write("╣\n")
+                item = ""
+                item += "║"
+                item += str(R_Pro.CodPromo).center(12)
+                item += borde
+                item += R_Pro.TextoPromo.strip().center(41)
+                item += borde
+                item += str(R_Pro.FechaDesdePromo).center(21)
+                item += borde
+                item += str(R_Pro.FechaHastaPromo).center(21)
+                item += borde
+                item += " " * 2
+                item += "║"
+                print(item)
+    sys.stdout.write("╚")
+    sys.stdout.write(12 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(41 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(21 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(21 * "═")
+    sys.stdout.write("╝\n")
 
 # SECCIÓN DE DETALLES ESTÉTICOS # (Final)
 
@@ -399,22 +461,6 @@ def Bs_Sec_R(arreglo, valor):
     else:
         return -1
 
-
-def Validacion(desde, hasta):
-    while True:
-        try:
-            numero = int(
-                input(f"Por favor ingresa una opción, número entre {desde} y {hasta}: ")
-            )
-            if desde <= numero <= hasta:
-                return numero
-            else:
-                print(
-                    f"El número debe estar entre {desde} y {hasta}. Inténtalo de nuevo."
-                )
-        except ValueError:
-            print("¡Eso no es un número válido! Inténtalo de nuevo.")
-
 def Bs_pro(valor):
     M = os.path.getsize(AFP)
     pos = 0
@@ -427,7 +473,40 @@ def Bs_pro(valor):
         return pos
     else:
         return -1
-    
+
+
+def Validacion(desde, hasta, mensaje):
+    while True:
+        try:
+            numero = int(
+                input(f"{mensaje}, número entre {desde} y {hasta}: ")
+            )
+            if desde <= numero <= hasta:
+                return numero
+            else:
+                print(
+                    f"El número debe estar entre {desde} y {hasta}. Inténtalo de nuevo."
+                )
+        except ValueError:
+            print("¡Eso no es un número válido! Inténtalo de nuevo.")
+
+
+def Validacion_fecha():
+    while True:
+        try:
+            fecha_str = input("Por favor ingresa una fecha en el formato YYYY-MM-DD: ")
+            fecha_ingresada = datetime.datetime.strptime(fecha_str, "%Y-%m-%d").date()
+            
+            fecha_actual = datetime.datetime.now().date()
+            
+            if fecha_ingresada >= fecha_actual:
+                return fecha_ingresada
+            else:
+                print("La fecha ingresada debe ser mayor o igual a la fecha actual. Inténtalo de nuevo.")
+        except ValueError:
+            print("¡Eso no es una fecha válida en el formato correcto (YYYY-MM-DD)! Inténtalo de nuevo.")
+
+
 # SECCIÓN DE BUSQUEDAS, ORDENAMIENTOS Y OTRAS FUNCIONES# (Final)
 
 """"""
@@ -479,11 +558,11 @@ def mostrar_menu():
     else:
         print(
             """\033[1;36m---------------Menu principal Cliente---------------\033[0;m
-    1. Registrarme
-    2. Buscar descuentos en locales
-    3. Solicitar descuento
-    4. Ver novedades
-    0. Salir"""
+    1. Buscar descuentos en local
+    2. Solicitar descuento
+    3. Ver novedades
+    0. Salir
+    """
         )
 
 
@@ -638,9 +717,6 @@ def Admin():
                     print("Diagramado en chapin")
                 case 5:
                     Reporte()
-
-def Reporte():
-    print("a")
 
 def Aprobar():
     global R_Pro
@@ -817,7 +893,7 @@ def gestion_de_locales():
                 decision = "z"
     else:
         print("No hay dueños de locales cargados hasta el momento.")
-        
+
 def Crear_Locales():
     verificacion = -2
     nombre = input(
@@ -1241,7 +1317,6 @@ def Eliminar_Locales():
                 "Ingrese el codigo del local que desea eliminar(si no desea eliminar ninguno ingrese 0): "
             )
 
-
 def Mapa_Locales():
     os.system("cls")
     print(
@@ -1267,6 +1342,9 @@ def Mapa_Locales():
                 Codigo = 0
             sys.stdout.write(f" |   {Codigo}   ")
         print(" |  \n +--------+--------+--------+--------+--------+")
+
+def Reporte():
+    print("a")
 
 
 # SECCIÓN ADMINISTRADOR CON TODAS SUS SUB-SECCIONES # (Final)
@@ -1372,7 +1450,7 @@ def Crear_Descuentos():
                                 R_Loc = pickle.load(ALL)
                         except:
                             while parar:
-                                loc = input(f"Ingrese el numero de su local teniendo en cuenta que el ultimo codigo de local es {R_Loc.CodLocal} (Ingrese 0 para salir)")
+                                loc = input(f"Ingrese el numero de su local teniendo en cuenta que el ultimo codigo de local es {R_Loc.CodLocal} (Ingrese 0 para salir): ")
                                 if loc == "0":
                                     parar = False
                                 else:
@@ -1445,8 +1523,51 @@ def Ver_Nov():
 
 
 def Clientes():
-    print("C")
+  global eleccion 
+  eleccion = -1 
+  while eleccion >= -1 and eleccion <= 3:
+      separador()
+      mostrar_menu()
+      eleccion = Validacion(0,3,"Ingrese una opción")
+      match eleccion:
+          case 0:
+              eleccion = -2
+          case 1: 
+              Bus_Desc()
+          case 2:
+              Solic_Desc()
+          case 3:
+              print("Esta sección esta diagramada en chapin")
 
+def Bus_Desc():
+  if os.path.getsize(AFP) != 0:
+    ALL.seek(0,0)
+    R_Loc = pickle.load(ALL)
+    T_R = ALL.tell()
+    Cant_R = os.path.getsize(AFL)//T_R
+    Cod_local = Validacion(0,Cant_R,"Ingrese un código de local")
+    Fecha = Validacion_fecha()
+    Exhibicion_Clientes(Cod_local,Fecha)
+  else:
+    print("Aún no hay ninguna promoción cargada.")
+
+def Solic_Desc():
+  if os.path.getsize(AFP) != 0:
+    ALP.seek(0,0)
+    R_Pro = pickle.load(ALP)
+    T_R = ALP.tell()
+    Tam = os.path.getsize(AFP)
+    Cant_R = Tam//T_R
+    Cod_pro = Validacion(0,Cant_R,"Ingrese el código de la promoción que desea usar: ")
+    Fecha = datetime.datetime.now().date()
+    Pos = Bs_pro(Cod_pro)
+    ALP.seek(Pos, 0)
+    R_Pro = pickle.load(ALP)
+    if R_Pro.CodPromo == Cod_pro and R_Pro.Estado == "aprobada" and R_Pro.FechaDesdePromo <= Fecha and R_Pro.FechaHastaPromo >= Fecha:
+      if R_Pro.DiaSemana[Fecha.weekday()] == 1:
+          print("")#Guardar los datos cuando se solicita un desc
+  else:
+    print("Aún no hay ninguna promoción cargada.")
 
 
 # SECCION  CLIENTES CON TODAS SUS SUB-SECCIONES # (Final)
@@ -1502,7 +1623,7 @@ if os.path.getsize(AFU) == 0:
 
 os.system("cls")
 Menu_principal()
-Eleccion = Validacion(1, 3)
+Eleccion = Validacion(1, 3,"Ingrese una opción")
 while Eleccion != 3:
     if Eleccion == 1:
         pedirusuario()
@@ -1536,4 +1657,4 @@ while Eleccion != 3:
         bandera = -1
     os.system("cls")
     Menu_principal()
-    Eleccion = Validacion(1, 3)
+    Eleccion = Validacion(1, 3,"Ingrese una opción")
