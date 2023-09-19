@@ -71,6 +71,7 @@ cl3.Nom = "comida".ljust(12," ")
 cl3.Ca = 0
 Rubros[2] = cl3
 
+
 """"""
 """"""
 """"""
@@ -895,6 +896,10 @@ def gestion_de_locales():
         print("No hay dueños de locales cargados hasta el momento.")
 
 def Crear_Locales():
+    #Auxiliares para guardar cantidades
+    guard_cant0 = 0 
+    guard_cant1 = 0
+    guard_cant2 = 0
     verificacion = -2
     nombre = input(
         "Ingrese el nombre del local (si no quiere crear locales ingrese 0): "
@@ -951,7 +956,7 @@ def Crear_Locales():
                     "Ingrese el tipo de rubro del local (perfumería, comida o indumentaria): "
                 )
                 rubro = rubro.lower()
-            if rubro == "perfumeria":
+            if rubro == "perfumeria" or rubro == "perfumería":
                 Rubros[0].Ca = Rubros[0].Ca + 1
             elif rubro == "indumentaria":
                 Rubros[1].Ca = Rubros[1].Ca + 1
@@ -1011,6 +1016,10 @@ def Crear_Locales():
                 "Ingrese el nombre del local (si no quiere crear locales ingrese 0): "
             )
             nombre = nombre.lower()
+    
+    guard_cant0  = Rubros[0].Ca
+    guard_cant1 = Rubros[1].Ca
+    guard_cant2  = Rubros[2].Ca
 
     os.system("cls")
     # Ordenando array de rubros y cantidades (de mayor a menor)
@@ -1025,6 +1034,7 @@ def Crear_Locales():
                 aux1 = Rubros[i].Nom.ljust(12," ")
                 Rubros[i].Nom = Rubros[j].Nom.ljust(12," ")
                 Rubros[j].Nom = aux1
+    os.system("cls")
     borde = "║"
     label1 = "║    Rubro   "
     label1 += borde
@@ -1054,6 +1064,13 @@ def Crear_Locales():
     sys.stdout.write("╩")
     sys.stdout.write(19 * "═")
     sys.stdout.write("╝\n")
+
+    Rubros[0].Nom = "perfumeria".ljust(12," ")
+    Rubros[1].Nom = "indumentaria".ljust(12," ")    
+    Rubros[2].Nom = "comida".ljust(12," ")
+    Rubros[0].Ca = guard_cant0
+    Rubros[1].Ca = guard_cant1
+    Rubros[2].Ca = guard_cant2
 
 def Modificar_Locales():
     # Procedimiento para la modificación de un local:
