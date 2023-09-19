@@ -494,7 +494,7 @@ def Validacion(desde, hasta, mensaje):
 
 
 def Validacion_fecha():
-    while True:
+    while True: #NO SE PUEDE PONER TRUE, HAY QUE USAR BANDERAS
         try:
             fecha_str = input("Por favor ingresa una fecha en el formato YYYY-MM-DD: ")
             fecha_ingresada = datetime.datetime.strptime(fecha_str, "%Y-%m-%d").date()
@@ -517,7 +517,7 @@ def Validacion_fecha_Desde():
             
             fecha_actual = datetime.datetime.now().date()
             
-            if fecha_ingresada <= fecha_actual:
+            if fecha_ingresada >= fecha_actual:
                 return fecha_ingresada
             else:
                 print("La fecha ingresada debe ser mayor o igual a la fecha actual. Inténtalo de nuevo.")
@@ -740,42 +740,40 @@ def Admin():
                     Reporte()
 
 def Aprobar():
-    global R_Pro
     #FALTA MOSSTRAR LOS DATOS DE CADA PROMOCION EL CODIGO DE SU LOCAL Y EL NOMBRE DEL MISMO
-    try:
+    #try:
         band = True
         ALP.seek(0,0)
-        aux_p = pickle.load(ALP)
+        R_Pro = pickle.load(ALP)
+        TR = ALP.tell()
         T = os.path.getsize(AFP)
-        try:
-            while ALP.tell() <= T:
-                aux_p = pickle.load(ALP)
-        except:
-            ALP.seek(0,0)
-            for i in range(0, aux_p.CodPromo):  
-                aux_p = pickle.load(ALP)
-                if aux_p.Estado == "pendiente":
-                    print(aux_p.CodPromo, aux_p.TextoPromo, aux_p.FechaDesdePromo, aux_p.FechaHastaPromo, aux_p.DiaSemana, aux_p.Estado, aux_p.CodLocal)
+        C_RP = round(T/TR)
+        ALP.seek(0,0)
+        while ALP.tell() < T :  
+                R_Pro = pickle.load(ALP)
+                if R_Pro.Estado == "pendiente":
+                    print(R_Pro.CodPromo, R_Pro.TextoPromo, R_Pro.FechaDesdePromo, R_Pro.FechaHastaPromo, R_Pro.DiaSemana, R_Pro.Estado, R_Pro.CodLocal)
                 else:
                     print("No hay promos pendientes")
                     
 
-            while band:
-                rta = input("Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir): ")
-                if rta == "0":
+        while band:
+                rta = Validacion(0, C_RP,"Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir)" )
+                if rta == 0:
                     band = False
                 else:
-                    rta = int(rta)
                     pos = Bs_pro(rta)
                     ALP.seek(pos,0)
-                    R_Pro = pickle.load(ALP)
+                    #aux = pickle.load(ALP)
                     print("Se ha logrado encontrar la promo")
                     elec = input("Ingrese `Aprobar` o `Denegar` para acetpar o rechazar la promocion (Ingrese 0 si desea salir): ")
                     if elec.lower() == "aprobar":
+                        ALP.seek(pos,0)
                         R_Pro.Estado = "aprobada"
                         pickle.dump(R_Pro, ALP)
                         ALP.flush()
                     elif elec.lower() == "denegar":
+                        ALP.seek(pos,0)
                         R_Pro.Estado = "rechazada"
                         pickle.dump(R_Pro,ALP)
                         ALP.flush()
@@ -784,8 +782,8 @@ def Aprobar():
                     else:
                         print("No existe esa opcion")
         
-    except:       
-        print("No se han encontrado promos por el momento")     
+    #except:       
+    #    print("No se han encontrado promos por el momento")     
 
 def Crear_D():
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
