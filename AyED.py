@@ -27,11 +27,11 @@ class Locales:
 class Promociones:
     def __init__(self) -> None:
         self.CodPromo = 0
-        self.TextoPromo = " ".ljust(200, " ")
+        self.TextoPromo = "".ljust(200, " ")
         self.FechaDesdePromo = ""
         self.FechaHastaPromo = ""
         self.DiaSemana = [0] * 7
-        self.Estado = " ".ljust(10, " ")
+        self.Estado = "".ljust(10, " ")
         self.CodLocal = 0
 
 
@@ -189,20 +189,19 @@ def Exhibicion_Prom():
         borde = "║"
         label = "║Codigo Promo"
         label += borde
+        label += " " * 15
         label += "Texto Promo"
-        label += " " * 3
+        label += " " * 15
         label += borde
-        label += " " * 8
-        label += "Fecha Desde Promo"
+        label += " " * 5
+        label += "Fecha Desde"
         label += " " * 5
         label += borde
         label += " " * 5
-        label += "Fecha Hasta Promo"
-        label += " " * 8
+        label += "Fecha Hasta"
+        label += " " * 5
         label += borde
-        label += " " * 8
         label += "Dia Semana"
-        label += " " * 4
         label += borde
         label += " " * 4
         label += "Estado"
@@ -281,8 +280,70 @@ def Exhibicion_Prom():
         sys.stdout.write(10 * "═")
         sys.stdout.write("╝\n")
     else:
-        print("Aun no hay ningún local cargado")
+        print("Aun no hay ninguna promoción cargada")
 
+def Exhibicion_Clientes_Desc():
+    borde = "║"
+    label = "║Codigo Promo"
+    label += borde
+    label += " " * 15
+    label += "Texto Promo"
+    label += " " * 15
+    label += borde
+    label += " " * 5
+    label += "Fecha Desde"
+    label += " " * 5
+    label += borde
+    label += " " * 5
+    label += "Fecha Hasta"
+    label += " " * 5
+    label += borde
+    sys.stdout.write("╔")
+    sys.stdout.write(12 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(41 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(21 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(21 * "═")
+    sys.stdout.write("╗\n")
+    print(label)
+    ALP.seek(0,0)
+    while ALP.tell() < os.path.getsize(AFP):
+        R_Pro = pickle.load(ALP)
+        if R_Pro.Estado.strip() == "aprobada" and R_Pro.FechaDesdePromo <= datetime.date.today() and R_Pro.FechaHastaPromo >= datetime.date.today():
+          if R_Pro.DiaSemana[datetime.date.today().weekday()] == 1:
+                sys.stdout.write("╠")
+                sys.stdout.write(12 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(41 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(21 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(21 * "═")
+                sys.stdout.write("╣\n")
+                item = ""
+                item += "║"
+                item += str(R_Pro.CodPromo).center(12)
+                item += borde
+                item += R_Pro.TextoPromo.strip().center(41)
+                item += borde
+                item += str(R_Pro.FechaDesdePromo).center(21)
+                item += borde
+                item += str(R_Pro.FechaHastaPromo).center(21)
+                item += borde
+                item += " " * 2
+                item += "║"
+                print(item)
+    sys.stdout.write("╚")
+    sys.stdout.write(12 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(41 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(21 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(21 * "═")
+    sys.stdout.write("╝\n")
 
 def Exhibicion_Clientes(Cod_local, Fecha):
     borde = "║"
@@ -313,7 +374,7 @@ def Exhibicion_Clientes(Cod_local, Fecha):
     ALP.seek(0,0)
     while ALP.tell() < os.path.getsize(AFP):
         R_Pro = pickle.load(ALP)
-        if R_Pro.CodLocal == Cod_local and R_Pro.Estado == "aprobada" and R_Pro.FechaDesdePromo <= Fecha and R_Pro.FechaHastaPromo >= Fecha:
+        if R_Pro.CodLocal == Cod_local and R_Pro.Estado.strip() == "aprobada" and R_Pro.FechaDesdePromo <= Fecha and R_Pro.FechaHastaPromo >= Fecha:
           if R_Pro.DiaSemana[Fecha.weekday()] == 1:
                 sys.stdout.write("╠")
                 sys.stdout.write(12 * "═")
@@ -469,13 +530,25 @@ def Bs_pro(valor):
     ALP.seek(0, 0)
     R_Pro = pickle.load(ALP)
     while ALP.tell() < M and R_Pro.CodPromo != valor:
-        pos = ALL.tell()
+        pos = ALP.tell()
         R_Pro = pickle.load(ALP)
     if R_Pro.CodPromo == valor:
         return pos
     else:
         return -1
 
+def Bs_pro_Estado(valor):
+    M = os.path.getsize(AFP)
+    pos = 0
+    ALP.seek(0, 0)
+    R_Pro = pickle.load(ALP)
+    while ALP.tell() < M and R_Pro.Estado != valor:
+        pos = ALP.tell()
+        R_Pro = pickle.load(ALP)
+    if R_Pro.Estado == valor:
+        return pos
+    else:
+        return -1
 
 def Validacion(desde, hasta, mensaje):
     while True:
@@ -488,6 +561,36 @@ def Validacion(desde, hasta, mensaje):
             else:
                 print(
                     f"El número debe estar entre {desde} y {hasta}. Inténtalo de nuevo."
+                )
+        except ValueError:
+            print("¡Eso no es un número válido! Inténtalo de nuevo.")
+
+def Validacion_Clientes(desde, hasta, mensaje):
+    while True:
+        try:
+            numero = int(
+                input(f"{mensaje}, hay {hasta} locales: ")
+            )
+            if desde <= numero <= hasta:
+                return numero
+            else:
+                print(
+                    f"El número debe estar entre {desde} y {hasta}. Inténtalo de nuevo."
+                )
+        except ValueError:
+            print("¡Eso no es un número válido! Inténtalo de nuevo.")
+
+def Validacion_Promos(desde, hasta, mensaje):
+    while True:
+        try:
+            numero = int(
+                input(f"{mensaje}")
+            )
+            if desde <= numero <= hasta:
+                return numero
+            else:
+                print(
+                    f"No es un numero valido, inténtalo de nuevo..."
                 )
         except ValueError:
             print("¡Eso no es un número válido! Inténtalo de nuevo.")
@@ -740,51 +843,47 @@ def Admin():
                     Reporte()
 
 def Aprobar():
-    #FALTA MOSSTRAR LOS DATOS DE CADA PROMOCION EL CODIGO DE SU LOCAL Y EL NOMBRE DEL MISMO
-    #try:
-        band = True
+    cond = Bs_pro_Estado("pendiente".ljust(10," "))
+    if cond != -1:
         ALP.seek(0,0)
         R_Pro = pickle.load(ALP)
         TR = ALP.tell()
         T = os.path.getsize(AFP)
-        C_RP = round(T/TR)
+        C_RL = T//TR
         ALP.seek(0,0)
+        print("Promociones pendientes...")
         while ALP.tell() < T :  
-                R_Pro = pickle.load(ALP)
-                if R_Pro.Estado == "pendiente":
-                    print(R_Pro.CodPromo, R_Pro.TextoPromo, R_Pro.FechaDesdePromo, R_Pro.FechaHastaPromo, R_Pro.DiaSemana, R_Pro.Estado, R_Pro.CodLocal)
-                else:
-                    print("No hay promos pendientes")
-                    
+            R_Pro = pickle.load(ALP)
+            if R_Pro.Estado.strip() == "pendiente":
+                print(R_Pro.CodPromo, R_Pro.TextoPromo.strip(), R_Pro.FechaDesdePromo, R_Pro.FechaHastaPromo, R_Pro.DiaSemana, R_Pro.Estado.strip(), R_Pro.CodLocal)
 
-        while band:
-                rta = Validacion(0, C_RP,"Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir)" )
-                if rta == 0:
-                    band = False
-                else:
-                    pos = Bs_pro(rta)
+        rta = Validacion_Promos(0,C_RL,"Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir): " )
+        while rta != 0:
+            pos = Bs_pro(rta)
+            ALP.seek(pos,0)
+            R_Pro = pickle.load(ALP)
+            if R_Pro.Estado.strip() == "pendiente":
+                elec = input("Ingrese `Aprobar` o `Denegar` para aceptar o rechazar la promocion (Ingrese 0 si desea salir): ")
+                while elec != "aprobar".lower() and elec != "Denegar".lower() and elec != "0":
+                    separador()
+                    print("Usted ingreso un valor no aceptado, intente nuevamente...")
+                    elec = input("Ingrese `Aprobar` o `Denegar` para aceptar o rechazar la promocion (Ingrese 0 si desea salir): ")
+                if elec.lower() == "aprobar":
                     ALP.seek(pos,0)
-                    #aux = pickle.load(ALP)
-                    print("Se ha logrado encontrar la promo")
-                    elec = input("Ingrese `Aprobar` o `Denegar` para acetpar o rechazar la promocion (Ingrese 0 si desea salir): ")
-                    if elec.lower() == "aprobar":
-                        ALP.seek(pos,0)
-                        R_Pro.Estado = "aprobada"
-                        pickle.dump(R_Pro, ALP)
-                        ALP.flush()
-                    elif elec.lower() == "denegar":
-                        ALP.seek(pos,0)
-                        R_Pro.Estado = "rechazada"
-                        pickle.dump(R_Pro,ALP)
-                        ALP.flush()
-                    elif elec == "0":
-                        band = False
-                    else:
-                        print("No existe esa opcion")
-        
-    #except:       
-    #    print("No se han encontrado promos por el momento")     
-
+                    R_Pro.Estado = "aprobada".ljust(10," ")
+                    pickle.dump(R_Pro, ALP)
+                    ALP.flush()
+                elif elec.lower() == "denegar":
+                    ALP.seek(pos,0)
+                    R_Pro.Estado = "rechazada".ljust(10," ")
+                    pickle.dump(R_Pro,ALP)
+                    ALP.flush()      
+            else:
+                print("La promoción no se encuentra en estado pendiente")
+            rta = Validacion_Promos(0,C_RL,"Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir): " )
+    else:
+        print("No hay promociones en estado pendiente")
+    
 def Crear_D():
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
     pos = Bs_Usu(R_Usu.NombreUsuario)
@@ -1479,7 +1578,7 @@ def Crear_Descuentos():
                 Cod_ant = 0
       ALP.seek(0, 2)
       R_Pro.CodPromo = Cod_ant + 1
-      R_Pro.TextoPromo = input("Ingrese la descripción de la promoción(Max 30 caracteres): ") #Máximo ideal 200, 30 es lo conveniente para mostrarlo en cuadro
+      R_Pro.TextoPromo = input("Ingrese la descripción de la promoción(Max 30 caracteres): ").ljust(200," ") #Máximo ideal 200, 30 es lo conveniente para mostrarlo en cuadro
       while len(R_Pro.TextoPromo.strip()) > 30:
         print("Usted ingreso una descripción muy larga... ")
         separador()
@@ -1493,7 +1592,7 @@ def Crear_Descuentos():
       print("Ingrese los días de semana en los cuales la promoción es válida con 1, si no ingrese 0: ")
       for i in range(0,7):
         R_Pro.DiaSemana[i] = Validacion(0,1,f"Día de la semana {i}: ")
-      R_Pro.Estado = "pendiente"
+      R_Pro.Estado = "pendiente".ljust(10," ")
       R_Pro.CodLocal = Cod_Loc
       pickle.dump(R_Pro, ALP)
       ALP.flush()
@@ -1545,27 +1644,41 @@ def Bus_Desc():
     R_Loc = pickle.load(ALL)
     T_R = ALL.tell()
     Cant_R = os.path.getsize(AFL)//T_R
-    Cod_local = Validacion(0,Cant_R,"Ingrese un código de local")
+    Exhibicion()
+    Cod_local = Validacion_Clientes(0,Cant_R,"Ingrese un código de local")
     Fecha = Validacion_fecha()
     Exhibicion_Clientes(Cod_local,Fecha)
   else:
     print("Aún no hay ninguna promoción cargada.")
 
 def Solic_Desc():
+  global User_g
   if os.path.getsize(AFP) != 0:
     ALP.seek(0,0)
     R_Pro = pickle.load(ALP)
     T_R = ALP.tell()
     Tam = os.path.getsize(AFP)
     Cant_R = Tam//T_R
+    Exhibicion_Clientes_Desc()
     Cod_pro = Validacion(0,Cant_R,"Ingrese el código de la promoción que desea usar: ")
     Fecha = datetime.datetime.now().date()
     Pos = Bs_pro(Cod_pro)
     ALP.seek(Pos, 0)
     R_Pro = pickle.load(ALP)
-    if R_Pro.CodPromo == Cod_pro and R_Pro.Estado == "aprobada" and R_Pro.FechaDesdePromo <= Fecha and R_Pro.FechaHastaPromo >= Fecha:
+    if R_Pro.CodPromo == Cod_pro and R_Pro.Estado.strip() == "aprobada" and R_Pro.FechaDesdePromo <= Fecha and R_Pro.FechaHastaPromo >= Fecha:
       if R_Pro.DiaSemana[Fecha.weekday()] == 1:
-          print("")#Guardar los datos cuando se solicita un desc
+            pos = Bs_Usu(User_g)
+            ALU.seek(pos, 0)
+            R_Usu = pickle.load(ALU)
+            R_Uso_Pro.CodCliente = R_Usu.CodUsuario
+            R_Uso_Pro.CodPromo = Cod_pro
+            R_Uso_Pro.FechaUsoPromo = Fecha 
+            ALUP.seek(0,2)
+            pickle.dump(R_Uso_Pro,ALUP)
+            ALUP.flush()
+            print("Promoción utilizada correctamente")
+      else:
+          print("La promoción no esta activa este dia")
   else:
     print("Aún no hay ninguna promoción cargada.")
 
