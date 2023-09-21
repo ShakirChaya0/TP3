@@ -936,7 +936,7 @@ def Admin():
                 case 4:
                     print("Diagramado en chapin")
                 case 5:
-                    Reporte()
+                    Reporte_A()
 
 def Aprobar():
     cond = Bs_pro_Estado("pendiente".ljust(10," "))
@@ -1573,8 +1573,45 @@ def Mapa_Locales():
             sys.stdout.write(f" |   {Codigo}   ")
         print(" |  \n +--------+--------+--------+--------+--------+")
 
-def Reporte():
-    print("a")
+def Reporte_A():
+    ALL.seek(0,0)
+    ALU.seek(0,0)
+    ALP.seek(0,0)
+    TL = os.path.getsize(AFL)
+    aux_l = pickle.load(ALL)
+    pos_L = ALL.tell()
+    C_R = round(TL/pos_L)
+    TP = os.path.getsize(AFP)
+    Aux = pickle.load(ALP)
+    pos_P = ALP.tell()
+    C_RP = round(TP/pos_P)
+    T = os.path.getsize(AFU)
+    aux = pickle.load(ALU)
+    pos = ALU.tell()
+    C_RU = round(T/pos)
+    ALU.seek(0,0)
+    if TP != 0:
+        while ALU.tell() < T:
+            R_Usu = pickle.load(ALU)
+            ALL.seek(0,0)
+            for i in range(0,C_R):
+                R_Loc = pickle.load(ALL)
+                if R_Usu.CodUsuario == R_Loc.CodUsuario:
+                    ALP.seek(0,0)
+                    for j in range(0, C_RP):
+                        R_Pro = pickle.load(ALP)
+                        if R_Pro.CodLocal == R_Loc.CodLocal and R_Pro.Estado.strip() == "aprobada":
+                            separador()
+                            print(f"El dueño: {R_Usu.NombreUsuario.strip()}, Tiene las siguientes promos en el codigo de local {R_Loc.CodLocal}")
+                            print(f"La promo es: {R_Pro.TextoPromo.strip()}, los dias disponibles son: {R_Pro.DiaSemana}")
+                        
+        input("")                  
+                
+                #FALTA PONERLA DE FORMA AESTETHIC
+            
+    else:
+        print("No hay promociones disponibles")
+        
 
 
 # SECCIÓN ADMINISTRADOR CON TODAS SUS SUB-SECCIONES # (Final)
