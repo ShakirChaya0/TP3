@@ -1601,9 +1601,11 @@ def Reporte_A():
                     for j in range(0, C_RP):
                         R_Pro = pickle.load(ALP)
                         if R_Pro.CodLocal == R_Loc.CodLocal and R_Pro.Estado.strip() == "aprobada":
+                            Usos = Conteo_Usos(R_Pro.CodPromo)
                             separador()
                             print(f"El dueño: {R_Usu.NombreUsuario.strip()}, Tiene las siguientes promos en el codigo de local {R_Loc.CodLocal}")
                             print(f"La promo es: {R_Pro.TextoPromo.strip()}, los dias disponibles son: {R_Pro.DiaSemana}")
+                            print(f"Se uso una cantidad de {Usos}")
                         
         input("")                  
                 
