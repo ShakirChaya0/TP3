@@ -177,7 +177,6 @@ def Exhibicion():
     else:
         print("Aun no hay ningún local cargado")
 
-
 def Exhibicion_Prom():
     if os.path.getsize(AFP) != 0:
         ALP.seek(0, 0)
@@ -259,7 +258,6 @@ def Exhibicion_Prom():
             item += R_Pro.Estado.center(14)
             item += borde
             item += str(R_Pro.CodLocal).center(8)
-            item += " " * 2
             item += "║"
             i += 1
             ALP.seek((i * T_RP) + 20 , 0)
@@ -331,8 +329,6 @@ def Exhibicion_Clientes_Desc():
                 item += str(R_Pro.FechaDesdePromo).center(21)
                 item += borde
                 item += str(R_Pro.FechaHastaPromo).center(21)
-                item += borde
-                item += " " * 2
                 item += "║"
                 print(item)
     sys.stdout.write("╚")
@@ -394,8 +390,6 @@ def Exhibicion_Clientes(Cod_local, Fecha):
                 item += str(R_Pro.FechaDesdePromo).center(21)
                 item += borde
                 item += str(R_Pro.FechaHastaPromo).center(21)
-                item += borde
-                item += " " * 2
                 item += "║"
                 print(item)
     sys.stdout.write("╚")
@@ -407,6 +401,87 @@ def Exhibicion_Clientes(Cod_local, Fecha):
     sys.stdout.write("╩")
     sys.stdout.write(21 * "═")
     sys.stdout.write("╝\n")
+
+def Exhibicion_Reportes(Fecha_d,Fecha_h, Cod):
+    borde = "║"
+    label = "║Codigo Promo"
+    label += borde
+    label += " " * 15
+    label += "Texto Promo"
+    label += " " * 15
+    label += borde
+    label += " " * 5
+    label += "Fecha Desde"
+    label += " " * 5
+    label += borde
+    label += " " * 5
+    label += "Fecha Hasta"
+    label += " " * 5
+    label += borde
+    label += "Cantidad de Usos"
+    label += borde
+    sys.stdout.write("╔")
+    sys.stdout.write(12 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(41 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(21 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(21 * "═")
+    sys.stdout.write("╦")
+    sys.stdout.write(16 * "═")
+    sys.stdout.write("╗\n")
+    print(label)
+    ALP.seek(0,0)
+    while ALP.tell() < os.path.getsize(AFP):
+        R_Pro = pickle.load(ALP)
+        if R_Pro.Estado.strip() == "aprobada" and Fecha_d <= R_Pro.FechaDesdePromo and Fecha_h >= R_Pro.FechaHastaPromo and Cod == R_Pro.CodLocal: 
+            sys.stdout.write("╠")
+            sys.stdout.write(12 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(41 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(21 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(21 * "═")
+            sys.stdout.write("╬")
+            sys.stdout.write(16 * "═")
+            sys.stdout.write("╣\n")
+            item = "║"
+            item += str(R_Pro.CodPromo).center(12)
+            item += borde
+            item += R_Pro.TextoPromo.strip().center(41)
+            item += borde
+            item += str(R_Pro.FechaDesdePromo).center(21)
+            item += borde
+            item += str(R_Pro.FechaHastaPromo).center(21)
+            item += borde
+            item += str(Conteo_Usos(R_Pro.CodPromo)).center(16)
+            item += "║"
+            print(item)
+    sys.stdout.write("╚")
+    sys.stdout.write(12 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(41 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(21 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(21 * "═")
+    sys.stdout.write("╩")
+    sys.stdout.write(16 * "═")
+    sys.stdout.write("╝\n")
+
+def Conteo_Usos(X):
+    if os.path.getsize(AFUP) != 0:
+        cont = 0
+        ALUP.seek(0,0)
+        while ALUP.tell() < os.path.getsize(AFUP):
+            R_Uso_Pro = pickle.load(ALUP)
+            if R_Uso_Pro.CodPromo == X:
+                cont = cont + 1
+        return cont
+    else:
+        return 0
 
 # SECCIÓN DE DETALLES ESTÉTICOS # (Final)
 
@@ -595,7 +670,6 @@ def Validacion_Promos(desde, hasta, mensaje):
         except ValueError:
             print("¡Eso no es un número válido! Inténtalo de nuevo.")
 
-
 def Validacion_fecha():
     while True: #NO SE PUEDE PONER TRUE, HAY QUE USAR BANDERAS
         try:
@@ -608,6 +682,28 @@ def Validacion_fecha():
                 return fecha_ingresada
             else:
                 print("La fecha ingresada debe ser mayor o igual a la fecha actual. Inténtalo de nuevo.")
+        except ValueError:
+            print("¡Eso no es una fecha válida en el formato correcto (YYYY-MM-DD)! Inténtalo de nuevo.")
+
+def Validacion_RangoI_Reporte():
+    while True: 
+        try:
+            fecha_str = input("Por favor ingresa la fecha de inicio en el formato YYYY-MM-DD: ")
+            fecha_ingresada = datetime.datetime.strptime(fecha_str, "%Y-%m-%d").date()
+            return fecha_ingresada  
+        except ValueError:
+            print("¡Eso no es una fecha válida en el formato correcto (YYYY-MM-DD)! Inténtalo de nuevo.")
+
+def Validacion_RangoF_Reporte(X):
+    while True: 
+        try:
+            fecha_str = input("Por favor ingresa la fecha de fin en el formato YYYY-MM-DD: ")
+            fecha_ingresada = datetime.datetime.strptime(fecha_str, "%Y-%m-%d").date()
+            
+            if fecha_ingresada >= X:
+                return fecha_ingresada
+            else:
+                print("La fecha ingresada debe ser mayor o igual a la fecha de inicio. Inténtalo de nuevo.")
         except ValueError:
             print("¡Eso no es una fecha válida en el formato correcto (YYYY-MM-DD)! Inténtalo de nuevo.")
 
@@ -1524,7 +1620,7 @@ def DueñoDelocales():
                     Crear_Descuentos()
                     eleccion = -1
                 case 2:
-                    Crear_D()
+                    Reporte()
                 case 3:
                     Aprobar()
 
@@ -1555,54 +1651,75 @@ def Crear_Descuentos():
       T_R = ALL.tell()
       Cant_R = os.path.getsize(AFL) // T_R
       Exhibicion()
+      print("Aviso: Ingrese 0 si desea salir")
       Cod_Loc = Validacion(0, Cant_R,"Ingrese el código del local al que le quiere asignar una promoción")
-      pos = Bs_Loc(Cod_Loc)
-      ALL.seek(pos, 0)
-      R_Loc = pickle.load(ALL)
-      while R_Usu.CodUsuario != R_Loc.CodUsuario:
-        os.system("cls")
-        print("El local no pertenece a este dueño.")
-        separador()
-        Cod_Loc = Validacion(0, Cant_R,"Ingrese el código del local al que le quiere asignar una promoción")
-        pos = Bs_Loc(Cod_Loc)
-        ALL.seek(pos, 0)
-        R_Loc = pickle.load(ALL)
-      if os.path.getsize(AFP) > 0:
-                ALP.seek(0, 0)
-                Aux_I = pickle.load(ALP)
-                T_AP = os.path.getsize(AFP)
-                T_aux = ALP.tell()
-                C_RP = round(T_AP / T_aux)
-                Cod_ant = C_RP
-      else:
-                Cod_ant = 0
-      ALP.seek(0, 2)
-      R_Pro.CodPromo = Cod_ant + 1
-      R_Pro.TextoPromo = input("Ingrese la descripción de la promoción(Max 30 caracteres): ").ljust(200," ") #Máximo ideal 200, 30 es lo conveniente para mostrarlo en cuadro
-      while len(R_Pro.TextoPromo.strip()) > 30:
-        print("Usted ingreso una descripción muy larga... ")
-        separador()
-        R_Pro.TextoPromo  = input("Ingrese la descripción de la promoción(Max 30 caracteres): ") #Máximo ideal 200, 30 es lo conveniente para mostrarlo en cuadro
-      R_Pro.FechaDesdePromo  = Validacion_fecha_Desde()
-      print("Por favor ingresa la fecha de fin de la promoción: ")
-      R_Pro.FechaHastaPromo = Validacion_fecha()
-      while R_Pro.FechaDesdePromo > R_Pro.FechaHastaPromo:
-          print("Por favor ingresa la fecha de fin de la promoción: ")
-          R_Pro.FechaHastaPromo = Validacion_fecha()
-      print("Ingrese los días de semana en los cuales la promoción es válida con 1, si no ingrese 0: ")
-      for i in range(0,7):
-        R_Pro.DiaSemana[i] = Validacion(0,1,f"Día de la semana {i}: ")
-      R_Pro.Estado = "pendiente".ljust(10," ")
-      R_Pro.CodLocal = Cod_Loc
-      pickle.dump(R_Pro, ALP)
-      ALP.flush()
+      if Cod_Loc != 0:
+            pos = Bs_Loc(Cod_Loc)
+            ALL.seek(pos, 0)
+            R_Loc = pickle.load(ALL)
+            while R_Usu.CodUsuario != R_Loc.CodUsuario:
+              os.system("cls")
+              print("El local no pertenece a este dueño.")
+              separador()
+              print("Aviso: Ingrese 0 si desea salir")
+              Cod_Loc = Validacion(0, Cant_R,"Ingrese el código del local al que le quiere asignar una promoción")
+              if Cod_Loc != 0:
+                  pos = Bs_Loc(Cod_Loc)
+                  ALL.seek(pos, 0)
+                  R_Loc = pickle.load(ALL)
+            if os.path.getsize(AFP) > 0:
+                      ALP.seek(0, 0)
+                      Aux_I = pickle.load(ALP)
+                      T_AP = os.path.getsize(AFP)
+                      T_aux = ALP.tell()
+                      C_RP = round(T_AP / T_aux)
+                      Cod_ant = C_RP
+            else:
+                      Cod_ant = 0
+            ALP.seek(0, 2)
+            R_Pro.CodPromo = Cod_ant + 1
+            R_Pro.TextoPromo = input("Ingrese la descripción de la promoción(Max 30 caracteres): ").ljust(200," ") #Máximo ideal 200, 30 es lo conveniente para mostrarlo en cuadro
+            while len(R_Pro.TextoPromo.strip()) > 30:
+              print("Usted ingreso una descripción muy larga... ")
+              separador()
+              R_Pro.TextoPromo  = input("Ingrese la descripción de la promoción(Max 30 caracteres): ") #Máximo ideal 200, 30 es lo conveniente para mostrarlo en cuadro
+            R_Pro.FechaDesdePromo  = Validacion_fecha_Desde()
+            print("Por favor ingresa la fecha de fin de la promoción: ")
+            R_Pro.FechaHastaPromo = Validacion_fecha()
+            while R_Pro.FechaDesdePromo > R_Pro.FechaHastaPromo:
+                print("Por favor ingresa la fecha de fin de la promoción: ")
+                R_Pro.FechaHastaPromo = Validacion_fecha()
+            print("Ingrese los días de semana en los cuales la promoción es válida con 1, si no ingrese 0: ")
+            for i in range(0,7):
+              R_Pro.DiaSemana[i] = Validacion(0,1,f"Día de la semana {i}: ")
+            R_Pro.Estado = "pendiente".ljust(10," ")
+            R_Pro.CodLocal = Cod_Loc
+            pickle.dump(R_Pro, ALP)
+            ALP.flush()
     else:
         print("Aun no hay, por ende no se pueden crear promociones. ")
 
 
 def Reporte():
-    print("Rep")
+   if os.path.getsize(AFP) != 0:
+        global User_g
+        pos = Bs_Usu(User_g)
+        ALU.seek(pos, 0)
+        R_Usu = pickle.load(ALU)
 
+        Fecha_d = Validacion_RangoI_Reporte()
+        Fecha_h = Validacion_RangoF_Reporte(Fecha_d)
+
+        os.system("cls")
+        print(f"Reporte de uso de descuentos del dueño: {R_Usu.NombreUsuario}")
+        print(f"Fecha desde: {Fecha_d}              Fecha hasta: {Fecha_h}")
+        ALL.seek(0,0)
+        while ALL.tell() < os.path.getsize(AFL):
+            R_Loc = pickle.load(ALL)
+            if R_Usu.CodUsuario == R_Loc.CodUsuario: 
+                print(f"Local {R_Loc.CodLocal}: {R_Loc.NombreLocal}")
+                Exhibicion_Reportes(Fecha_d,Fecha_h, R_Loc.CodLocal)
+                print("\n") 
 
 def Ver_Nov():
     print("Diagramado en chapin")
