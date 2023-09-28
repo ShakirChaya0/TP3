@@ -23,7 +23,6 @@ class Locales:
         self.CodUsuario = 0
         self.Estado = ""
 
-
 class Promociones:
     def __init__(self) -> None:
         self.CodPromo = 0
@@ -34,13 +33,11 @@ class Promociones:
         self.Estado = "".ljust(10, " ")
         self.CodLocal = 0
 
-
 class Uso_Promocion:
     def __init__(self) -> None:
         self.CodCliente = 0
         self.CodPromo = 0
         self.FechaUsoPromo = ""
-
 
 class Novedades:
     def __init__(self) -> None:
@@ -85,7 +82,6 @@ Rubros[2] = cl3
 
 def separador():
     print(70 * "-")
-
 
 def Exhibicion():
     if os.path.getsize(AFL) != 0:
@@ -760,9 +756,6 @@ def mostrar_menu():
       e) Volver"""
             )
 
-        elif eleccion == 4:
-            print("Diagramado en chapín, para volver al menu oprima la letra e")
-
     elif cod == "dueño de local":
         print(
             """\033[1;36m---------------Menu principal Dueños Locales---------------\033[0;m
@@ -906,14 +899,7 @@ def Admin():
         mostrar_menu()
         eleccion = input("Escoger la opción a la que desee acceder: ")
 
-        if (
-            eleccion != "1"
-            and eleccion != "2"
-            and eleccion != "3"
-            and eleccion != "4"
-            and eleccion != "5"
-            and eleccion != "0"
-        ):
+        if ( eleccion < "0" and eleccion > "5"):
             os.system("cls")
             print(
                 "La opción que has elegido es incorrecta, intentelo de nuevo ingresando un numero del 0 al 5."
@@ -927,16 +913,27 @@ def Admin():
                     print("\033[3;31mSaliendo del programa...\033[0;m")
                     eleccion = -2
                 case 1:
+                    os.system("cls")
                     gestion_de_locales()
+                    input("")
                     eleccion = -1
                 case 2:
+                    os.system("cls")
                     Crear_D()
+                    input("")
                 case 3:
+                    os.system("cls")
                     Aprobar()
+                    input("")
                 case 4:
+                    os.system("cls")
                     print("Diagramado en chapin")
+                    eleccion = -1
+                    input("")
                 case 5:
+                    os.system("cls")
                     Reporte_A()
+                    input("")
 
 def Aprobar():
     cond = Bs_pro_Estado("pendiente".ljust(10," "))
@@ -1591,6 +1588,8 @@ def Reporte_A():
     C_RU = round(T/pos)
     ALU.seek(0,0)
     if TP != 0:
+        print("Reporte de promociones:".center(70))
+        print("\n")
         while ALU.tell() < T:
             R_Usu = pickle.load(ALU)
             ALL.seek(0,0)
@@ -1602,18 +1601,33 @@ def Reporte_A():
                         R_Pro = pickle.load(ALP)
                         if R_Pro.CodLocal == R_Loc.CodLocal and R_Pro.Estado.strip() == "aprobada":
                             Usos = Conteo_Usos(R_Pro.CodPromo)
+                            print(f"El dueño: \033[0;31m{R_Usu.NombreUsuario.strip()}\033[0;m, Tiene las siguientes promos en el codigo de local {R_Loc.CodLocal}")
+                            print(f"Se uso una cantidad de {Usos} veces la promoción") 
+                            print(f"La promo es: \033[0;31m{R_Pro.TextoPromo.strip()}\033[0;m, los dias disponibles son:")
+                            Semana(R_Pro.DiaSemana)
+                            print("\n")
                             separador()
-                            print(f"El dueño: {R_Usu.NombreUsuario.strip()}, Tiene las siguientes promos en el codigo de local {R_Loc.CodLocal}")
-                            print(f"La promo es: {R_Pro.TextoPromo.strip()}, los dias disponibles son: {R_Pro.DiaSemana}")
-                            print(f"Se uso una cantidad de {Usos}")
-                        
-        input("")                  
-                
-                #FALTA PONERLA DE FORMA AESTETHIC
-            
     else:
         print("No hay promociones disponibles")
         
+def Semana(X):
+    for i in range(0,7):
+        if X[i] == 1:
+            if i == 0:
+                sys.stdout.write("Lunes ")
+            elif i == 1:
+                sys.stdout.write("Martes ")
+            elif i == 2:
+                sys.stdout.write("Miercoles ")
+            elif i == 3:
+                sys.stdout.write("Jueves ")
+            elif i == 4:
+                sys.stdout.write("Viernes ")
+            elif i == 5:
+                sys.stdout.write("Sabado ")
+            elif i == 6:
+                sys.stdout.write("Domingo ")
+
 
 
 # SECCIÓN ADMINISTRADOR CON TODAS SUS SUB-SECCIONES # (Final)
@@ -1788,24 +1802,30 @@ def Clientes():
           case 0:
               eleccion = -2
           case 1: 
+              os.system("cls")
               Bus_Desc()
+              input("")
           case 2:
+              os.system("cls")
               Solic_Desc()
+              input("")
           case 3:
+              os.system("cls")
               print("Esta sección esta diagramada en chapin")
+              input("")
 
 def Bus_Desc():
   if os.path.getsize(AFP) != 0:
-    ALL.seek(0,0)
-    R_Loc = pickle.load(ALL)
-    T_R = ALL.tell()
-    Cant_R = os.path.getsize(AFL)//T_R
-    Exhibicion()
-    Cod_local = Validacion_Clientes(0,Cant_R,"Ingrese un código de local")
-    Fecha = Validacion_fecha()
-    Exhibicion_Clientes(Cod_local,Fecha)
+     ALL.seek(0,0)
+     R_Loc = pickle.load(ALL)
+     T_R = ALL.tell()
+     Cant_R = os.path.getsize(AFL)//T_R
+     Exhibicion()
+     Cod_local = Validacion_Clientes(0,Cant_R,"Ingrese un código de local")
+     Fecha = Validacion_fecha()
+     Exhibicion_Clientes(Cod_local,Fecha)
   else:
-    print("Aún no hay ninguna promoción cargada.")
+     print("Aún no hay ninguna promoción cargada.")
 
 def Solic_Desc():
   global User_g
@@ -1835,8 +1855,8 @@ def Solic_Desc():
             print("Promoción utilizada correctamente")
       else:
           print("La promoción no esta activa este dia")
-  else:
-    print("Aún no hay ninguna promoción cargada.")
+    else:
+        print("Promoción no disponible.")
 
 
 # SECCION  CLIENTES CON TODAS SUS SUB-SECCIONES # (Final)
@@ -1900,22 +1920,6 @@ while Eleccion != 3:
         pedirusuario()
         match cod.strip():
             case "administrador":
-                if os.path.getsize(AFL) > 0: #Ayuda para entender todo sobre los registros
-                    separador()
-                    ALL.seek(0, 0)
-                    Aux = pickle.load(ALL)
-                    T_aux = ALL.tell()
-                    C_RL = int(os.path.getsize(AFL) / T_aux)
-                    print("Tamaño del archivo: ", os.path.getsize(AFL))
-                    print("Tamaño de cada registro: ", T_aux)
-                    print("Cantidad de Registros: ", C_RL)
-                    if C_RL > 2:
-                        Aux = pickle.load(ALL)
-                        T_aux_2 = ALL.tell()
-                        print("Tamaño de 2 registros: ", T_aux_2)
-                        ALL.seek(-T_aux_2, 1)
-                        Aux = pickle.load(ALL)
-                    separador()
                 Admin()
             case "dueño de local":
                 DueñoDelocales()
