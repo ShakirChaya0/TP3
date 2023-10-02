@@ -5,15 +5,12 @@ import os
 import sys
 import datetime
 
-
 class Usuarios:
     def __init__(self) -> None:
         self.CodUsuario = 0
         self.NombreUsuario = " ".ljust(100, " ")
         self.ClaveUsuario = " ".ljust(8, " ")
         self.TipoUsuario = " ".ljust(20, " ")
-
-
 class Locales:
     def __init__(self) -> None:
         self.CodLocal = 0
@@ -22,7 +19,6 @@ class Locales:
         self.RubroLocal = " ".ljust(12, " ")
         self.CodUsuario = 0
         self.Estado = ""
-
 class Promociones:
     def __init__(self) -> None:
         self.CodPromo = 0
@@ -32,22 +28,11 @@ class Promociones:
         self.DiaSemana = [0] * 7
         self.Estado = "".ljust(10, " ")
         self.CodLocal = 0
-
 class Uso_Promocion:
     def __init__(self) -> None:
         self.CodCliente = 0
         self.CodPromo = 0
         self.FechaUsoPromo = ""
-
-class Novedades:
-    def __init__(self) -> None:
-        self.CodNovedad = 0
-        self.TextoNovedad = " ".ljust(200, " ")
-        self.FechaDesdeNovedad = ""
-        self.FechaHastaNovedad = ""
-        self.TipoUsuario = " ".ljust(20, " ")
-        self.Estado = ""
-
 class R_Rub:
     def __init__(self) -> None:
         self.Nom = " ".ljust(12," ")
@@ -68,7 +53,6 @@ cl3.Nom = "comida".ljust(12," ")
 cl3.Ca = 0
 Rubros[2] = cl3
 
-
 """"""
 """"""
 """"""
@@ -78,7 +62,6 @@ Rubros[2] = cl3
 """"""
 
 # SECCIÓN DE DETALLES ESTÉTICOS # (Inicio)
-
 
 def separador():
     print(70 * "-")
@@ -398,74 +381,77 @@ def Exhibicion_Clientes(Cod_local, Fecha):
     sys.stdout.write(21 * "═")
     sys.stdout.write("╝\n")
 
-def Exhibicion_Reportes(Fecha_d,Fecha_h, Cod):
-    borde = "║"
-    label = "║Codigo Promo"
-    label += borde
-    label += " " * 15
-    label += "Texto Promo"
-    label += " " * 15
-    label += borde
-    label += " " * 5
-    label += "Fecha Desde"
-    label += " " * 5
-    label += borde
-    label += " " * 5
-    label += "Fecha Hasta"
-    label += " " * 5
-    label += borde
-    label += "Cantidad de Usos"
-    label += borde
-    sys.stdout.write("╔")
-    sys.stdout.write(12 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(41 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(21 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(21 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(16 * "═")
-    sys.stdout.write("╗\n")
-    print(label)
-    ALP.seek(0,0)
-    while ALP.tell() < os.path.getsize(AFP):
-        R_Pro = pickle.load(ALP)
-        if R_Pro.Estado.strip() == "aprobada" and Fecha_d <= R_Pro.FechaDesdePromo and Fecha_h >= R_Pro.FechaHastaPromo and Cod == R_Pro.CodLocal: 
-            sys.stdout.write("╠")
-            sys.stdout.write(12 * "═")
-            sys.stdout.write("╬")
-            sys.stdout.write(41 * "═")
-            sys.stdout.write("╬")
-            sys.stdout.write(21 * "═")
-            sys.stdout.write("╬")
-            sys.stdout.write(21 * "═")
-            sys.stdout.write("╬")
-            sys.stdout.write(16 * "═")
-            sys.stdout.write("╣\n")
-            item = "║"
-            item += str(R_Pro.CodPromo).center(12)
-            item += borde
-            item += R_Pro.TextoPromo.strip().center(41)
-            item += borde
-            item += str(R_Pro.FechaDesdePromo).center(21)
-            item += borde
-            item += str(R_Pro.FechaHastaPromo).center(21)
-            item += borde
-            item += str(Conteo_Usos(R_Pro.CodPromo)).center(16)
-            item += "║"
-            print(item)
-    sys.stdout.write("╚")
-    sys.stdout.write(12 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(41 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(21 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(21 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(16 * "═")
-    sys.stdout.write("╝\n")
+def Exhibicion_Reportes(Fecha_d,Fecha_h,Cod):
+    if Bs_Pro_Cod(Cod) == True:
+        borde = "║"
+        label = "║Codigo Promo"
+        label += borde
+        label += " " * 15
+        label += "Texto Promo"
+        label += " " * 15
+        label += borde
+        label += " " * 5
+        label += "Fecha Desde"
+        label += " " * 5
+        label += borde
+        label += " " * 5
+        label += "Fecha Hasta"
+        label += " " * 5
+        label += borde
+        label += "Cantidad de Usos"
+        label += borde
+        sys.stdout.write("╔")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(41 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(21 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(21 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(16 * "═")
+        sys.stdout.write("╗\n")
+        print(label)
+        ALP.seek(0,0)
+        while ALP.tell() < os.path.getsize(AFP):
+            R_Pro = pickle.load(ALP)
+            if R_Pro.Estado.strip() == "aprobada" and Fecha_d <= R_Pro.FechaDesdePromo and Fecha_h >= R_Pro.FechaHastaPromo and Cod == R_Pro.CodLocal: 
+                sys.stdout.write("╠")
+                sys.stdout.write(12 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(41 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(21 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(21 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(16 * "═")
+                sys.stdout.write("╣\n")
+                item = "║"
+                item += str(R_Pro.CodPromo).center(12)
+                item += borde
+                item += R_Pro.TextoPromo.strip().center(41)
+                item += borde
+                item += str(R_Pro.FechaDesdePromo).center(21)
+                item += borde
+                item += str(R_Pro.FechaHastaPromo).center(21)
+                item += borde
+                item += str(Conteo_Usos(R_Pro.CodPromo)).center(16)
+                item += "║"
+                print(item)
+        sys.stdout.write("╚")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(41 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(21 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(21 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(16 * "═")
+        sys.stdout.write("╝\n")
+    else:
+        print("Este local no presenta promociones")
 
 def Conteo_Usos(X):
     if os.path.getsize(AFUP) != 0:
@@ -490,7 +476,6 @@ def Conteo_Usos(X):
 """"""
 
 # SECCIÓN DE BUSQUEDAS, ORDENAMIENTOS Y OTRAS FUNCIONES# (Inicio)
-
 
 def Bs_Usu(valor):
     T = os.path.getsize(AFU)
@@ -621,6 +606,19 @@ def Bs_pro_Estado(valor):
     else:
         return -1
 
+def Bs_Pro_Cod(X):#Arreglarrrr
+    cond = False
+    T = os.path.getsize(AFP)
+    pos = 0
+    ALP.seek(0, 0)
+    cont = pickle.load(ALP)
+    while ALP.tell() < T:
+        pos = ALP.tell()
+        cont = pickle.load(ALP)
+        if cont.CodLocal == X and cont.Estado == "aprobada".ljust(10, " "):
+            cond = True
+    return cond
+    
 def Validacion(desde, hasta, mensaje):
     while True:
         try:
@@ -703,7 +701,6 @@ def Validacion_RangoF_Reporte(X):
         except ValueError:
             print("¡Eso no es una fecha válida en el formato correcto (YYYY-MM-DD)! Inténtalo de nuevo.")
 
-
 def Validacion_fecha_Desde():
     while True:
         try:
@@ -719,7 +716,6 @@ def Validacion_fecha_Desde():
         except ValueError:
             print("¡Eso no es una fecha válida en el formato correcto (YYYY-MM-DD)! Inténtalo de nuevo.")
 
-
 # SECCIÓN DE BUSQUEDAS, ORDENAMIENTOS Y OTRAS FUNCIONES# (Final)
 
 """"""
@@ -731,7 +727,6 @@ def Validacion_fecha_Desde():
 """"""
 
 # SECCIÓN DE MENUS # (Inicio)
-
 
 def mostrar_menu():
     if cod == "administrador":
@@ -775,16 +770,15 @@ def mostrar_menu():
     """
         )
 
-
 def Menu_principal():
     print(
         """
+               MENU PRINCIPAL    
     1. Ingresar con usuario registrado
     2. Registrarse como cliente
     3. Salir
     """
     )
-
 
 # SECCIÓN DE MENUS # (Final)
 
@@ -797,7 +791,6 @@ def Menu_principal():
 """"""
 
 # SECCIÓN DE REGISTRO E INICIO DE SESIÓN # (Inicio)
-
 
 def pedirusuario():
     global cod
@@ -848,7 +841,6 @@ def pedirusuario():
         os.system("cls")
         print("- Hola, has ingresado correctamente")
 
-
 def Registrarse():
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
     pos = Bs_Usu(R_Usu.NombreUsuario)
@@ -877,7 +869,6 @@ def Registrarse():
     pickle.dump(R_Usu, ALU)
     ALU.flush()
 
-
 # SECCIÓN DE REGISTRO E INICIO DE SESIÓN # (Final)
 
 """"""
@@ -890,11 +881,11 @@ def Registrarse():
 
 # SECCIÓN ADMINISTRADOR CON TODAS SUS SUB-SECCIONES # (Inicio)
 
-
 def Admin():
     global eleccion
     eleccion = -1
     while eleccion >= -1 and eleccion < 6:
+        os.system("cls")
         separador()
         mostrar_menu()
         eleccion = input("Escoger la opción a la que desee acceder: ")
@@ -915,25 +906,25 @@ def Admin():
                 case 1:
                     os.system("cls")
                     gestion_de_locales()
-                    input("")
+                    input("Ejecución completada, presione ENTER para continuar...")
                     eleccion = -1
                 case 2:
                     os.system("cls")
                     Crear_D()
-                    input("")
+                    input("Ejecución completada, presione ENTER para continuar...")
                 case 3:
                     os.system("cls")
                     Aprobar()
-                    input("")
+                    input("Ejecución completada, presione ENTER para continuar...")
                 case 4:
                     os.system("cls")
                     print("Diagramado en chapin")
                     eleccion = -1
-                    input("")
+                    input("Presione ENTER para continuar...")
                 case 5:
                     os.system("cls")
                     Reporte_A()
-                    input("")
+                    input("Ejecución completada, presione ENTER para continuar...")
 
 def Aprobar():
     cond = Bs_pro_Estado("pendiente".ljust(10," "))
@@ -948,7 +939,12 @@ def Aprobar():
         while ALP.tell() < T :  
             R_Pro = pickle.load(ALP)
             if R_Pro.Estado.strip() == "pendiente":
-                print(R_Pro.CodPromo, R_Pro.TextoPromo.strip(), R_Pro.FechaDesdePromo, R_Pro.FechaHastaPromo, R_Pro.DiaSemana, R_Pro.Estado.strip(), R_Pro.CodLocal)
+                print("Codigo de Promo: ",R_Pro.CodPromo)
+                print("Texto: ", R_Pro.TextoPromo.strip())
+                print("Fecha: Desde=",R_Pro.FechaDesdePromo,"Hasta=", R_Pro.FechaHastaPromo)
+                print("Dias disponibles: ", Semana(R_Pro.DiaSemana))
+                print("Local al que pertenece: ",R_Pro.CodLocal)
+                separador()
 
         rta = Validacion_Promos(0,C_RL,"Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir): " )
         while rta != 0:
@@ -1050,6 +1046,7 @@ def gestion_de_locales():
                     Exhibicion()
                 separador()
                 Crear_Locales()
+                os.system("cls")
                 separador()
                 decision = "z"
 
@@ -1071,6 +1068,7 @@ def gestion_de_locales():
                     Exhibicion()
                 separador()
                 Modificar_Locales()
+                os.system("cls")
                 decision = "z"
 
             # Nuevo, revisar.
@@ -1091,12 +1089,15 @@ def gestion_de_locales():
                     Exhibicion()
                 separador()
                 Eliminar_Locales()
+                os.system("cls")
                 decision = "z"
 
             # Falta desarrollar
             elif decision == "d":
                 os.system("cls")
                 Mapa_Locales()
+                input("Presione ENTER para continuar...")
+                os.system("cls")
                 decision = "z"
 
             elif decision == "e":
@@ -1209,7 +1210,6 @@ def Crear_Locales():
                 Cod_ant = 0
             # Cargando registro locales.
             M = os.path.getsize(AFL)
-            print("Tamaño del archivo: ", M)
             ALL.seek(M, 0)
             R_Loc.CodLocal = Cod_ant + 1
             R_Loc.NombreLocal = nombre.ljust(30," ")
@@ -1332,7 +1332,7 @@ def Modificar_Locales():
             ALL.seek(pos_reg, 0)
             R_Loc = pickle.load(ALL)
             R_Loc.NombreLocal = nombre.ljust(30," ")
-            print("Su modificación se a realizado con exito")
+            input("Su modificación se ha realizado con exito, presione ENTER para continuar...")
 
         # Modificación de la ubicación:
         elif modif == "ubicacion" or modif == "ubicación":
@@ -1344,7 +1344,7 @@ def Modificar_Locales():
             ALL.seek(pos_reg, 0)
             R_Loc = pickle.load(ALL)
             R_Loc.UbiLocal = Ubi.ljust(30," ")
-            print("Su modificación se a realizado con exito")
+            input("Su modificación se ha realizado con exito, presione ENTER para continuar...")
 
         # Modificación del rubro
         elif modif == "rubro":
@@ -1379,7 +1379,7 @@ def Modificar_Locales():
                 c1 = c1 + 1
             Rubros[c1].Ca = Rubros[c1].Ca + 1
             R_Loc.RubroLocal = rubro.ljust(12," ")
-            print("Su modificación se a realizado con exito")
+            input("Su modificación se ha realizado con exito, presione ENTER para continuar...")
 
         # Modificación del código de usuario
         elif modif == "codigo de usuario":
@@ -1408,7 +1408,7 @@ def Modificar_Locales():
             ALL.seek(pos_reg, 0)
             R_Loc = pickle.load(ALL)
             R_Loc.CodUsuario = Cod_us
-            print("Su modificación se a realizado con exito")
+            input("Su modificación se ha realizado con exito, presione ENTER para continuar...")
         else:
             print("No se realizó ninguna modificación")
 
@@ -1463,6 +1463,7 @@ def Modificar_Locales():
                         Rubros[c].Ca = Rubros[c].Ca + 1
 
                         Modificacion(pos)
+                        os.system("cls")
                         separador()
                         Exhibicion()
                         cod_local = input(
@@ -1470,6 +1471,7 @@ def Modificar_Locales():
                         )
                 else:
                     Modificacion(pos)
+                    os.system("cls")
                     separador()
                     Exhibicion()
                     cod_local = input(
@@ -1548,9 +1550,9 @@ def Mapa_Locales():
     os.system("cls")
     print(
         """
-        Referencias: 
-        - \033[0;32mLocal activo\033[0;m
-        - \033[0;31mLocal inactivo\033[0;m
+    Referencias: 
+    - \033[0;32mLocal activo\033[0;m
+    - \033[0;31mLocal inactivo\033[0;m
         """
     )
     print("                 Mapa de Locales")
@@ -1605,30 +1607,29 @@ def Reporte_A():
                             print(f"Se uso una cantidad de {Usos} veces la promoción") 
                             print(f"La promo es: \033[0;31m{R_Pro.TextoPromo.strip()}\033[0;m, los dias disponibles son:")
                             Semana(R_Pro.DiaSemana)
-                            print("\n")
                             separador()
     else:
         print("No hay promociones disponibles")
         
 def Semana(X):
+    dias = ""
     for i in range(0,7):
         if X[i] == 1:
             if i == 0:
-                sys.stdout.write("Lunes ")
+                dias += "Lunes "
             elif i == 1:
-                sys.stdout.write("Martes ")
+                dias += "Martes "
             elif i == 2:
-                sys.stdout.write("Miercoles ")
+                dias += "Miercoles "
             elif i == 3:
-                sys.stdout.write("Jueves ")
+                dias += "Jueves "
             elif i == 4:
-                sys.stdout.write("Viernes ")
+                dias += "Viernes "
             elif i == 5:
-                sys.stdout.write("Sabado ")
+                dias += "Sabado "
             elif i == 6:
-                sys.stdout.write("Domingo ")
-
-
+                dias += "Domingo "
+    return dias
 
 # SECCIÓN ADMINISTRADOR CON TODAS SUS SUB-SECCIONES # (Final)
 
@@ -1642,11 +1643,11 @@ def Semana(X):
 
 # SECCION  DUEÑOS DE LOCALES CON TODAS SUS SUB-SECCIONES # (Inicio)
 
-
 def DueñoDelocales():
     global eleccion
     eleccion = -1
     while eleccion >= -1 and eleccion < 4:
+        os.system("cls")
         separador()
         mostrar_menu()
         eleccion = input("Escoger la opción a la que desee acceder: ")
@@ -1672,11 +1673,13 @@ def DueñoDelocales():
                 case 1:
                     Crear_Descuentos()
                     eleccion = -1
+                    input("Ejecución completada, presione ENTER para continuar...")
                 case 2:
                     Reporte()
+                    input("Presione ENTER para continuar...")
                 case 3:
-                    Aprobar()
-
+                    print("Diagramado en chapin")
+                    input("Presione ENTER para continuar...")
 
 def Crear_Descuentos():
     global User_g, R_Pro
@@ -1752,7 +1755,6 @@ def Crear_Descuentos():
     else:
         print("Aun no hay, por ende no se pueden crear promociones. ")
 
-
 def Reporte():
    if os.path.getsize(AFP) != 0:
         global User_g
@@ -1766,17 +1768,15 @@ def Reporte():
         os.system("cls")
         print(f"Reporte de uso de descuentos del dueño: {R_Usu.NombreUsuario}")
         print(f"Fecha desde: {Fecha_d}              Fecha hasta: {Fecha_h}")
+        separador()
         ALL.seek(0,0)
         while ALL.tell() < os.path.getsize(AFL):
             R_Loc = pickle.load(ALL)
             if R_Usu.CodUsuario == R_Loc.CodUsuario: 
                 print(f"Local {R_Loc.CodLocal}: {R_Loc.NombreLocal}")
                 Exhibicion_Reportes(Fecha_d,Fecha_h, R_Loc.CodLocal)
-                print("\n") 
-
-def Ver_Nov():
-    print("Diagramado en chapin")
-
+                print(120 * "-")
+                 
 
 # SECCION  DUEÑOS DE LOCALES CON TODAS SUS SUB-SECCIONES # (Final)
 
@@ -1789,7 +1789,6 @@ def Ver_Nov():
 """"""
 
 # SECCION  CLIENTES CON TODAS SUS SUB-SECCIONES # (Inicio)
-
 
 def Clientes():
   global eleccion 
@@ -1804,15 +1803,15 @@ def Clientes():
           case 1: 
               os.system("cls")
               Bus_Desc()
-              input("")
+              input("Ejecución completada, presione ENTER para continuar...")
           case 2:
               os.system("cls")
               Solic_Desc()
-              input("")
+              input("Ejecución completada, presione ENTER para continuar...")
           case 3:
               os.system("cls")
               print("Esta sección esta diagramada en chapin")
-              input("")
+              input("Presione ENTER para continuar...")
 
 def Bus_Desc():
   if os.path.getsize(AFP) != 0:
@@ -1858,7 +1857,6 @@ def Solic_Desc():
     else:
         print("Promoción no disponible.")
 
-
 # SECCION  CLIENTES CON TODAS SUS SUB-SECCIONES # (Final)
 
 """"""
@@ -1877,28 +1875,24 @@ i_global = 1 #Eliminar una vez modificado el arreglo de rubros y cantidades
 frenar = True
 User_g = ""
 
-
-
 # Declaración de variables que contienen la ubicación física de los archivos
 AFU = "C:\\TP3\\Archivos\\Usuarios.dat"
 AFL = "C:\\TP3\\Archivos\\Locales.dat"
 AFP = "C:\\TP3\\Archivos\\Promociones.dat"
 AFUP = "C:\\TP3\\Archivos\\Uso_Promociones.dat"
-AFN = "C:\\TP3\\Archivos\\Novedades.dat"
 
 # Declaración de las variables que contienen a los archivos abiertos
 ALU = open(AFU, "r+b")
 ALL = open(AFL, "r+b")
 ALP = open(AFP, "r+b")
 ALUP = open(AFUP, "r+b")
-ALN = open(AFN, "r+b")
 
 # Declaración de las variables que contienen a los registros
 R_Usu = Usuarios()
 R_Loc = Locales()
 R_Pro = Promociones()
 R_Uso_Pro = Uso_Promocion()
-R_Nov = Novedades()
+
 
 if os.path.getsize(AFU) == 0:
     R_Usu.CodUsuario = 1
@@ -1908,7 +1902,6 @@ if os.path.getsize(AFU) == 0:
     ALU.seek(0, 2)
     pickle.dump(R_Usu, ALU)
     ALU.flush()
-
 
 # PROGRAMA PRINCIPAL #
 
