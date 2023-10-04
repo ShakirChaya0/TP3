@@ -200,8 +200,8 @@ def Exhibicion_Crear_D():
         sys.stdout.write(6 * "═")
         sys.stdout.write("╗\n")
         print(label)
-        while ALL.tell() <= T_AL:
-            ALL.seek(i * T_RL, 0)
+        ALL.seek(0, 0)
+        while ALL.tell() < T_AL:
             Auxiliar = pickle.load(ALL)
             if Auxiliar.CodUsuario == R_Usu.CodUsuario:
                 sys.stdout.write("╠")
@@ -231,8 +231,6 @@ def Exhibicion_Crear_D():
                 item += borde
                 item += Auxiliar.Estado.center(6)
                 item += "║"
-                i += 1
-                ALL.seek((i * T_RL) +20 , 0)
                 print(item)
         sys.stdout.write("╚")
         sys.stdout.write(12 * "═")
@@ -887,7 +885,13 @@ def Menu_principal():
     """
     )
 
-# SECCIÓN DE MENUS # (Final)
+# SECCIÓN Final
+
+def Finalizar():
+    ALU.close() 
+    ALL.close() 
+    ALP.close() 
+    ALUP.close()
 
 """"""
 """"""
@@ -1008,7 +1012,6 @@ def Admin():
             os.system("cls")
             match eleccion:
                 case 0:
-                    print("\033[3;31mSaliendo del programa...\033[0;m")
                     eleccion = -2
                 case 1:
                     os.system("cls")
@@ -1775,7 +1778,6 @@ def DueñoDelocales():
             os.system("cls")
             match eleccion:
                 case 0:
-                    print("\033[3;31mSaliendo del programa...\033[0;m")
                     eleccion = -2
                 case 1:
                     Crear_Descuentos()
@@ -1824,7 +1826,7 @@ def Crear_Descuentos():
             pos = Bs_Loc(Cod_Loc)
             ALL.seek(pos, 0)
             R_Loc = pickle.load(ALL)
-            while R_Usu.CodUsuario != R_Loc.CodUsuario:
+            while R_Usu.CodUsuario != R_Loc.CodUsuario and Cod_Loc != 0:
               os.system("cls")
               print("El local no pertenece a este dueño.")
               separador()
@@ -1835,35 +1837,37 @@ def Crear_Descuentos():
                   pos = Bs_Loc(Cod_Loc)
                   ALL.seek(pos, 0)
                   R_Loc = pickle.load(ALL)
-            if os.path.getsize(AFP) > 0:
-                      ALP.seek(0, 0)
-                      Aux_I = pickle.load(ALP)
-                      T_AP = os.path.getsize(AFP)
-                      T_aux = ALP.tell()
-                      C_RP = round(T_AP / T_aux)
-                      Cod_ant = C_RP
-            else:
-                      Cod_ant = 0
-            ALP.seek(0, 2)
-            R_Pro.CodPromo = Cod_ant + 1
-            R_Pro.TextoPromo = input("Ingrese la descripción de la promoción(Max 30 caracteres): ").ljust(200," ") #Máximo ideal 200, 30 es lo conveniente para mostrarlo en cuadro
-            while len(R_Pro.TextoPromo.strip()) > 30:
-              print("Usted ingreso una descripción muy larga... ")
-              separador()
-              R_Pro.TextoPromo  = input("Ingrese la descripción de la promoción(Max 30 caracteres): ") #Máximo ideal 200, 30 es lo conveniente para mostrarlo en cuadro
-            R_Pro.FechaDesdePromo  = Validacion_fecha_Desde()
-            print("Por favor ingresa la fecha de fin de la promoción: ")
-            R_Pro.FechaHastaPromo = Validacion_fecha()
-            while R_Pro.FechaDesdePromo > R_Pro.FechaHastaPromo:
+            if Cod_Loc != 0:
+                if os.path.getsize(AFP) > 0:
+                    ALP.seek(0, 0)
+                    Aux_I = pickle.load(ALP)
+                    T_AP = os.path.getsize(AFP)
+                    T_aux = ALP.tell()
+                    C_RP = round(T_AP / T_aux)
+                    Cod_ant = C_RP
+                else:
+                    Cod_ant = 0
+                ALP.seek(0, 2)
+                R_Pro.CodPromo = Cod_ant + 1
+                R_Pro.TextoPromo = input("Ingrese la descripción de la promoción(Max 30 caracteres): ").ljust(200," ") #Máximo ideal 200, 30 es lo conveniente para mostrarlo en cuadro
+                while len(R_Pro.TextoPromo.strip()) > 30:
+                  print("Usted ingreso una descripción muy larga... ")
+                  separador()
+                  R_Pro.TextoPromo  = input("Ingrese la descripción de la promoción(Max 30 caracteres): ") #Máximo ideal 200, 30 es lo conveniente para mostrarlo en cuadro
+                R_Pro.FechaDesdePromo  = Validacion_fecha_Desde()
                 print("Por favor ingresa la fecha de fin de la promoción: ")
                 R_Pro.FechaHastaPromo = Validacion_fecha()
-            print("Ingrese los días de semana en los cuales la promoción es válida con 1, si no ingrese 0: ")
-            for i in range(0,7):
-              R_Pro.DiaSemana[i] = Validacion(0,1,f"Día de la semana {i}: ")
-            R_Pro.Estado = "pendiente".ljust(10," ")
-            R_Pro.CodLocal = Cod_Loc
-            pickle.dump(R_Pro, ALP)
-            ALP.flush()
+                while R_Pro.FechaDesdePromo > R_Pro.FechaHastaPromo:
+                    print("Por favor ingresa la fecha de fin de la promoción: ")
+                    R_Pro.FechaHastaPromo = Validacion_fecha()
+                print("Ingrese los días de semana en los cuales la promoción es válida con 1, si no ingrese 0: ")
+                for i in range(0,7):
+                  R_Pro.DiaSemana[i] = Validacion(0,1,f"Día de la semana {i}: ")
+                R_Pro.Estado = "pendiente".ljust(10," ")
+                R_Pro.CodLocal = Cod_Loc
+                pickle.dump(R_Pro, ALP)
+                ALP.flush()
+                input("Ejecución completada, presione ENTER para continuar...")
     else:
         print("Aun no hay, por ende no se pueden crear promociones. ")
 
@@ -1878,14 +1882,14 @@ def Reporte():
         Fecha_h = Validacion_RangoF_Reporte(Fecha_d)
 
         os.system("cls")
-        print(f"Reporte de uso de descuentos del dueño: {R_Usu.NombreUsuario}")
+        print(f"Reporte de uso de descuentos del dueño: \033[93m{R_Usu.NombreUsuario}\033[0m")
         print(f"Fecha desde: {Fecha_d}              Fecha hasta: {Fecha_h}")
         separador()
         ALL.seek(0,0)
         while ALL.tell() < os.path.getsize(AFL):
             R_Loc = pickle.load(ALL)
             if R_Usu.CodUsuario == R_Loc.CodUsuario: 
-                print(f"Local {R_Loc.CodLocal}: {R_Loc.NombreLocal}")
+                print(f"Local {R_Loc.CodLocal}: \033[92m{R_Loc.NombreLocal}\033[0m")
                 Exhibicion_Reportes(Fecha_d,Fecha_h, R_Loc.CodLocal)
                 print(117 * "-")
                  
@@ -1987,6 +1991,12 @@ i_global = 1 #Eliminar una vez modificado el arreglo de rubros y cantidades
 frenar = True
 User_g = ""
 
+# Declaración de las variables que contienen a los registros
+R_Usu = Usuarios()
+R_Loc = Locales()
+R_Pro = Promociones()
+R_Uso_Pro = Uso_Promocion()
+
 # Declaración de variables que contienen la ubicación física de los archivos
 AFU = "C:\\TP3\\Archivos\\Usuarios.dat"
 AFL = "C:\\TP3\\Archivos\\Locales.dat"
@@ -1994,17 +2004,16 @@ AFP = "C:\\TP3\\Archivos\\Promociones.dat"
 AFUP = "C:\\TP3\\Archivos\\Uso_Promociones.dat"
 
 # Declaración de las variables que contienen a los archivos abiertos
-ALU = open(AFU, "r+b")
-ALL = open(AFL, "r+b")
-ALP = open(AFP, "r+b")
-ALUP = open(AFUP, "r+b")
-
-# Declaración de las variables que contienen a los registros
-R_Usu = Usuarios()
-R_Loc = Locales()
-R_Pro = Promociones()
-R_Uso_Pro = Uso_Promocion()
-
+if os.path.exists(AFU) and os.path.exists(AFL) and os.path.exists(AFP) and os.path.exists(AFUP):
+    ALU = open(AFU, "r+b")
+    ALL = open(AFL, "r+b")
+    ALP = open(AFP, "r+b")
+    ALUP = open(AFUP, "r+b")
+else:
+    ALU = open(AFU, "w+b")
+    ALL = open(AFL, "w+b")
+    ALP = open(AFP, "w+b")
+    ALUP = open(AFUP, "w+b")
 
 if os.path.getsize(AFU) == 0:
     R_Usu.CodUsuario = 1
@@ -2016,7 +2025,6 @@ if os.path.getsize(AFU) == 0:
     ALU.flush()
 
 # PROGRAMA PRINCIPAL #
-
 os.system("cls")
 Menu_principal()
 Eleccion = Validacion(1, 3,"Ingrese una opción")
@@ -2030,11 +2038,11 @@ while Eleccion != 3:
                 DueñoDelocales()
             case "cliente":
                 Clientes()
-    elif Eleccion == 2:
-        Registrarse()
     else:
-        print("Hasta luego...")
-        bandera = -1
+        Registrarse()
     os.system("cls")
     Menu_principal()
     Eleccion = Validacion(1, 3,"Ingrese una opción")
+Finalizar()
+os.system("cls")
+print("\033[3;31mSaliendo del programa...\033[0;m")
