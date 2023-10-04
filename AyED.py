@@ -156,6 +156,100 @@ def Exhibicion():
     else:
         print("Aun no hay ningún local cargado")
 
+def Exhibicion_Crear_D():
+    pos = Bs_Usu(User_g)
+    ALU.seek(pos,0)
+    R_Usu = pickle.load(ALU)
+    if Bs_Loc_Usu(R_Usu.CodUsuario) != -1:
+        or_archivo()
+        ALL.seek(0, 0)
+        Aux_I = pickle.load(ALL)
+        T_RL = ALL.tell()
+        T_AL = os.path.getsize(AFL)
+        C_RL = round(T_AL / T_RL) 
+        i = 0
+        borde = "║"
+        label = "║Codigo local"
+        label += borde
+        label += "Codigo Usuario"
+        label += borde
+        label += " " * 12
+        label += "Nombre"
+        label += " " * 12
+        label += borde
+        label += " " * 10
+        label += "Ubicacion"
+        label += " " * 11
+        label += borde
+        label += " " * 3
+        label += "Rubro"
+        label += " " * 4
+        label += borde
+        label += "Estado║"
+        sys.stdout.write("╔")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(14 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(30 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(30 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(6 * "═")
+        sys.stdout.write("╗\n")
+        print(label)
+        while ALL.tell() <= T_AL:
+            ALL.seek(i * T_RL, 0)
+            Auxiliar = pickle.load(ALL)
+            if Auxiliar.CodUsuario == R_Usu.CodUsuario:
+                sys.stdout.write("╠")
+                sys.stdout.write(12 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(14 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(30 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(30 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(12 * "═")
+                sys.stdout.write("╬")
+                sys.stdout.write(6 * "═")
+                sys.stdout.write("╣\n")
+                item = ""
+                item += "║"
+                item += str(Auxiliar.CodLocal).center(12)
+                item += borde
+                item += str(Auxiliar.CodUsuario).center(14)
+                item += borde
+                item += Auxiliar.NombreLocal.strip().center(30)
+                item += borde
+                item += Auxiliar.UbiLocal.strip().center(30)
+                item += borde
+                item += Auxiliar.RubroLocal.strip().center(12)
+                item += borde
+                item += Auxiliar.Estado.center(6)
+                item += "║"
+                i += 1
+                ALL.seek((i * T_RL) +20 , 0)
+                print(item)
+        sys.stdout.write("╚")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(14 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(30 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(30 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(6 * "═")
+        sys.stdout.write("╝\n")
+    else:
+        print("Aun no hay ningún local cargado de este dueño")
+
 def Exhibicion_Prom():
     if os.path.getsize(AFP) != 0:
         ALP.seek(0, 0)
@@ -382,7 +476,7 @@ def Exhibicion_Clientes(Cod_local, Fecha):
     sys.stdout.write("╝\n")
 
 def Exhibicion_Reportes(Fecha_d,Fecha_h,Cod):
-    if Bs_Pro_Cod(Cod) == True:
+    if Bs_Pro_Cod(Cod, Fecha_d, Fecha_h) == True:
         borde = "║"
         label = "║Codigo Promo"
         label += borde
@@ -451,7 +545,7 @@ def Exhibicion_Reportes(Fecha_d,Fecha_h,Cod):
         sys.stdout.write(16 * "═")
         sys.stdout.write("╝\n")
     else:
-        print("Este local no presenta promociones")
+        print("Este local no presenta promociones dentro de estas fechas")
 
 def Conteo_Usos(X):
     if os.path.getsize(AFUP) != 0:
@@ -525,6 +619,19 @@ def Bs_Loc(valor):
         pos = ALL.tell()
         cont = pickle.load(ALL)
     if cont.CodLocal == valor:
+        return pos
+    else:
+        return -1
+
+def Bs_Loc_Usu(valor):
+    T = os.path.getsize(AFL)
+    pos = 0
+    ALL.seek(0, 0)
+    cont = pickle.load(ALL)
+    while ALL.tell() < T and cont.CodUsuario != valor:
+        pos = ALL.tell()
+        cont = pickle.load(ALL)
+    if cont.CodUsuario == valor:
         return pos
     else:
         return -1
@@ -606,16 +713,16 @@ def Bs_pro_Estado(valor):
     else:
         return -1
 
-def Bs_Pro_Cod(X):#Arreglarrrr
+def Bs_Pro_Cod(X, desde, hasta):
     cond = False
     T = os.path.getsize(AFP)
     pos = 0
     ALP.seek(0, 0)
     cont = pickle.load(ALP)
-    while ALP.tell() < T:
+    while ALP.tell() < T and cond == False:
         pos = ALP.tell()
         cont = pickle.load(ALP)
-        if cont.CodLocal == X and cont.Estado == "aprobada".ljust(10, " "):
+        if cont.CodLocal == X and cont.Estado == "aprobada".ljust(10, " ") and desde <= cont.FechaDesdePromo and hasta >= cont.FechaHastaPromo:
             cond = True
     return cond
     
@@ -1673,7 +1780,6 @@ def DueñoDelocales():
                 case 1:
                     Crear_Descuentos()
                     eleccion = -1
-                    input("Ejecución completada, presione ENTER para continuar...")
                 case 2:
                     Reporte()
                     input("Presione ENTER para continuar...")
@@ -1692,13 +1798,18 @@ def Crear_Descuentos():
       while ALL.tell() < os.path.getsize(AFL):
         R_Loc = pickle.load(ALL)
         if R_Loc.Estado == "A" and R_Usu.CodUsuario == R_Loc.CodUsuario:
-            print(f"El local {R_Loc.NombreLocal.strip()} tiene las siguientes promociones: ")
+            print(f"El local \033[92m{R_Loc.NombreLocal.strip()}\033[0m...")
             ALP.seek(0,0)
+            cond = 0
             while ALP.tell() < os.path.getsize(AFP):
               R_Pro = pickle.load(ALP)
               if R_Loc.CodLocal == R_Pro.CodLocal and R_Pro.FechaDesdePromo <= datetime.date.today() and R_Pro.FechaHastaPromo >= datetime.date.today():
-                  print(f"-Promición {R_Pro.TextoPromo.strip()} tiene un Estado: {R_Pro.Estado}")
+                  print(f"-Promición \033[94m{R_Pro.TextoPromo.strip()}\033[0m tiene un Estado: {R_Pro.Estado}")
                   separador()
+                  cond = 1
+            if cond == 0:
+                print("No presenta promociones")
+                separador()
     else:
       print("Aún no hay promociones cargadas. ")
     if os.path.getsize(AFL) != 0:
@@ -1706,7 +1817,7 @@ def Crear_Descuentos():
       R_Loc = pickle.load(ALL)
       T_R = ALL.tell()
       Cant_R = os.path.getsize(AFL) // T_R
-      Exhibicion()
+      Exhibicion_Crear_D()
       print("Aviso: Ingrese 0 si desea salir")
       Cod_Loc = Validacion(0, Cant_R,"Ingrese el código del local al que le quiere asignar una promoción")
       if Cod_Loc != 0:
@@ -1717,6 +1828,7 @@ def Crear_Descuentos():
               os.system("cls")
               print("El local no pertenece a este dueño.")
               separador()
+              Exhibicion_Crear_D()
               print("Aviso: Ingrese 0 si desea salir")
               Cod_Loc = Validacion(0, Cant_R,"Ingrese el código del local al que le quiere asignar una promoción")
               if Cod_Loc != 0:
@@ -1775,7 +1887,7 @@ def Reporte():
             if R_Usu.CodUsuario == R_Loc.CodUsuario: 
                 print(f"Local {R_Loc.CodLocal}: {R_Loc.NombreLocal}")
                 Exhibicion_Reportes(Fecha_d,Fecha_h, R_Loc.CodLocal)
-                print(120 * "-")
+                print(117 * "-")
                  
 
 # SECCION  DUEÑOS DE LOCALES CON TODAS SUS SUB-SECCIONES # (Final)
