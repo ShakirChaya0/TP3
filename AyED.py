@@ -245,8 +245,7 @@ def Exhibicion_Crear_D():
         sys.stdout.write("╩")
         sys.stdout.write(6 * "═")
         sys.stdout.write("╝\n")
-    else:
-        print("Aun no hay ningún local cargado de este dueño")
+
 
 def Exhibicion_Prom():
     if os.path.getsize(AFP) != 0:
@@ -716,7 +715,6 @@ def Bs_Pro_Cod(X, desde, hasta):
     T = os.path.getsize(AFP)
     pos = 0
     ALP.seek(0, 0)
-    cont = pickle.load(ALP)
     while ALP.tell() < T and cond == False:
         pos = ALP.tell()
         cont = pickle.load(ALP)
@@ -1016,7 +1014,6 @@ def Admin():
                 case 1:
                     os.system("cls")
                     gestion_de_locales()
-                    input("Ejecución completada, presione ENTER para continuar...")
                     eleccion = -1
                 case 2:
                     os.system("cls")
@@ -1790,7 +1787,7 @@ def DueñoDelocales():
                     input("Presione ENTER para continuar...")
 
 def Crear_Descuentos():
-    global User_g, R_Pro
+    global User_g
     pos = Bs_Usu(User_g)
     ALU.seek(pos, 0)
     R_Usu = pickle.load(ALU)
@@ -1805,9 +1802,8 @@ def Crear_Descuentos():
             cond = 0
             while ALP.tell() < os.path.getsize(AFP):
               R_Pro = pickle.load(ALP)
-              if R_Loc.CodLocal == R_Pro.CodLocal and R_Pro.FechaDesdePromo <= datetime.date.today() and R_Pro.FechaHastaPromo >= datetime.date.today():
+              if R_Loc.CodLocal == R_Pro.CodLocal and R_Pro.FechaDesdePromo >= datetime.date.today() and R_Pro.FechaHastaPromo >= R_Pro.FechaDesdePromo:
                   print(f"-Promición \033[94m{R_Pro.TextoPromo.strip()}\033[0m tiene un Estado: {R_Pro.Estado}")
-                  separador()
                   cond = 1
             if cond == 0:
                 print("No presenta promociones")
@@ -1954,24 +1950,25 @@ def Solic_Desc():
     Cod_pro = Validacion(0,Cant_R,"Ingrese el código de la promoción que desea usar: ")
     Fecha = datetime.datetime.now().date()
     Pos = Bs_pro(Cod_pro)
-    ALP.seek(Pos, 0)
-    R_Pro = pickle.load(ALP)
-    if R_Pro.CodPromo == Cod_pro and R_Pro.Estado.strip() == "aprobada" and R_Pro.FechaDesdePromo <= Fecha and R_Pro.FechaHastaPromo >= Fecha:
-      if R_Pro.DiaSemana[Fecha.weekday()] == 1:
-            pos = Bs_Usu(User_g)
-            ALU.seek(pos, 0)
-            R_Usu = pickle.load(ALU)
-            R_Uso_Pro.CodCliente = R_Usu.CodUsuario
-            R_Uso_Pro.CodPromo = Cod_pro
-            R_Uso_Pro.FechaUsoPromo = Fecha 
-            ALUP.seek(0,2)
-            pickle.dump(R_Uso_Pro,ALUP)
-            ALUP.flush()
-            print("Promoción utilizada correctamente")
-      else:
-          print("La promoción no esta activa este dia")
-    else:
-        print("Promoción no disponible.")
+    if Pos != -1:
+        ALP.seek(Pos, 0)
+        R_Pro = pickle.load(ALP)
+        if R_Pro.CodPromo == Cod_pro and R_Pro.Estado.strip() == "aprobada" and R_Pro.FechaDesdePromo <= Fecha and R_Pro.FechaHastaPromo >= Fecha:
+          if R_Pro.DiaSemana[Fecha.weekday()] == 1:
+                pos = Bs_Usu(User_g)
+                ALU.seek(pos, 0)
+                R_Usu = pickle.load(ALU)
+                R_Uso_Pro.CodCliente = R_Usu.CodUsuario
+                R_Uso_Pro.CodPromo = Cod_pro
+                R_Uso_Pro.FechaUsoPromo = Fecha 
+                ALUP.seek(0,2)
+                pickle.dump(R_Uso_Pro,ALUP)
+                ALUP.flush()
+                print("Promoción utilizada correctamente")
+          else:
+              print("La promoción no esta activa este dia")
+        else:
+            print("Promoción no disponible.")
 
 # SECCION  CLIENTES CON TODAS SUS SUB-SECCIONES # (Final)
 
