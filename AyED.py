@@ -567,7 +567,7 @@ def Conteo_Usos(X):
 """"""
 """"""
 
-# SECCIÓN DE BUSQUEDAS, ORDENAMIENTOS Y OTRAS FUNCIONES# (Inicio)
+# SECCIÓN DE BUSQUEDAS, ORDENAMIENTOS Y OTRAS FUNCIONES# (Inicio )
 
 def Bs_Usu(valor):
     T = os.path.getsize(AFU)
