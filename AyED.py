@@ -701,7 +701,6 @@ def Bs_pro_Estado(valor):
     M = os.path.getsize(AFP)
     pos = 0
     ALP.seek(0, 0)
-    R_Pro = pickle.load(ALP)
     while ALP.tell() < M and R_Pro.Estado != valor:
         pos = ALP.tell()
         R_Pro = pickle.load(ALP)
@@ -819,6 +818,11 @@ def Validacion_fecha_Desde():
         except ValueError:
             print("¡Eso no es una fecha válida en el formato correcto (YYYY-MM-DD)! Inténtalo de nuevo.")
 
+def valid_mail(X):
+    if "@" in X:
+        return True
+    else:
+        return False
 # SECCIÓN DE BUSQUEDAS, ORDENAMIENTOS Y OTRAS FUNCIONES# (Final)
 
 """"""
@@ -889,7 +893,7 @@ def Finalizar():
     ALU.close() 
     ALL.close() 
     ALP.close() 
-    ALUP.close()
+    ALUP.close() 
 
 """"""
 """"""
@@ -910,61 +914,70 @@ def pedirusuario():
 
     # Ingreso de datos:
     user = input("Escriba su usuario: ").ljust(100, " ")
-    contraseña = getpass.getpass("Escriba su contraseña: ").ljust(8, " ")
-
-    pos = Bs_Usu(user)
-    if pos != -1:
-        ALU.seek(pos, 0)
-        cont = pickle.load(ALU)
-        if cont.ClaveUsuario == contraseña:
-            cod = cont.TipoUsuario.strip()
-            User_g = cont.NombreUsuario
-        else:
-            cod = ""
-    else:
-        cod = ""
-
-    # Restricción de intentos del inicio de sesión
-    while cod == "" and contador < 3:
-        contador = contador + 1
-        os.system("cls")
-        if contador <= 2:
-            user = input("Escriba su usuario: ").ljust(100, " ")
-            contraseña = getpass.getpass("Escriba su contraseña: ").ljust(8, " ")
-            pos = Bs_Usu(user)
-            if pos != -1:
-                ALU.seek(pos, 0)
-                cont = pickle.load(ALU)
-                if cont.ClaveUsuario == contraseña:
-                    cod = cont.TipoUsuario.strip()
-                    User_g = cont.NombreUsuario
-                else:
-                    cod = ""
+    if valid_mail(user):
+        contraseña = getpass.getpass("Ingrese su contraseña").ljust(8, " ")
+        pos = Bs_Usu(user)
+        if pos != -1:
+            ALU.seek(pos, 0)
+            cont = pickle.load(ALU)
+            if cont.ClaveUsuario == contraseña:
+                cod = cont.TipoUsuario.strip()
+                User_g = cont.NombreUsuario
             else:
                 cod = ""
         else:
-            print("Su numero de intentos ha finalizado")
-            bandera = -1
-            eleccion = 0
-    if cod != "":
-        os.system("cls")
-        print("- Hola, has ingresado correctamente")
+            cod = ""
+    else:
+        input("Usuario incorrecto, recuerde utilizar un formato de mail, presione ENTER para volver a intentarlo...")
+        cod = ""
+    # Restricción de intentos del inicio de sesión
+        while cod == "" and contador < 3:
+            contador = contador + 1
+            os.system("cls")
+            if contador <= 2:
+                user = input("Escriba su usuario: ").ljust(100, " ")
+                if valid_mail(user):
+                    contraseña =  getpass.getpass("Ingrese su contraseña").ljust(8, " ")
+                    pos = Bs_Usu(user)
+                    if pos != -1:
+                        ALU.seek(pos, 0)
+                        cont = pickle.load(ALU)
+                        if cont.ClaveUsuario == contraseña:
+                            cod = cont.TipoUsuario.strip()
+                            User_g = cont.NombreUsuario
+                        else:
+                            cod = ""
+                    else:
+                        cod = ""
+                else:
+                    input("Usuario incorrecto, recuerde utilizar un formato de mail, presione ENTER para volver a intentarlo...")
+                    cod = ""
+            else:
+                print("Su numero de intentos ha finalizado")
+                bandera = -1
+                eleccion = 0
+        if cod != "":
+            os.system("cls")
+            print("- Hola, has ingresado correctamente")
 
 def Registrarse():
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
-    pos = Bs_Usu(R_Usu.NombreUsuario)
-    while len(R_Usu.NombreUsuario) <= 100 and pos != -1:
-        if pos != -1:
-            print("Actualmente ese mail existe, intente con otro...")
-        else:
-            print("Usted ingreso un mail muy largo, intente otra vez")
-        R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
+    if valid_mail(R_Usu.NombreUsuario):
         pos = Bs_Usu(R_Usu.NombreUsuario)
+        while len(R_Usu.NombreUsuario) <= 100 and pos != -1:
+            if pos != -1:
+                print("Actualmente ese mail existe, intente con otro...")
+            else:
+                print("Usted ingreso un mail muy largo, intente otra vez")
+            R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
+            pos = Bs_Usu(R_Usu.NombreUsuario)
 
-    R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
-    while len(R_Usu.ClaveUsuario) > 8:
-        print("Usted ingreso una clave muy larga, intente otra vez")
-        R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
+        R_Usu.ClaveUsuario = getpass.getpass("Ingrese su contraseña").ljust(8, " ")
+        while len(R_Usu.ClaveUsuario) > 8:
+            print("Usted ingreso una clave muy larga, intente otra vez")
+            R_Usu.ClaveUsuario = getpass.getpass("Ingrese su contraseña").ljust(8, " ")
+    else:
+        input("Usuario incorrecto, recuerde utilizar un formato de mail, presione ENTER para continuar...")
 
     R_Usu.TipoUsuario = "cliente".ljust(20," ")
     #Buscando el codigo del anterior registro
@@ -1022,7 +1035,6 @@ def Admin():
                 case 3:
                     os.system("cls")
                     Aprobar()
-                    input("Ejecución completada, presione ENTER para continuar...")
                 case 4:
                     os.system("cls")
                     print("Diagramado en chapin")
@@ -1031,70 +1043,76 @@ def Admin():
                 case 5:
                     os.system("cls")
                     Reporte_A()
-                    input("Ejecución completada, presione ENTER para continuar...")
 
 def Aprobar():
-    cond = Bs_pro_Estado("pendiente".ljust(10," "))
-    if cond != -1:
-        ALP.seek(0,0)
-        R_Pro = pickle.load(ALP)
-        TR = ALP.tell()
-        T = os.path.getsize(AFP)
-        C_RL = T//TR
-        ALP.seek(0,0)
-        print("Promociones pendientes...")
-        while ALP.tell() < T :  
+    if os.path.getsize(AFP):
+        cond = Bs_pro_Estado("pendiente".ljust(10," "))
+        if cond != -1:
+            ALP.seek(0,0)
             R_Pro = pickle.load(ALP)
-            if R_Pro.Estado.strip() == "pendiente":
-                print("Codigo de Promo: ",R_Pro.CodPromo)
-                print("Texto: ", R_Pro.TextoPromo.strip())
-                print("Fecha: Desde=",R_Pro.FechaDesdePromo,"Hasta=", R_Pro.FechaHastaPromo)
-                print("Dias disponibles: ", Semana(R_Pro.DiaSemana))
-                print("Local al que pertenece: ",R_Pro.CodLocal)
-                separador()
-
-        rta = Validacion_Promos(0,C_RL,"Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir): " )
-        while rta != 0:
-            pos = Bs_pro(rta)
-            ALP.seek(pos,0)
-            R_Pro = pickle.load(ALP)
-            if R_Pro.Estado.strip() == "pendiente":
-                elec = input("Ingrese `Aprobar` o `Denegar` para aceptar o rechazar la promocion (Ingrese 0 si desea salir): ")
-                while elec != "aprobar".lower() and elec != "Denegar".lower() and elec != "0":
+            TR = ALP.tell()
+            T = os.path.getsize(AFP)
+            C_RL = T//TR
+            ALP.seek(0,0)
+            print("Promociones pendientes...")
+            while ALP.tell() < T :  
+                R_Pro = pickle.load(ALP)
+                if R_Pro.Estado.strip() == "pendiente":
+                    print("Codigo de Promo: ",R_Pro.CodPromo)
+                    print("Texto: ", R_Pro.TextoPromo.strip())
+                    print("Fecha: Desde=",R_Pro.FechaDesdePromo,"Hasta=", R_Pro.FechaHastaPromo)
+                    print("Dias disponibles: ", Semana(R_Pro.DiaSemana))
+                    print("Local al que pertenece: ",R_Pro.CodLocal)
                     separador()
-                    print("Usted ingreso un valor no aceptado, intente nuevamente...")
-                    elec = input("Ingrese `Aprobar` o `Denegar` para aceptar o rechazar la promocion (Ingrese 0 si desea salir): ")
-                if elec.lower() == "aprobar":
-                    ALP.seek(pos,0)
-                    R_Pro.Estado = "aprobada".ljust(10," ")
-                    pickle.dump(R_Pro, ALP)
-                    ALP.flush()
-                elif elec.lower() == "denegar":
-                    ALP.seek(pos,0)
-                    R_Pro.Estado = "rechazada".ljust(10," ")
-                    pickle.dump(R_Pro,ALP)
-                    ALP.flush()      
-            else:
-                print("La promoción no se encuentra en estado pendiente")
+
             rta = Validacion_Promos(0,C_RL,"Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir): " )
+            while rta != 0:
+                pos = Bs_pro(rta)
+                ALP.seek(pos,0)
+                R_Pro = pickle.load(ALP)
+                if R_Pro.Estado.strip() == "pendiente":
+                    elec = input("Ingrese `Aprobar` o `Denegar` para aceptar o rechazar la promocion (Ingrese 0 si desea salir): ")
+                    while elec != "aprobar".lower() and elec != "Denegar".lower() and elec != "0":
+                        separador()
+                        print("Usted ingreso un valor no aceptado, intente nuevamente...")
+                        elec = input("Ingrese `Aprobar` o `Denegar` para aceptar o rechazar la promocion (Ingrese 0 si desea salir): ")
+                    if elec.lower() == "aprobar":
+                        ALP.seek(pos,0)
+                        R_Pro.Estado = "aprobada".ljust(10," ")
+                        pickle.dump(R_Pro, ALP)
+                        ALP.flush()
+                    elif elec.lower() == "denegar":
+                        ALP.seek(pos,0)
+                        R_Pro.Estado = "rechazada".ljust(10," ")
+                        pickle.dump(R_Pro,ALP)
+                        ALP.flush()      
+                else:
+                    print("La promoción no se encuentra en estado pendiente")
+                rta = Validacion_Promos(0,C_RL,"Ingrese el codigo de promo que desea cambiar (Ingrese 0 si desea salir): " )
+            input("Ejecución completada, presione ENTER para continuar...")
+        else:
+            print("No hay promociones en estado pendiente")
     else:
-        print("No hay promociones en estado pendiente")
-    
+        input("No hay promociones, presione ENTER para continuar")
+        
 def Crear_D():
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
-    pos = Bs_Usu(R_Usu.NombreUsuario)
-    while len(R_Usu.NombreUsuario) <= 100 and pos != -1:
-        if pos != -1:
-            print("Actualmente ese mail existe, intente con otro...")
-        else:
-            print("Usted ingreso un mail muy largo, intente otra vez")
-        R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
+    if valid_mail(R_Usu.NombreUsuario):
         pos = Bs_Usu(R_Usu.NombreUsuario)
+        while len(R_Usu.NombreUsuario) <= 100 and pos != -1:
+            if pos != -1:
+                print("Actualmente ese mail existe, intente con otro...")
+            else:
+                print("Usted ingreso un mail muy largo, intente otra vez")
+            R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
+            pos = Bs_Usu(R_Usu.NombreUsuario)
 
-    R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
-    while len(R_Usu.ClaveUsuario) > 8:
-        print("Usted ingreso una clave muy larga, intente otra vez")
-        R_Usu.ClaveUsuario = input("Ingrese la clave del usuario: ").ljust(8, " ")
+        R_Usu.ClaveUsuario = getpass.getpass("Ingrese la clave del usuario: ").ljust(8, " ")
+        while len(R_Usu.ClaveUsuario) > 8:
+            print("Usted ingreso una clave muy larga, intente otra vez")
+            R_Usu.ClaveUsuario = getpass.getpass("Ingrese la clave del usuario: ").ljust(8, " ")
+    else:
+        input("Usuario incorrecto, recuerde utilizar un formato de mail, presione ENTER para continuar...")
 
     R_Usu.TipoUsuario = "dueño de local".ljust(20," ")
     #Buscando el codigo del anterior registro
@@ -1211,7 +1229,7 @@ def gestion_de_locales():
                 eleccion = -1
                 decision = "z"
     else:
-        print("No hay dueños de locales cargados hasta el momento.")
+        input("No hay dueños de locales cargados hasta el momento, presione ENTER para volver...")
 
 def Crear_Locales():
     #Auxiliares para guardar cantidades
@@ -1680,23 +1698,23 @@ def Mapa_Locales():
         print(" |  \n +--------+--------+--------+--------+--------+")
 
 def Reporte_A():
-    ALL.seek(0,0)
-    ALU.seek(0,0)
-    ALP.seek(0,0)
-    TL = os.path.getsize(AFL)
-    aux_l = pickle.load(ALL)
-    pos_L = ALL.tell()
-    C_R = round(TL/pos_L)
     TP = os.path.getsize(AFP)
-    Aux = pickle.load(ALP)
-    pos_P = ALP.tell()
-    C_RP = round(TP/pos_P)
-    T = os.path.getsize(AFU)
-    aux = pickle.load(ALU)
-    pos = ALU.tell()
-    C_RU = round(T/pos)
-    ALU.seek(0,0)
-    if TP != 0:
+    if TP != 0 :
+        ALL.seek(0,0)
+        ALU.seek(0,0)
+        ALP.seek(0,0)
+        TL = os.path.getsize(AFL)
+        aux_l = pickle.load(ALL)
+        pos_L = ALL.tell()
+        C_R = round(TL/pos_L)
+        Aux = pickle.load(ALP)
+        pos_P = ALP.tell()
+        C_RP = round(TP/pos_P)
+        T = os.path.getsize(AFU)
+        aux = pickle.load(ALU)
+        pos = ALU.tell()
+        C_RU = round(T/pos)
+        ALU.seek(0,0)
         print("Reporte de promociones:".center(70))
         print("\n")
         while ALU.tell() < T:
@@ -1715,8 +1733,9 @@ def Reporte_A():
                             print(f"La promo es: \033[0;31m{R_Pro.TextoPromo.strip()}\033[0;m, los dias disponibles son:")
                             Semana(R_Pro.DiaSemana)
                             separador()
+        input("Ejecución completada, presione ENTER para continuar...")
     else:
-        print("No hay promociones disponibles")
+        input("No hay promociones disponibles, presione ENTER para volver...")
         
 def Semana(X):
     dias = ""
@@ -1888,6 +1907,8 @@ def Reporte():
                 print(f"Local {R_Loc.CodLocal}: \033[92m{R_Loc.NombreLocal}\033[0m")
                 Exhibicion_Reportes(Fecha_d,Fecha_h, R_Loc.CodLocal)
                 print(117 * "-")
+   else:
+       input("No hay promociones cargadas, presione ENTER para volver...")
                  
 
 # SECCION  DUEÑOS DE LOCALES CON TODAS SUS SUB-SECCIONES # (Final)
@@ -1903,6 +1924,7 @@ def Reporte():
 # SECCION  CLIENTES CON TODAS SUS SUB-SECCIONES # (Inicio)
 
 def Clientes():
+  os.system("cls")
   global eleccion 
   eleccion = -1 
   while eleccion >= -1 and eleccion <= 3:
@@ -1913,8 +1935,8 @@ def Clientes():
           case 0:
               eleccion = -2
           case 1: 
-              os.system("cls")
               Bus_Desc()
+              os.system("cls")
               input("Ejecución completada, presione ENTER para continuar...")
           case 2:
               os.system("cls")
@@ -1933,8 +1955,9 @@ def Bus_Desc():
      Cant_R = os.path.getsize(AFL)//T_R
      Exhibicion()
      Cod_local = Validacion_Clientes(0,Cant_R,"Ingrese un código de local")
-     Fecha = Validacion_fecha()
-     Exhibicion_Clientes(Cod_local,Fecha)
+     if Cod_local != 0:
+        Fecha = Validacion_fecha()
+        Exhibicion_Clientes(Cod_local,Fecha)
   else:
      print("Aún no hay ninguna promoción cargada.")
 
@@ -2006,6 +2029,7 @@ if os.path.exists(AFU) and os.path.exists(AFL) and os.path.exists(AFP) and os.pa
     ALL = open(AFL, "r+b")
     ALP = open(AFP, "r+b")
     ALUP = open(AFUP, "r+b")
+    
 else:
     ALU = open(AFU, "w+b")
     ALL = open(AFL, "w+b")
@@ -2014,7 +2038,7 @@ else:
 
 if os.path.getsize(AFU) == 0:
     R_Usu.CodUsuario = 1
-    R_Usu.NombreUsuario = "admin".ljust(100, " ")
+    R_Usu.NombreUsuario = "admin@shopping.com".ljust(100, " ")
     R_Usu.ClaveUsuario = "12345".ljust(8, " ")
     R_Usu.TipoUsuario = "administrador".ljust(20, " ")
     ALU.seek(0, 2)
