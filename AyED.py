@@ -701,6 +701,7 @@ def Bs_pro_Estado(valor):
     M = os.path.getsize(AFP)
     pos = 0
     ALP.seek(0, 0)
+    R_Pro = pickle.load(ALP)
     while ALP.tell() < M and R_Pro.Estado != valor:
         pos = ALP.tell()
         R_Pro = pickle.load(ALP)
@@ -915,7 +916,7 @@ def pedirusuario():
     # Ingreso de datos:
     user = input("Escriba su usuario: ").ljust(100, " ")
     if valid_mail(user):
-        contraseña = getpass.getpass("Ingrese su contraseña").ljust(8, " ")
+        contraseña = getpass.getpass("Ingrese su contraseña: ").ljust(8, " ")
         pos = Bs_Usu(user)
         if pos != -1:
             ALU.seek(pos, 0)
@@ -937,7 +938,7 @@ def pedirusuario():
             if contador <= 2:
                 user = input("Escriba su usuario: ").ljust(100, " ")
                 if valid_mail(user):
-                    contraseña =  getpass.getpass("Ingrese su contraseña").ljust(8, " ")
+                    contraseña =  getpass.getpass("Ingrese su contraseña: ").ljust(8, " ")
                     pos = Bs_Usu(user)
                     if pos != -1:
                         ALU.seek(pos, 0)
@@ -976,6 +977,18 @@ def Registrarse():
         while len(R_Usu.ClaveUsuario) > 8:
             print("Usted ingreso una clave muy larga, intente otra vez")
             R_Usu.ClaveUsuario = getpass.getpass("Ingrese su contraseña").ljust(8, " ")
+        
+        R_Usu.TipoUsuario = "cliente".ljust(20," ")
+        #Buscando el codigo del anterior registro
+        ALU.seek(0, 0)
+        Aux = pickle.load(ALU)
+        T_aux = ALU.tell()
+        C_RL = int(os.path.getsize(AFU) / T_aux)
+        R_Usu.CodUsuario = C_RL + 1
+        C = os.path.getsize(AFU)
+        ALU.seek(C, 0)
+        pickle.dump(R_Usu, ALU)
+        ALU.flush()
     else:
         input("Usuario incorrecto, recuerde utilizar un formato de mail, presione ENTER para continuar...")
 
@@ -1031,7 +1044,6 @@ def Admin():
                 case 2:
                     os.system("cls")
                     Crear_D()
-                    input("Ejecución completada, presione ENTER para continuar...")
                 case 3:
                     os.system("cls")
                     Aprobar()
@@ -1045,7 +1057,7 @@ def Admin():
                     Reporte_A()
 
 def Aprobar():
-    if os.path.getsize(AFP):
+    if os.path.getsize(AFP) != 0:
         cond = Bs_pro_Estado("pendiente".ljust(10," "))
         if cond != -1:
             ALP.seek(0,0)
@@ -1800,13 +1812,12 @@ def DueñoDelocales():
                     eleccion = -1
                 case 2:
                     Reporte()
-                    input("Presione ENTER para continuar...")
                 case 3:
                     print("Diagramado en chapin")
                     input("Presione ENTER para continuar...")
 
 def Crear_Descuentos():
-    global User_g
+    global User_g, R_Pro
     pos = Bs_Usu(User_g)
     ALU.seek(pos, 0)
     R_Usu = pickle.load(ALU)
