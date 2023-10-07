@@ -1048,7 +1048,7 @@ def Admin():
                     Reporte_A()
 
 def Aprobar():
-    if os.path.getsize(AFP):
+    if os.path.getsize(AFP) =! 0:
         cond = Bs_pro_Estado("pendiente".ljust(10," "))
         if cond != -1:
             ALP.seek(0,0)
