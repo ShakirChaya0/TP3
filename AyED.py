@@ -915,7 +915,7 @@ def pedirusuario():
     # Ingreso de datos:
     user = input("Escriba su usuario: ").ljust(100, " ")
     if valid_mail(user):
-        contraseña = getpass.getpass("Ingrese su contraseña").ljust(8, " ")
+        contraseña = getpass.getpass("Ingrese su contraseña: ").ljust(8, " ")
         pos = Bs_Usu(user)
         if pos != -1:
             ALU.seek(pos, 0)
@@ -930,6 +930,7 @@ def pedirusuario():
     else:
         input("Usuario incorrecto, recuerde utilizar un formato de mail, presione ENTER para volver a intentarlo...")
         cod = ""
+
     # Restricción de intentos del inicio de sesión
         while cod == "" and contador < 3:
             contador = contador + 1
@@ -937,7 +938,7 @@ def pedirusuario():
             if contador <= 2:
                 user = input("Escriba su usuario: ").ljust(100, " ")
                 if valid_mail(user):
-                    contraseña =  getpass.getpass("Ingrese su contraseña").ljust(8, " ")
+                    contraseña =  getpass.getpass("Ingrese su contraseña: ").ljust(8, " ")
                     pos = Bs_Usu(user)
                     if pos != -1:
                         ALU.seek(pos, 0)
@@ -972,24 +973,26 @@ def Registrarse():
             R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
             pos = Bs_Usu(R_Usu.NombreUsuario)
 
-        R_Usu.ClaveUsuario = getpass.getpass("Ingrese su contraseña").ljust(8, " ")
+        R_Usu.ClaveUsuario = getpass.getpass("Ingrese su contraseña: ").ljust(8, " ")
         while len(R_Usu.ClaveUsuario) > 8:
             print("Usted ingreso una clave muy larga, intente otra vez")
-            R_Usu.ClaveUsuario = getpass.getpass("Ingrese su contraseña").ljust(8, " ")
+            R_Usu.ClaveUsuario = getpass.getpass("Ingrese su contraseña: ").ljust(8, " ")
+        
+        R_Usu.TipoUsuario = "cliente".ljust(20," ")
+        #Buscando el codigo del anterior registro
+        ALU.seek(0, 0)
+        Aux = pickle.load(ALU)
+        T_aux = ALU.tell()
+        C_RL = int(os.path.getsize(AFU) / T_aux)
+        R_Usu.CodUsuario = C_RL + 1
+        C = os.path.getsize(AFU)
+        ALU.seek(C, 0)
+        pickle.dump(R_Usu, ALU)
+        ALU.flush()
+
     else:
         input("Usuario incorrecto, recuerde utilizar un formato de mail, presione ENTER para continuar...")
 
-    R_Usu.TipoUsuario = "cliente".ljust(20," ")
-    #Buscando el codigo del anterior registro
-    ALU.seek(0, 0)
-    Aux = pickle.load(ALU)
-    T_aux = ALU.tell()
-    C_RL = int(os.path.getsize(AFU) / T_aux)
-    R_Usu.CodUsuario = C_RL + 1
-    C = os.path.getsize(AFU)
-    ALU.seek(C, 0)
-    pickle.dump(R_Usu, ALU)
-    ALU.flush()
 
 # SECCIÓN DE REGISTRO E INICIO DE SESIÓN # (Final)
 
