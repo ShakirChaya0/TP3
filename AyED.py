@@ -1048,7 +1048,7 @@ def Admin():
                     Reporte_A()
 
 def Aprobar():
-    if os.path.getsize(AFP) =! 0:
+    if os.path.getsize(AFP) != 0:
         cond = Bs_pro_Estado("pendiente".ljust(10," "))
         if cond != -1:
             ALP.seek(0,0)
@@ -1114,20 +1114,21 @@ def Crear_D():
         while len(R_Usu.ClaveUsuario) > 8:
             print("Usted ingreso una clave muy larga, intente otra vez")
             R_Usu.ClaveUsuario = getpass.getpass("Ingrese la clave del usuario: ").ljust(8, " ")
+
+        R_Usu.TipoUsuario = "dueño de local".ljust(20," ")
+        #Buscando el codigo del anterior registro
+        ALU.seek(0, 0)
+        Aux = pickle.load(ALU)
+        T_aux = ALU.tell()
+        C_RL = int(os.path.getsize(AFU) / T_aux)
+        R_Usu.CodUsuario = C_RL + 1
+        C = os.path.getsize(AFU)
+        ALU.seek(C, 0)
+        pickle.dump(R_Usu, ALU)
+        ALU.flush()
     else:
         input("Usuario incorrecto, recuerde utilizar un formato de mail, presione ENTER para continuar...")
 
-    R_Usu.TipoUsuario = "dueño de local".ljust(20," ")
-    #Buscando el codigo del anterior registro
-    ALU.seek(0, 0)
-    Aux = pickle.load(ALU)
-    T_aux = ALU.tell()
-    C_RL = int(os.path.getsize(AFU) / T_aux)
-    R_Usu.CodUsuario = C_RL + 1
-    C = os.path.getsize(AFU)
-    ALU.seek(C, 0)
-    pickle.dump(R_Usu, ALU)
-    ALU.flush()
 
 def gestion_de_locales():
     global eleccion
@@ -1912,7 +1913,7 @@ def Reporte():
                 print(117 * "-")
    else:
        input("No hay promociones cargadas, presione ENTER para volver...")
-                 
+
 
 # SECCION  DUEÑOS DE LOCALES CON TODAS SUS SUB-SECCIONES # (Final)
 
