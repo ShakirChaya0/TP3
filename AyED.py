@@ -1016,6 +1016,7 @@ def Admin():
                 case 3:
                     os.system("cls")
                     Aprobar()
+
                 case 4:
                     os.system("cls")
                     print("Diagramado en chapin")
@@ -1072,6 +1073,7 @@ def Aprobar():
             input("Ejecución completada, presione ENTER para continuar...")
         else:
             print("No hay promociones en estado pendiente")
+            input("Presione ENTER para continuar...")
     else:
         input("No hay promociones, presione ENTER para continuar")
 
