@@ -4,6 +4,7 @@ import os.path
 import os
 import sys
 import datetime
+import time
 class Usuarios:
     def __init__(self) -> None:
         self.CodUsuario = 0
@@ -40,15 +41,15 @@ Rubros = [R_Rub] * 3
 #Instanciando las clases para asignar los atributos respectivos
 cl1 = R_Rub()
 cl1.Nom = "perfumeria".ljust(12," ")
-cl1.Ca = 0
+cl1.Ca = 1
 Rubros[0] = cl1
 cl2 = R_Rub()
 cl2.Nom = "indumentaria".ljust(12," ")
-cl2.Ca = 0
+cl2.Ca = 1
 Rubros[1] = cl2
 cl3 = R_Rub()
 cl3.Nom = "comida".ljust(12," ")
-cl3.Ca = 0
+cl3.Ca = 1
 Rubros[2] = cl3
 """"""
 """"""
@@ -401,65 +402,68 @@ def Exhibicion_Clientes_Desc():
     sys.stdout.write(21 * "═")
     sys.stdout.write("╝\n")
 def Exhibicion_Clientes(Cod_local, Fecha):
-    borde = "║"
-    label = "║Codigo Promo"
-    label += borde
-    label += " " * 15
-    label += "Texto Promo"
-    label += " " * 15
-    label += borde
-    label += " " * 5
-    label += "Fecha Desde"
-    label += " " * 5
-    label += borde
-    label += " " * 5
-    label += "Fecha Hasta"
-    label += " " * 5
-    label += borde
-    sys.stdout.write("╔")
-    sys.stdout.write(12 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(41 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(21 * "═")
-    sys.stdout.write("╦")
-    sys.stdout.write(21 * "═")
-    sys.stdout.write("╗\n")
-    print(label)
-    ALP.seek(0,0)
-    while ALP.tell() < os.path.getsize(AFP):
-        R_Pro = pickle.load(ALP)
-        if R_Pro.CodLocal == Cod_local and R_Pro.Estado.strip() == "aprobada" and R_Pro.FechaDesdePromo <= Fecha and R_Pro.FechaHastaPromo >= Fecha:
-          if R_Pro.DiaSemana[Fecha.weekday()] == 1:
-                sys.stdout.write("╠")
-                sys.stdout.write(12 * "═")
-                sys.stdout.write("╬")
-                sys.stdout.write(41 * "═")
-                sys.stdout.write("╬")
-                sys.stdout.write(21 * "═")
-                sys.stdout.write("╬")
-                sys.stdout.write(21 * "═")
-                sys.stdout.write("╣\n")
-                item = ""
-                item += "║"
-                item += str(R_Pro.CodPromo).center(12)
-                item += borde
-                item += R_Pro.TextoPromo.strip().center(41)
-                item += borde
-                item += str(R_Pro.FechaDesdePromo).center(21)
-                item += borde
-                item += str(R_Pro.FechaHastaPromo).center(21)
-                item += "║"
-                print(item)
-    sys.stdout.write("╚")
-    sys.stdout.write(12 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(41 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(21 * "═")
-    sys.stdout.write("╩")
-    sys.stdout.write(21 * "═")
-    sys.stdout.write("╝\n")
+    if Bs_pro_Estado("aprobada".ljust(10," ")) != -1:
+        borde = "║"
+        label = "║Codigo Promo"
+        label += borde
+        label += " " * 15
+        label += "Texto Promo"
+        label += " " * 15
+        label += borde
+        label += " " * 5
+        label += "Fecha Desde"
+        label += " " * 5
+        label += borde
+        label += " " * 5
+        label += "Fecha Hasta"
+        label += " " * 5
+        label += borde
+        sys.stdout.write("╔")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(41 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(21 * "═")
+        sys.stdout.write("╦")
+        sys.stdout.write(21 * "═")
+        sys.stdout.write("╗\n")
+        print(label)
+        ALP.seek(0,0)
+        while ALP.tell() < os.path.getsize(AFP):
+            R_Pro = pickle.load(ALP)
+            if R_Pro.CodLocal == Cod_local and R_Pro.Estado.strip() == "aprobada" and R_Pro.FechaDesdePromo <= Fecha and R_Pro.FechaHastaPromo >= Fecha:
+              if R_Pro.DiaSemana[Fecha.weekday()] == 1:
+                    sys.stdout.write("╠")
+                    sys.stdout.write(12 * "═")
+                    sys.stdout.write("╬")
+                    sys.stdout.write(41 * "═")
+                    sys.stdout.write("╬")
+                    sys.stdout.write(21 * "═")
+                    sys.stdout.write("╬")
+                    sys.stdout.write(21 * "═")
+                    sys.stdout.write("╣\n")
+                    item = ""
+                    item += "║"
+                    item += str(R_Pro.CodPromo).center(12)
+                    item += borde
+                    item += R_Pro.TextoPromo.strip().center(41)
+                    item += borde
+                    item += str(R_Pro.FechaDesdePromo).center(21)
+                    item += borde
+                    item += str(R_Pro.FechaHastaPromo).center(21)
+                    item += "║"
+                    print(item)
+        sys.stdout.write("╚")
+        sys.stdout.write(12 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(41 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(21 * "═")
+        sys.stdout.write("╩")
+        sys.stdout.write(21 * "═")
+        sys.stdout.write("╝\n")
+    else:
+        print("No hay promociones aprobadas para este local")
 def Exhibicion_Reportes(Fecha_d,Fecha_h,Cod):
     if Bs_Pro_Cod(Cod, Fecha_d, Fecha_h) == True:
         borde = "║"
@@ -675,6 +679,7 @@ def Bs_pro_Estado(valor):
     M = os.path.getsize(AFP)
     pos = 0
     ALP.seek(0, 0)
+    R_Pro = pickle.load(ALP)
     while ALP.tell() < M and R_Pro.Estado != valor:
         pos = ALP.tell()
         R_Pro = pickle.load(ALP)
@@ -682,6 +687,19 @@ def Bs_pro_Estado(valor):
         return pos
     else:
         return -1
+def Barrido_EstadoyFecha():
+    M = os.path.getsize(AFP)
+    menor = str(datetime.datetime.now())
+    ALP.seek(0, 0)
+    R_Pro = pickle.load(ALP)
+    while ALP.tell() < M:
+        if menor > str(R_Pro.FechaDesdePromo):
+            menor = str(R_Pro.FechaDesdePromo)
+        R_Pro = pickle.load(ALP)
+        
+    return menor
+
+    
 def Bs_Pro_Cod(X, desde, hasta):
     cond = False
     T = os.path.getsize(AFP)
@@ -889,34 +907,34 @@ def pedirusuario():
         cod = ""
 
     # Restricción de intentos del inicio de sesión
-        while cod == "" and contador < 3:
-            contador = contador + 1
-            os.system("cls")
-            if contador <= 2:
-                user = input("Escriba su usuario: ").ljust(100, " ")
-                if valid_mail(user):
-                    contraseña =  getpass.getpass("Ingrese su contraseña: ").ljust(8, " ")
-                    pos = Bs_Usu(user)
-                    if pos != -1:
-                        ALU.seek(pos, 0)
-                        cont = pickle.load(ALU)
-                        if cont.ClaveUsuario == contraseña:
-                            cod = cont.TipoUsuario.strip()
-                            User_g = cont.NombreUsuario
-                        else:
-                            cod = ""
+    while cod == "" and contador < 3:
+        contador = contador + 1
+        os.system("cls")
+        if contador <= 2:
+            user = input("Escriba su usuario: ").ljust(100, " ")
+            if valid_mail(user):
+                contraseña =  getpass.getpass("Ingrese su contraseña: ").ljust(8, " ")
+                pos = Bs_Usu(user)
+                if pos != -1:
+                    ALU.seek(pos, 0)
+                    cont = pickle.load(ALU)
+                    if cont.ClaveUsuario == contraseña:
+                        cod = cont.TipoUsuario.strip()
+                        User_g = cont.NombreUsuario
                     else:
                         cod = ""
                 else:
-                    input("Usuario incorrecto, recuerde utilizar un formato de mail, presione ENTER para volver a intentarlo...")
                     cod = ""
             else:
-                print("Su numero de intentos ha finalizado")
-                bandera = -1
-                eleccion = 0
-        if cod != "":
-            os.system("cls")
-            print("- Hola, has ingresado correctamente")
+                input("Usuario incorrecto, recuerde utilizar un formato de mail, presione ENTER para volver a intentarlo...")
+                cod = ""
+        else:
+            print("Su numero de intentos ha finalizado")
+            bandera = -1
+            eleccion = 0
+    if cod != "":
+        os.system("cls")
+        print("- Hola, has ingresado correctamente")
 
 def Registrarse():
     R_Usu.NombreUsuario = input("Ingrese el mail del usuario: ").ljust(100, " ")
@@ -1130,6 +1148,7 @@ def gestion_de_locales():
                     Exhibicion()
                 separador()
                 Crear_Locales()
+                input("Presione ENTER para continuar...")
                 os.system("cls")
                 separador()
                 decision = "z"
@@ -1640,7 +1659,9 @@ def Mapa_Locales():
 
 def Reporte_A():
     TP = os.path.getsize(AFP)
-    if TP != 0 :
+    if TP != 0:
+        Fecha_d = Validacion_RangoI_Reporte()
+        Fecha_h = Validacion_RangoF_Reporte(Fecha_d)
         ALL.seek(0,0)
         ALU.seek(0,0)
         ALP.seek(0,0)
@@ -1667,12 +1688,12 @@ def Reporte_A():
                     ALP.seek(0,0)
                     for j in range(0, C_RP):
                         R_Pro = pickle.load(ALP)
-                        if R_Pro.CodLocal == R_Loc.CodLocal and R_Pro.Estado.strip() == "aprobada":
+                        if R_Pro.CodLocal == R_Loc.CodLocal and R_Pro.Estado.strip() == "aprobada" and R_Pro.FechaDesdePromo >= Fecha_d and R_Pro.FechaHastaPromo <= Fecha_h:
                             Usos = Conteo_Usos(R_Pro.CodPromo)
                             print(f"El dueño: \033[0;31m{R_Usu.NombreUsuario.strip()}\033[0;m, Tiene las siguientes promos en el codigo de local {R_Loc.CodLocal}")
                             print(f"Se uso una cantidad de {Usos} veces la promoción") 
                             print(f"La promo es: \033[0;31m{R_Pro.TextoPromo.strip()}\033[0;m, los dias disponibles son:")
-                            Semana(R_Pro.DiaSemana)
+                            print(Semana(R_Pro.DiaSemana))
                             separador()
         input("Ejecución completada, presione ENTER para continuar...")
     else:
@@ -1739,13 +1760,12 @@ def DueñoDelocales():
                     eleccion = -1
                 case 2:
                     Reporte()
-                    input("Presione ENTER para continuar...")
                 case 3:
                     print("Diagramado en chapin")
                     input("Presione ENTER para continuar...")
 
 def Crear_Descuentos():
-    global User_g
+    global User_g, R_Pro
     pos = Bs_Usu(User_g)
     ALU.seek(pos, 0)
     R_Usu = pickle.load(ALU)
@@ -1844,6 +1864,7 @@ def Reporte():
                 print(f"Local {R_Loc.CodLocal}: \033[92m{R_Loc.NombreLocal}\033[0m")
                 Exhibicion_Reportes(Fecha_d,Fecha_h, R_Loc.CodLocal)
                 print(117 * "-")
+        input("Presione ENTER para continuar...")
    else:
        input("No hay promociones cargadas, presione ENTER para volver...")
 
@@ -1859,10 +1880,10 @@ def Reporte():
 # SECCION  CLIENTES CON TODAS SUS SUB-SECCIONES # (Inicio)
 
 def Clientes():
-  os.system("cls")
   global eleccion 
   eleccion = -1 
   while eleccion >= -1 and eleccion <= 3:
+      os.system("cls")
       separador()
       mostrar_menu()
       eleccion = Validacion(0,3,"Ingrese una opción")
@@ -1870,25 +1891,27 @@ def Clientes():
           case 0:
               eleccion = -2
           case 1: 
-              Bus_Desc()
               os.system("cls")
+              Bus_Desc()
               input("Ejecución completada, presione ENTER para continuar...")
           case 2:
               os.system("cls")
               Solic_Desc()
-              input("Ejecución completada, presione ENTER para continuar...")
+              input("Presione ENTER para continuar...")
           case 3:
               os.system("cls")
               print("Esta sección esta diagramada en chapin")
               input("Presione ENTER para continuar...")
 
 def Bus_Desc():
+  global R_Pro
   if os.path.getsize(AFP) != 0:
      ALL.seek(0,0)
      R_Loc = pickle.load(ALL)
      T_R = ALL.tell()
      Cant_R = os.path.getsize(AFL)//T_R
      Exhibicion()
+     print("Aclaración: si no desea buscar ningun descuento ingrese 0")
      Cod_local = Validacion_Clientes(0,Cant_R,"Ingrese un código de local")
      if Cod_local != 0:
         Fecha = Validacion_fecha()
@@ -1897,36 +1920,40 @@ def Bus_Desc():
      print("Aún no hay ninguna promoción cargada.")
 
 def Solic_Desc():
-  global User_g
-  if os.path.getsize(AFP) != 0:
-    ALP.seek(0,0)
-    R_Pro = pickle.load(ALP)
-    T_R = ALP.tell()
-    Tam = os.path.getsize(AFP)
-    Cant_R = Tam//T_R
-    Exhibicion_Clientes_Desc()
-    Cod_pro = Validacion(0,Cant_R,"Ingrese el código de la promoción que desea usar: ")
-    Fecha = datetime.datetime.now().date()
-    Pos = Bs_pro(Cod_pro)
-    if Pos != -1:
-        ALP.seek(Pos, 0)
+    global User_g
+    if os.path.getsize(AFP) != 0 and Bs_pro_Estado("aprobada".ljust(10," ")) != -1 and Barrido_EstadoyFecha() <= str(datetime.datetime.now()):
+        ALP.seek(0,0)
         R_Pro = pickle.load(ALP)
-        if R_Pro.CodPromo == Cod_pro and R_Pro.Estado.strip() == "aprobada" and R_Pro.FechaDesdePromo <= Fecha and R_Pro.FechaHastaPromo >= Fecha:
-          if R_Pro.DiaSemana[Fecha.weekday()] == 1:
-                pos = Bs_Usu(User_g)
-                ALU.seek(pos, 0)
-                R_Usu = pickle.load(ALU)
-                R_Uso_Pro.CodCliente = R_Usu.CodUsuario
-                R_Uso_Pro.CodPromo = Cod_pro
-                R_Uso_Pro.FechaUsoPromo = Fecha 
-                ALUP.seek(0,2)
-                pickle.dump(R_Uso_Pro,ALUP)
-                ALUP.flush()
-                print("Promoción utilizada correctamente")
-          else:
-              print("La promoción no esta activa este dia")
-        else:
-            print("Promoción no disponible.")
+        T_R = ALP.tell()
+        Tam = os.path.getsize(AFP)
+        Cant_R = Tam//T_R
+        Exhibicion_Clientes_Desc()
+        Cod_pro = Validacion(0,Cant_R,"Ingrese el código de la promoción que desea usar: ")
+        Fecha = datetime.datetime.now().date()
+        Pos = Bs_pro(Cod_pro)
+        if Pos != -1:
+            ALP.seek(Pos, 0)
+            R_Pro = pickle.load(ALP)
+            if R_Pro.CodPromo == Cod_pro and R_Pro.Estado.strip() == "aprobada" and R_Pro.FechaDesdePromo <= Fecha and R_Pro.FechaHastaPromo >= Fecha:
+              if R_Pro.DiaSemana[Fecha.weekday()] == 1:
+                    pos = Bs_Usu(User_g)
+                    ALU.seek(pos, 0)
+                    R_Usu = pickle.load(ALU)
+                    R_Uso_Pro.CodCliente = R_Usu.CodUsuario
+                    R_Uso_Pro.CodPromo = Cod_pro
+                    R_Uso_Pro.FechaUsoPromo = Fecha 
+                    ALUP.seek(0,2)
+                    pickle.dump(R_Uso_Pro,ALUP)
+                    ALUP.flush()
+                    print("Promoción utilizada correctamente")
+              else:
+                  print("La promoción no esta activa este dia")
+            else:
+                print("Promoción no disponible.")          
+    else:
+        print("No hay promociones disponibles") 
+      
+
 
 # SECCION  CLIENTES CON TODAS SUS SUB-SECCIONES # (Final)
 
@@ -1984,7 +2011,7 @@ if os.path.getsize(AFU) == 0:
 os.system("cls")
 Menu_principal()
 Eleccion = Validacion(1, 3,"Ingrese una opción")
-while Eleccion != 3:
+while Eleccion != 3 and bandera != -1:
     if Eleccion == 1:
         pedirusuario()
         match cod.strip():
@@ -1996,9 +2023,11 @@ while Eleccion != 3:
                 Clientes()
     else:
         Registrarse()
-    os.system("cls")
-    Menu_principal()
-    Eleccion = Validacion(1, 3,"Ingrese una opción")
+    if bandera != -1:
+        os.system("cls")
+        Menu_principal()
+        Eleccion = Validacion(1, 3,"Ingrese una opción")
 Finalizar()
 os.system("cls")
 print("\033[3;31mSaliendo del programa...\033[0;m")
+time.sleep(2)
